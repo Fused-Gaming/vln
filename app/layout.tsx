@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -101,8 +102,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="antialiased">
-        {children}
+      <body className="antialiased bg-vln-bg text-vln-white">
+        <PCBTraceBackground />
+        <div className="relative z-10">
+          {children}
+        </div>
       </body>
     </html>
   );

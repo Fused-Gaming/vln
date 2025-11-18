@@ -1,10 +1,7 @@
-import Link from "next/link";
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Services - VLN Smart Contract Security",
-  description: "Professional smart contract security audits, vulnerability research, and penetration testing for blockchain gaming projects.",
-};
+import Link from "next/link";
+import ClientCarousel from "@/components/vln/client-carousel";
 
 export default function ServicesPage() {
   return (
@@ -211,6 +208,11 @@ export default function ServicesPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Who We Work With */}
+        <section className="border-t border-vln-sage/20">
+          <ClientCarousel />
         </section>
 
         {/* CTA Section */}
