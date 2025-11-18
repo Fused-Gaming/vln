@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/VLN2.svg",
         width: 1200,
         height: 630,
         alt: "VLN - Smart Contract Vulnerability Research Lab",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     description:
       "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects.",
     creator: "@vlngg",
-    images: ["/twitter-image.png"],
+    images: ["/VLN2.svg"],
   },
   robots: {
     index: true,
