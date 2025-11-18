@@ -1,16 +1,28 @@
 "use client";
 
 import { motion, HTMLMotionProps } from "framer-motion";
+import Link from "next/link";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface ButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
+interface BaseButtonProps {
   children: ReactNode;
   variant?: "primary" | "secondary" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   icon?: ReactNode;
   loading?: boolean;
+  className?: string;
 }
+
+interface ButtonAsButton extends BaseButtonProps, Omit<HTMLMotionProps<"button">, "ref"> {
+  href?: never;
+}
+
+interface ButtonAsLink extends BaseButtonProps {
+  href: string;
+}
+
+type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 export default function Button({
   children,
@@ -19,7 +31,6 @@ export default function Button({
   icon,
   loading = false,
   className,
-  disabled,
   ...props
 }: ButtonProps) {
   const baseStyles = "font-semibold rounded-vln transition-all inline-flex items-center justify-center gap-2";
@@ -37,14 +48,8 @@ export default function Button({
     lg: "px-8 py-4 text-lg",
   };
 
-  return (
-    <motion.button
-      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
-      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
-      disabled={disabled || loading}
-      {...props}
-    >
+  const content = (
+    <>
       {loading && (
         <motion.div
           className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
@@ -54,6 +59,39 @@ export default function Button({
       )}
       {icon && !loading && <span>{icon}</span>}
       {children}
+    </>
+  );
+
+  const combinedClassName = cn(baseStyles, variants[variant], sizes[size], className);
+
+  // If href is provided, render as Link
+  if ("href" in props && props.href) {
+    return (
+      <Link href={props.href} className={combinedClassName}>
+        <motion.div
+          className="w-full h-full flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {content}
+        </motion.div>
+      </Link>
+    );
+  }
+
+  // Otherwise render as button
+  const buttonProps = props as ButtonAsButton;
+  const disabled = buttonProps.disabled || loading;
+
+  return (
+    <motion.button
+      whileHover={!disabled ? { scale: 1.02 } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      className={combinedClassName}
+      disabled={disabled}
+      {...buttonProps}
+    >
+      {content}
     </motion.button>
   );
 }

@@ -357,10 +357,10 @@ export default function ServicesPage() {
                   Get in touch to discuss your security needs and receive a custom proposal
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 px-4">
-                  <Button variant="primary" size="lg">
+                  <Button variant="primary" size="lg" href="/contact">
                     Contact Us
                   </Button>
-                  <Button variant="secondary" size="lg">
+                  <Button variant="secondary" size="lg" href="/pricing">
                     View Pricing
                   </Button>
                 </div>

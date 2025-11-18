@@ -264,6 +264,7 @@ export default function PricingPage() {
                         variant={service.featured ? "primary" : "secondary"}
                         size="sm"
                         className="w-full"
+                        href="/contact"
                       >
                         Request Quote
                       </Button>
@@ -370,7 +371,7 @@ export default function PricingPage() {
                       ))}
                     </ul>
 
-                        <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
+                        <Button variant={plan.popular ? "primary" : "secondary"} className="w-full" href="/contact">
                           Get Started
                         </Button>
                       </Card>
@@ -401,10 +402,10 @@ export default function PricingPage() {
                   Contact us for a custom quote tailored to your specific needs
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button variant="primary" size="lg">
+                  <Button variant="primary" size="lg" href="/contact">
                     Request Consultation
                   </Button>
-                  <Button variant="secondary" size="lg">
+                  <Button variant="secondary" size="lg" href="/contact">
                     Schedule Call
                   </Button>
                 </div>

@@ -55,10 +55,10 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, delay: 0.6 }}
                 >
-                  <Button variant="primary" size="lg">
+                  <Button variant="primary" size="lg" href="/services">
                     Our Services
                   </Button>
-                  <Button variant="secondary" size="lg">
+                  <Button variant="secondary" size="lg" href="/contact">
                     Get in Touch
                   </Button>
                 </motion.div>
@@ -188,10 +188,10 @@ export default function Home() {
                   Get in touch to discuss your security needs and receive a custom proposal
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 px-4">
-                  <Button variant="primary" size="lg">
+                  <Button variant="primary" size="lg" href="/contact">
                     Contact Us
                   </Button>
-                  <Button variant="secondary" size="lg">
+                  <Button variant="secondary" size="lg" href="/services">
                     View Services
                   </Button>
                 </div>
