@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import ClientCarousel from "@/components/vln/client-carousel";
 
 export default function Home() {
   return (
@@ -111,6 +114,11 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* Who We Work With */}
+        <section className="border-t border-vln-sage/20">
+          <ClientCarousel />
         </section>
       </main>
 
