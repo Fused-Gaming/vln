@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -11,15 +11,19 @@ interface BaseButtonProps {
   size?: "sm" | "md" | "lg";
   icon?: ReactNode;
   loading?: boolean;
-  className?: string;
 }
 
-interface ButtonAsButton extends BaseButtonProps, Omit<HTMLMotionProps<"button">, "ref"> {
+interface ButtonAsButton extends BaseButtonProps {
   href?: never;
+  className?: string;
+  disabled?: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: "button" | "submit" | "reset";
 }
 
 interface ButtonAsLink extends BaseButtonProps {
   href: string;
+  className?: string;
 }
 
 type ButtonProps = ButtonAsButton | ButtonAsLink;
@@ -89,7 +93,8 @@ export default function Button({
       whileTap={!disabled ? { scale: 0.98 } : {}}
       className={combinedClassName}
       disabled={disabled}
-      {...buttonProps}
+      onClick={buttonProps.onClick}
+      type={buttonProps.type}
     >
       {content}
     </motion.button>
