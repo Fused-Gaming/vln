@@ -4,11 +4,40 @@
 
 @layer base {
   :root {
+    /* Brand Colors */
     --vln-bg: #0f0f0f;
     --vln-sage: #a6c3a7;
     --vln-bluegray: #aab7c8;
     --vln-accent: #a6c3a7;
     --vln-glow: #a6c3a7;
+
+    /* Neutral Colors */
+    --vln-white: #ffffff;
+    --vln-gray-50: #fafafa;
+    --vln-gray-100: #f4f4f5;
+    --vln-gray-200: #e4e4e7;
+    --vln-gray-300: #d4d4d8;
+    --vln-gray-400: #a1a1aa;
+    --vln-gray-500: #71717a;
+    --vln-gray-600: #52525b;
+    --vln-gray-700: #3f3f46;
+    --vln-gray-800: #27272a;
+    --vln-gray-900: #18181b;
+
+    /* Status Colors */
+    --vln-danger: #dc2626;
+    --vln-danger-hover: #b91c1c;
+    --vln-danger-light: #fee2e2;
+
+    --vln-success: #16a34a;
+    --vln-success-hover: #15803d;
+    --vln-success-light: #dcfce7;
+
+    --vln-warning: #eab308;
+    --vln-warning-hover: #ca8a04;
+    --vln-warning-light: #fef9c3;
+
+    /* Spacing */
     --vln-radius: 12px;
     --vln-card-lift: 4px;
   }
