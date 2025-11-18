@@ -1,8 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { Shield, Search, AlertTriangle, Clock, GraduationCap, Code, Check } from "lucide-react";
 import { SiSolidity } from "react-icons/si";
+import { motion } from "framer-motion";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
+import PCBTraceBackground from "@/components/vln/pcb-trace-background";
+import ScrollSection from "@/components/animations/scroll-section";
+import AlternatingFade, { AlternatingFadeItem } from "@/components/animations/alternating-fade";
 import ScrollProgress from "@/components/animations/scroll-progress";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
@@ -156,69 +161,57 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
       <ScrollProgress />
 
+      {/* Fixed Background - Optimized PCB Trace */}
+      <PCBTraceBackground />
+
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-vln-sage/20 backdrop-blur-md bg-vln-bg/80">
-        <nav className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Shield className="w-6 h-6 text-vln-sage" />
-              <span className="text-xl sm:text-2xl font-bold text-vln-sage">VLN</span>
-              <span className="text-xs sm:text-sm text-vln-bluegray hidden sm:inline">
-                by Fused Gaming
-              </span>
-            </Link>
-            <div className="flex items-center space-x-4 sm:space-x-8">
-              <Link
-                href="/services"
-                className="text-sm sm:text-base text-vln-white hover:text-vln-sage transition-colors"
-              >
-                Services
-              </Link>
-              <Link
-                href="/pricing"
-                className="text-sm sm:text-base text-vln-sage font-semibold"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm sm:text-base text-vln-white hover:text-vln-sage transition-colors"
-              >
-                Contact
-              </Link>
-            </div>
-          </div>
-        </nav>
-      </header>
+      <Header />
 
-      <main className="relative z-10">
-        {/* Hero */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32">
-          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight">
-              Professional <span className="text-gradient-rainbow">Security Services</span>
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-vln-gray max-w-2xl mx-auto">
-              Enterprise-grade blockchain security with transparent, competitive pricing
-            </p>
+      <main className="relative z-10 pt-8 sm:pt-12 lg:pt-20">
+        {/* Section 0: Hero - Even */}
+        <ScrollSection index={0} variant="default">
+          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32">
+            <AlternatingFade index={0}>
+              <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
+                <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight">
+                  Professional <span className="text-gradient-rainbow">Security Services</span>
+                </h1>
+                <p className="text-lg sm:text-xl md:text-2xl text-vln-gray max-w-2xl mx-auto">
+                  Enterprise-grade blockchain security with transparent, competitive pricing
+                </p>
+              </div>
+            </AlternatingFade>
           </div>
-        </section>
+        </ScrollSection>
 
-        {/* Services Grid */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {services.map((service, i) => {
-              const colorClasses = getColorClasses(service.color);
-              return (
-                <Card
-                  key={i}
-                  className={`${colorClasses.glow} ${
-                    service.featured ? "ring-2 ring-vln-amber" : ""
-                  } relative`}
-                >
+        {/* Section 1: Services Grid - Odd */}
+        <ScrollSection index={1} variant="default">
+          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+            <motion.div
+              className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={{
+                visible: {
+                  transition: {
+                    staggerChildren: 0.1,
+                  },
+                },
+              }}
+            >
+              {services.map((service, i) => {
+                const colorClasses = getColorClasses(service.color);
+                return (
+                  <AlternatingFadeItem key={i}>
+                    <Card
+                      className={`${colorClasses.glow} ${
+                        service.featured ? "ring-2 ring-vln-amber" : ""
+                      } relative h-full`}
+                    >
                   {service.featured && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <span className="bg-vln-amber text-vln-bg text-xs font-bold px-3 py-1 rounded-full">
@@ -267,28 +260,46 @@ export default function PricingPage() {
                     ))}
                   </ul>
 
-                  <Button
-                    variant={service.featured ? "primary" : "secondary"}
-                    size="sm"
-                    className="w-full"
-                  >
-                    Request Quote
-                  </Button>
-                </Card>
-              );
-            })}
+                      <Button
+                        variant={service.featured ? "primary" : "secondary"}
+                        size="sm"
+                        className="w-full"
+                        href="/contact"
+                      >
+                        Request Quote
+                      </Button>
+                    </Card>
+                  </AlternatingFadeItem>
+                );
+              })}
+            </motion.div>
           </div>
-        </section>
+        </ScrollSection>
 
-        {/* Retainer Plans */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24 border-t border-vln-sage/20">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-16">
-              Retainer <span className="text-vln-sage">Plans</span>
-            </h2>
+        {/* Section 2: Retainer Plans - Even */}
+        <ScrollSection index={2} variant="default">
+          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+            <div className="max-w-6xl mx-auto">
+              <AlternatingFade index={2}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-16">
+                  Retainer <span className="text-vln-sage">Plans</span>
+                </h2>
+              </AlternatingFade>
 
-            <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
-              {[
+              <motion.div
+                className="grid md:grid-cols-3 gap-6 sm:gap-8"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.2,
+                    },
+                  },
+                }}
+              >
+                {[
                 {
                   name: "Essential",
                   price: "$10K/month",
@@ -328,15 +339,15 @@ export default function PricingPage() {
                   ],
                   color: "purple",
                 },
-              ].map((plan, i) => {
-                const colorClasses = getColorClasses(plan.color);
-                return (
-                  <Card
-                    key={i}
-                    className={`${colorClasses.glow} ${
-                      plan.popular ? "ring-2 ring-vln-bluegray scale-105" : ""
-                    } relative`}
-                  >
+                ].map((plan, i) => {
+                  const colorClasses = getColorClasses(plan.color);
+                  return (
+                    <AlternatingFadeItem key={i}>
+                      <Card
+                        className={`${colorClasses.glow} ${
+                          plan.popular ? "ring-2 ring-vln-bluegray scale-105" : ""
+                        } relative h-full`}
+                      >
                     {plan.popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                         <span className="bg-vln-bluegray text-vln-bg text-xs font-bold px-3 py-1 rounded-full">
@@ -360,51 +371,52 @@ export default function PricingPage() {
                       ))}
                     </ul>
 
-                    <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
-                      Get Started
-                    </Button>
-                  </Card>
-                );
-              })}
+                        <Button variant={plan.popular ? "primary" : "secondary"} className="w-full" href="/contact">
+                          Get Started
+                        </Button>
+                      </Card>
+                    </AlternatingFadeItem>
+                  );
+                })}
+              </motion.div>
             </div>
           </div>
-        </section>
+        </ScrollSection>
 
-        {/* Who We Work With */}
-        <section className="border-t border-vln-sage/20">
-          <ClientCarousel />
-        </section>
-
-        {/* CTA */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24 border-t border-vln-sage/20">
-          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-              Ready to Get <span className="text-vln-sage">Started</span>?
-            </h2>
-            <p className="text-lg sm:text-xl text-vln-gray">
-              Contact us for a custom quote tailored to your specific needs
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button variant="primary" size="lg">
-                Request Consultation
-              </Button>
-              <Button variant="secondary" size="lg">
-                Schedule Call
-              </Button>
-            </div>
+        {/* Section 3: Who We Work With - Odd */}
+        <ScrollSection index={3} variant="default">
+          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <ClientCarousel />
           </div>
-        </section>
+        </ScrollSection>
+
+        {/* Section 4: CTA - Even */}
+        <ScrollSection index={4} variant="default">
+          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+            <AlternatingFade index={4}>
+              <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                  Ready to Get <span className="text-vln-sage">Started</span>?
+                </h2>
+                <p className="text-lg sm:text-xl text-vln-gray">
+                  Contact us for a custom quote tailored to your specific needs
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Button variant="primary" size="lg" href="/contact">
+                    Request Consultation
+                  </Button>
+                  <Button variant="secondary" size="lg" href="/contact">
+                    Schedule Call
+                  </Button>
+                </div>
+              </div>
+            </AlternatingFade>
+          </div>
+        </ScrollSection>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-vln-sage/20 bg-vln-bg/90 backdrop-blur-md mt-12 sm:mt-24">
-        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center text-sm text-vln-gray">
-            <p className="mb-2">VLN - Smart Contract Vulnerability Research Lab</p>
-            <p className="text-xs">© 2024 Fused Gaming. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
