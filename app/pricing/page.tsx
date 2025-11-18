@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Shield, Search, AlertTriangle, Clock, GraduationCap, Code, Check } from "lucide-react";
 import { SiSolidity } from "react-icons/si";
-import CircuitBoardOptimized from "@/components/vln/circuit-board-optimized";
 import ScrollProgress from "@/components/animations/scroll-progress";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
+import ClientCarousel from "@/components/vln/client-carousel";
 
 export default function PricingPage() {
   const services = [
@@ -156,13 +156,8 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-vln-bg text-vln-white">
+    <div className="min-h-screen">
       <ScrollProgress />
-
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <CircuitBoardOptimized />
-      </div>
 
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-vln-sage/20 backdrop-blur-md bg-vln-bg/80">
@@ -373,6 +368,11 @@ export default function PricingPage() {
               })}
             </div>
           </div>
+        </section>
+
+        {/* Who We Work With */}
+        <section className="border-t border-vln-sage/20">
+          <ClientCarousel />
         </section>
 
         {/* CTA */}
