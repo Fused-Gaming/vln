@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { Search, BarChart3, Zap } from "lucide-react";
 import Header from "@/components/layout/header";

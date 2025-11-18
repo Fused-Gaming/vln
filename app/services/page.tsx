@@ -6,7 +6,7 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import ScrollSection from "@/components/animations/scroll-section";
-import AlternatingFade, { AlternatingFadeItem } from "@/components/animations/alternating-fade";
+import AlternatingFade from "@/components/animations/alternating-fade";
 import ScrollProgress from "@/components/animations/scroll-progress";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
