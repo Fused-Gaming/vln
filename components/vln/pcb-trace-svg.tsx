@@ -7,7 +7,7 @@ import { memo } from "react";
 // Uses modern gradient system and illuminated component states
 function PCBTraceSVG() {
   return (
-    <div className="fixed inset-0 pointer-events-none opacity-20">
+    <div className="fixed inset-0 -z-10 pointer-events-none opacity-20">
       <svg
         viewBox="0 0 2800 1800"
         xmlns="http://www.w3.org/2000/svg"
@@ -16,28 +16,17 @@ function PCBTraceSVG() {
       >
         <defs>
           <linearGradient id="trace-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: "var(--trace-color-1, #14b8a6)", stopOpacity: 1 }} />
-            <stop offset="50%" style={{ stopColor: "var(--trace-color-2, #06b6d4)", stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: "var(--trace-color-3, #e879f9)", stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#86d993", stopOpacity: 1 }} />
+            <stop offset="50%" style={{ stopColor: "#7dd3fc", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#c084fc", stopOpacity: 1 }} />
           </linearGradient>
           <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" style={{ stopColor: "var(--glow-color, #06b6d4)", stopOpacity: 0.8 }} />
-            <stop offset="100%" style={{ stopColor: "var(--glow-color, #06b6d4)", stopOpacity: 0 }} />
+            <stop offset="0%" style={{ stopColor: "#86d993", stopOpacity: 0.8 }} />
+            <stop offset="100%" style={{ stopColor: "#86d993", stopOpacity: 0 }} />
           </radialGradient>
         </defs>
 
         <style>{`
-          :root {
-            --bg-color: #020617;
-            --trace-color-1: #14b8a6;
-            --trace-color-2: #06b6d4;
-            --trace-color-3: #e879f9;
-            --component-bg: #0f172a;
-            --component-stroke: #1e293b;
-            --component-lit-bg: #06b6d4;
-            --component-lit-stroke: #22d3ee;
-            --glow-color: #06b6d4;
-          }
           .trace {
             fill: none;
             stroke: url(#trace-gradient);
@@ -49,18 +38,23 @@ function PCBTraceSVG() {
           .trace.med { stroke-width: 2.5; }
           .trace.fine { stroke-width: 1.5; }
           .illuminate-target {
-            fill: var(--component-bg);
-            stroke: var(--component-stroke);
+            fill: #151a1c;
+            stroke: #1f2527;
             stroke-width: 2;
           }
           .illuminate-target.lit {
-            fill: var(--component-lit-bg);
-            stroke: var(--component-lit-stroke);
+            fill: #86d993;
+            stroke: #a8e9b4;
             filter: url(#glow);
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .trace, .illuminate-target {
+              transition: none !important;
+            }
           }
         `}</style>
 
-        <rect width="2800" height="1800" fill="var(--bg-color)" />
+        <rect width="2800" height="1800" fill="#0a0e0f" />
 
         {/* Horizontal Bus Lines */}
         <g id="bus-horizontal">
