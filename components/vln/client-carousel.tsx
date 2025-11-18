@@ -6,28 +6,28 @@ import Image from "next/image";
 // Client logos with their CDN URLs
 const clients = [
   // Gaming/Crypto Platforms
-  { name: "Stake.com", logo: "https://stake.com/favicon.ico", type: "gaming" },
-  { name: "Shuffle.com", logo: "https://shuffle.com/favicon.ico", type: "gaming" },
+  { name: "Stake.com", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Stake_logo.svg", type: "gaming" },
+  { name: "Shuffle.com", logo: "https://shuffle.com/icons/logo.svg", type: "gaming" },
   { name: "Thrill.com", logo: "https://thrill.com/favicon.ico", type: "gaming" },
-  { name: "Fullhouse.gg", logo: "https://fullhouse.gg/favicon.ico", type: "gaming" },
+  { name: "Fullhouse.gg", logo: "https://fullhouse.gg/logo/logo.webp", type: "gaming" },
   { name: "Razed.com", logo: "https://razed.com/favicon.ico", type: "gaming" },
   { name: "Gamba.com", logo: "https://gamba.com/favicon.ico", type: "gaming" },
 
   // Blockchain Platforms
-  { name: "Solana", logo: "https://solana.com/favicon.ico", type: "blockchain" },
-  { name: "Ethereum", logo: "https://ethereum.org/favicon.ico", type: "blockchain" },
+  { name: "Solana", logo: "https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png", type: "blockchain" },
+  { name: "Ethereum", logo: "https://ethereum.org/images/eth-org-logo.png", type: "blockchain" },
 
   // Tech/Infrastructure
-  { name: "Telegram", logo: "https://telegram.org/favicon.ico", type: "tech" },
-  { name: "Discord", logo: "https://discord.com/favicon.ico", type: "tech" },
-  { name: "Google", logo: "https://www.google.com/favicon.ico", type: "tech" },
-  { name: "Cloudflare", logo: "https://www.cloudflare.com/favicon.ico", type: "tech" },
-  { name: "Apple", logo: "https://www.apple.com/favicon.ico", type: "tech" },
-  { name: "GitHub", logo: "https://github.com/favicon.ico", type: "tech" },
+  { name: "Telegram", logo: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", type: "tech" },
+  { name: "Discord", logo: "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.svg", type: "tech" },
+  { name: "Google", logo: "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png", type: "tech" },
+  { name: "Cloudflare", logo: "https://cf-assets.www.cloudflare.com/dzlvafdwdttg/735eoClKJf9XfkqCJs1mfZ/b6767158f39af8d538517df918b8fc2e/logo-white-desktop.svg", type: "tech" },
+  { name: "Apple", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg", type: "tech" },
+  { name: "GitHub", logo: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png", type: "tech" },
 
   // Development Tools
-  { name: "Foundry", logo: "https://book.getfoundry.sh/favicon.ico", type: "dev" },
-  { name: "Solidity", logo: "https://soliditylang.org/favicon.ico", type: "dev" },
+  { name: "Foundry", logo: "https://getfoundry.sh/og-image.png", type: "dev" },
+  { name: "Solidity", logo: "https://upload.wikimedia.org/wikipedia/commons/9/98/Solidity_logo.svg", type: "dev" },
 ];
 
 // Government/Regulatory (using placeholder for sensitive logos)
