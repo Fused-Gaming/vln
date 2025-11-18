@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --vln-bg: #0f0f0f;
+    --vln-sage: #a6c3a7;
+    --vln-bluegray: #aab7c8;
+    --vln-accent: #a6c3a7;
+    --vln-glow: #a6c3a7;
+    --vln-radius: 12px;
+    --vln-card-lift: 4px;
+  }
+
+  * {
+    @apply border-vln-bluegray/20;
+  }
+
+  body {
+    @apply bg-vln-bg text-white antialiased;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+@layer components {
+  .vln-button {
+    @apply inline-flex items-center justify-center rounded-vln px-6 py-3 font-medium transition-all duration-300;
+    @apply hover:shadow-vln-glow;
+  }
+
+  .vln-button-primary {
+    @apply bg-vln-sage text-vln-bg;
+  }
+
+  .vln-button-secondary {
+    @apply border border-vln-sage text-vln-sage hover:bg-vln-sage/10;
+  }
+
+  .vln-card {
+    @apply rounded-vln border border-vln-bluegray/20 bg-vln-bg/40 p-6 backdrop-blur-sm;
+    @apply transition-all duration-300 hover:shadow-vln-lift;
+  }
+
+  .vln-heading {
+    @apply font-bold tracking-tight;
+  }
+
+  .vln-text-gradient {
+    @apply bg-gradient-to-r from-vln-sage to-vln-bluegray bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

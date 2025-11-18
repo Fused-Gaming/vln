@@ -1,15 +1,62 @@
-# Remix compiler artifacts
-**/artifacts/
-**/artifacts/**
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# Remix plugin state folders
-deps/
-states/
+# Testing
+coverage
+*.lcov
+.nyc_output
 
-# Debug info
+# Next.js
+.next/
+out/
+build
+dist/
+
+# Production
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
 *.dbg.json
-*.tsbuildinfo
 
-# Optional
+# Local env files
 .env
-.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Turbo
+.turbo
+
+# IDEs
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
