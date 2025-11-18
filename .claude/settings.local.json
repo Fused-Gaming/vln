@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(test:*)",
+      "Bash(pnpm create:*)",
+      "Bash(pkill -f \"create next-app\")",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm build:*)",
+      "Bash(timeout 10 pnpm dev:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(vln): add performance optimizations, SEO enhancements, and Vercel config\n\n## Performance Optimizations\n- Replace heavy Framer Motion circuit boards with lightweight canvas-based PCB trace animation\n- Add optimized CircuitBoardOptimized and PCBTraceBackground components\n- Create enhanced PCB trace SVG component with VLN color palette\n- Implement React.memo for preventing unnecessary re-renders\n- Add GPU-accelerated transforms and CSS animations\n\n## UI/UX Improvements\n- Replace all emojis with high-quality Lucide React SVG icons\n- Add comprehensive responsive breakpoints (mobile, tablet, desktop, ultra-wide)\n- Implement rainbow gradient text effects and multi-color glow states\n- Create fully responsive pricing page with 7 services and 3 retainer tiers\n- Add Shield icon to header navigation\n\n## SEO & Metadata\n- Add comprehensive SEO metadata with Open Graph and Twitter Card support\n- Create sitemap.ts for dynamic sitemap generation\n- Add robots.txt for search engine crawling\n- Implement canonical URLs and structured data\n- Add WCAG AAA compliant color palette (#86d993, #7dd3fc, #fbbf24, #c084fc)\n\n## Vercel Deployment\n- Add vercel.json configuration for deployment\n- Configure build commands and output directories\n- Enable deployment for main and integration/vln branches\n\n## New Components\n- components/vln/pcb-trace-background.tsx - Canvas-based animation\n- components/vln/pcb-trace-svg.tsx - SVG motherboard design with VLN colors\n- components/vln/circuit-board-optimized.tsx - Optimized circuit animation\n- app/pricing/page.tsx - Complete pricing page\n- app/sitemap.ts - Dynamic sitemap\n\n## Dependencies\n- Add lucide-react@0.554.0 for SVG icons\n- Add react-icons@5.5.0 for Web3 icons (Solidity, Ethereum)\n- Add tailwindcss-animate@1.0.7 for animation utilities\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh run view:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
