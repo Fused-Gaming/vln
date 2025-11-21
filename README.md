@@ -18,6 +18,19 @@ VLN is Fused Gaming's smart contract security research platform, specializing in
 
 ---
 
+## 🌐 Public Resources
+
+VLN provides comprehensive resources across multiple platforms:
+
+- **📚 [docs.vln.gg](https://docs.vln.gg)** - Technical documentation, API references, and integration guides
+- **🎓 [edu.vln.gg](https://edu.vln.gg)** - Educational content, tutorials, and security research courses
+- **🎨 [design.vln.gg](https://design.vln.gg)** - Design system, brand assets, and component library
+- **❓ [help.vln.gg](https://help.vln.gg)** - Help center, FAQs, and support resources
+- **📊 [status.vln.gg](https://status.vln.gg)** - Platform status and uptime monitoring
+- **📰 [blog.vln.gg](https://blog.vln.gg)** - Security research articles, vulnerability disclosures, and updates
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -182,6 +195,7 @@ All research is conducted to improve blockchain security and for educational pur
 - **📧 Email**: [info@vln.gg](mailto:info@vln.gg)
 - **💬 Telegram**: [@vlngg](https://t.me/vlngg)
 - **🐙 GitHub**: [github.com/Fused-Gaming/vln](https://github.com/Fused-Gaming/vln)
+- **❓ Support**: [help.vln.gg](https://help.vln.gg)
 
 ---
 
@@ -189,9 +203,12 @@ All research is conducted to improve blockchain security and for educational pur
 
 For detailed documentation, see:
 
+- **[docs.vln.gg](https://docs.vln.gg)** - Complete online documentation and API references
+- **[edu.vln.gg](https://edu.vln.gg)** - Educational tutorials and security courses
+- **[design.vln.gg](https://design.vln.gg)** - Design system and component library
 - [CLAUDE.md](./CLAUDE.md) - Contribution guidelines for Claude Code
 - [BRANDING.md](./BRANDING.md) - Official branding guidelines
-- [docs/](./docs/) - Technical and project documentation
+- [docs/](./docs/) - Technical and project documentation (local)
 
 ---
 
