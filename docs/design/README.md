@@ -27,19 +27,16 @@ The VLN design system provides a comprehensive framework for building conversion
 ```
 docs/design/
 ├── README.md (this file)
+├── ROUTES_AND_ELEMENTS.md - Complete inventory of pages & components
+├── DESIGN_ASSETS.md - Reusable patterns, icons, gradients
 ├── tokens/
-│   ├── colors.md - Color palette and usage
-│   ├── typography.md - Font system
-│   └── spacing.md - Layout and spacing
+│   └── colors.md - Color palette and usage (WCAG AAA)
 ├── components/
-│   ├── animations.md - Animation guidelines
-│   ├── buttons.md - CTA buttons
-│   └── cards.md - Content cards
+│   └── animations.md - Animation system & best practices
 ├── pages/
-│   ├── homepage.md - Homepage design spec
-│   └── conversion.md - Conversion optimization
+│   └── homepage.md - Homepage design spec & wireframes
 └── performance/
-    └── guidelines.md - Performance best practices
+    └── guidelines.md - Performance optimization (17 rules)
 ```
 
 ---

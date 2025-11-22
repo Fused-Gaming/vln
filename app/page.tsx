@@ -2,7 +2,7 @@
 
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-import PCBTraceBackground from "@/components/vln/pcb-trace-background";
+import ICBoardBackground from "@/components/vln/ic-board-background";
 import StatsGrid from "@/components/vln/stats-grid";
 import ServicePillars from "@/components/vln/service-pillars";
 import TestimonialsSection from "@/components/vln/testimonials-section";
@@ -12,13 +12,13 @@ import GuaranteeSection from "@/components/vln/guarantee-section";
 import UrgencyBanner from "@/components/vln/urgency-banner";
 import CSSFade from "@/components/animations/css-fade";
 import Button from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Search, DollarSign, ShieldCheck, Siren } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
-      {/* Fixed Background - Optimized PCB Trace */}
-      <PCBTraceBackground />
+      {/* Fixed Background - Futuristic IC Board */}
+      <ICBoardBackground />
 
       {/* Header */}
       <Header />
@@ -54,8 +54,8 @@ export default function Home() {
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Button>
                 <Button variant="secondary" size="xl" href="/contact?service=forensics" className="group border-vln-amber text-vln-amber hover:bg-vln-amber/10 glow-lift-amber">
+                  <Siren className="w-5 h-5" />
                   24/7 Emergency Forensics
-                  <span className="ml-2">🚨</span>
                 </Button>
               </div>
             </CSSFade>
@@ -64,15 +64,15 @@ export default function Home() {
             <CSSFade delay={800} direction="up">
               <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 pt-8 max-w-3xl mx-auto">
                 {[
-                  { icon: '🔍', text: '47 Critical Vulns Found' },
-                  { icon: '💰', text: '$5.2M Funds Recovered' },
-                  { icon: '🛡️', text: '0 Post-Audit Hacks' },
+                  { Icon: Search, text: '47 Critical Vulns Found', color: 'text-vln-sage' },
+                  { Icon: DollarSign, text: '$5.2M Funds Recovered', color: 'text-vln-bluegray' },
+                  { Icon: ShieldCheck, text: '0 Post-Audit Hacks', color: 'text-vln-purple' },
                 ].map((badge, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-center gap-2 p-3 rounded-vln bg-vln-bg-light/80 border border-vln-sage/20"
                   >
-                    <span className="text-2xl">{badge.icon}</span>
+                    <badge.Icon className={`w-5 h-5 ${badge.color}`} />
                     <span className="text-sm font-medium text-vln-white">{badge.text}</span>
                   </div>
                 ))}

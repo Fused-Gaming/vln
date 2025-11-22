@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 import CSSFade from '@/components/animations/css-fade';
 import Button from '@/components/ui/button';
 
@@ -22,7 +22,7 @@ export default function GuaranteeSection() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-vln-sage/20 mb-6">
-                <span className="text-4xl">💚</span>
+                <ShieldCheck className="w-8 h-8 text-vln-sage" />
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
                 The <span className="text-vln-sage">VLN Guarantee</span>
