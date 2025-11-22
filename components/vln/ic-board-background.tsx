@@ -2,29 +2,31 @@
 
 import React, { useEffect, useRef } from 'react';
 
+// Type definitions (moved outside component to avoid hoisting issues)
+interface TracePath {
+  points: { x: number; y: number }[];
+  progress: number;
+  speed: number;
+  width: number;
+  color: string;
+  pulseIntensity: number;
+}
+
+interface ComponentNode {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  type: 'chip' | 'capacitor' | 'resistor';
+  pulsePhase: number;
+}
+
 /**
  * Futuristic IC Board Background Animation
  * Performance-optimized canvas-based circuit board with data bus traces
  * Simulates electrical signals traveling through IC pathways
  */
 const ICBoardBackground = () => {
-  interface TracePath {
-    points: { x: number; y: number }[];
-    progress: number;
-    speed: number;
-    width: number;
-    color: string;
-    pulseIntensity: number;
-  }
-
-  interface ComponentNode {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    type: 'chip' | 'capacitor' | 'resistor';
-    pulsePhase: number;
-  }
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
