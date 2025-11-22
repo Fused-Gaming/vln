@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import { Analytics } from "@vercel/analytics/react";
@@ -109,6 +110,13 @@ export default function RootLayout({
           {children}
         </div>
         <Analytics />
+        {/* Cloudflare Web Analytics */}
+        <Script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "565db9149b914dc2aec85b7ac21da3c0"}'
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
