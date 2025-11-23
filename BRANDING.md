@@ -301,6 +301,44 @@ For branding questions or usage permissions:
 
 ---
 
-**Last Updated**: 2024-11-14
-**Version**: 1.0
+## 🎬 Animation System
+
+### Circuit Board Styles
+
+**Standard Styles** (Static patterns with basic animations):
+- `subtle` - Light traces, minimal distraction
+- `moderate` - Visible circuits, balanced presence (default)
+- `bold` - Dense network, high visual impact
+
+**Randomized Styles** (Organic, non-repetitive animations):
+- `bold-random` - Randomized circuit board with multi-color nodes
+- `pcb-animated` - Full PCB motherboard with animated buses and data flow particles
+
+### Animation Features
+
+The randomized animation system includes:
+- **Multi-color gradients**: Sage, blue, and purple color scheme
+- **Data flow particles**: Visual representation of data transfer
+- **Randomized timing**: Every element has unique animation parameters
+- **Better bus definition**: 5px thick lines for visibility
+- **Organic motion**: Non-repetitive, natural feeling animations
+
+### Usage in PageSkeleton
+
+```tsx
+<PageSkeleton circuitStyle="pcb-animated" codeRain={true}>
+  {/* Your content */}
+</PageSkeleton>
+```
+
+### Documentation
+
+For complete animation documentation, see:
+- [RANDOMIZED-ANIMATIONS.md](RANDOMIZED-ANIMATIONS.md) - Full randomized animation system guide
+- [SCROLLING-ANIMATIONS.md](SCROLLING-ANIMATIONS.md) - Scroll-based animation system
+
+---
+
+**Last Updated**: 2024-11-22
+**Version**: 2.0
 **Maintained By**: Fused Gaming Team

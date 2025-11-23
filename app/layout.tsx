@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import { Analytics } from "@vercel/analytics/react";
+import { AnimationProvider } from "@/lib/animation-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -105,18 +106,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased bg-vln-bg text-vln-white">
-        <PCBTraceBackground />
-        <div className="relative z-10">
-          {children}
-        </div>
-        <Analytics />
-        {/* Cloudflare Web Analytics */}
-        <Script
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon='{"token": "565db9149b914dc2aec85b7ac21da3c0"}'
-          strategy="afterInteractive"
-        />
+        <AnimationProvider>
+          <PCBTraceBackground />
+          <div className="relative z-10">
+            {children}
+          </div>
+          <Analytics />
+          {/* Cloudflare Web Analytics */}
+          <Script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "565db9149b914dc2aec85b7ac21da3c0"}'
+            strategy="afterInteractive"
+          />
+        </AnimationProvider>
       </body>
     </html>
   );
