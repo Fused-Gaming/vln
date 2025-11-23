@@ -248,12 +248,11 @@ jobs:
           chmod +x .github/scripts/analyze-build-failure.sh
           .github/scripts/analyze-build-failure.sh
 
-      - name: 💬 Post Diagnostic Comment (PR)
+      - name: 📝 Create/Update Diagnostic Issue
         if: |
-          github.event_name == 'pull_request' &&
-          (needs.security-audit.result != 'success' ||
-           needs.lint.result != 'success' ||
-           needs.build-and-test.result != 'success')
+          needs.security-audit.result != 'success' ||
+          needs.lint.result != 'success' ||
+          needs.build-and-test.result != 'success'
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -263,82 +262,96 @@ jobs:
               ? fs.readFileSync('diagnostic-report.md', 'utf8')
               : '## ⚠️ Build Failed\n\nAutomated diagnostics could not run. Please check the workflow logs.';
 
-            const comment = `${diagnosticReport}
+            const issueTitle = '🔍 Build Diagnostics Report';
+            const issueBody = `${diagnosticReport}
 
             ---
+
+            ## 📊 Latest Build Information
 
             **Pipeline Results:**
             - 🔒 Security Audit: \`${{ needs.security-audit.result }}\`
             - 🎨 Lint & Type Check: \`${{ needs.lint.result }}\`
             - 🔨 Build & Test: \`${{ needs.build-and-test.result }}\`
 
+            **Branch:** \`${{ github.ref_name }}\`
             **Commit:** ${{ github.sha }}
             **Triggered by:** @${{ github.actor }}
-
-            <sub>🤖 Automated by [VLN Build Diagnostics](.github/scripts/analyze-build-failure.sh)</sub>`;
-
-            // Find existing diagnostic comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const botComment = comments.find(comment =>
-              comment.body.includes('VLN Build Diagnostics')
-            );
-
-            if (botComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: comment
-              });
-              console.log('Updated existing diagnostic comment');
-            } else {
-              // Create new comment
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: comment
-              });
-              console.log('Posted new diagnostic comment');
-            }
-
-      - name: 💬 Post Diagnostic Comment (Commit)
-        if: |
-          github.event_name == 'push' &&
-          (needs.security-audit.result != 'success' ||
-           needs.lint.result != 'success' ||
-           needs.build-and-test.result != 'success')
-        uses: actions/github-script@v7
-        continue-on-error: true
-        with:
-          script: |
-            const fs = require('fs');
-            const diagnosticReport = fs.existsSync('diagnostic-report.md')
-              ? fs.readFileSync('diagnostic-report.md', 'utf8')
-              : '## ⚠️ Build Failed\n\nAutomated diagnostics could not run.';
-
-            const comment = `${diagnosticReport}
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
             ---
 
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
+            <sub>🤖 This issue is automatically updated by [VLN Build Diagnostics](.github/scripts/analyze-build-failure.sh)</sub>
+            <sub>Last updated: ${new Date().toISOString()}</sub>`;
 
-            <sub>🤖 Automated by VLN Build Diagnostics</sub>`;
-
-            await github.rest.repos.createCommitComment({
+            // Search for existing diagnostic issue (both open and closed)
+            const { data: openIssues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: comment
+              state: 'open',
+              labels: ['build-diagnostics'],
+              per_page: 100
             });
-            console.log('Posted diagnostic comment on commit');
+
+            const { data: closedIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              labels: ['build-diagnostics'],
+              per_page: 10,
+              sort: 'updated',
+              direction: 'desc'
+            });
+
+            const allIssues = [...openIssues, ...closedIssues];
+            const existingIssue = allIssues.find(issue => issue.title === issueTitle);
+
+            if (existingIssue) {
+              // Reopen if closed
+              if (existingIssue.state === 'closed') {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existingIssue.number,
+                  state: 'open'
+                });
+                console.log(\`Reopened diagnostic issue #\${existingIssue.number}\`);
+              }
+
+              // Update issue body
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: issueBody
+              });
+              console.log(\`Updated diagnostic issue #\${existingIssue.number}\`);
+
+              // Add a comment with the new failure info
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: \`## 🔄 New Build Failure Detected
+
+            **Branch:** \`${{ github.ref_name }}\`
+            **Commit:** \`${{ github.sha }}\`
+            **Time:** ${new Date().toISOString()}
+            **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            See updated diagnostics in the issue description above.\`
+              });
+            } else {
+              // Create new issue
+              const newIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['build-diagnostics', 'automation']
+              });
+              console.log(\`Created new diagnostic issue #\${newIssue.data.number}\`);
+            }
 
       - name: 🎉 Success Actions
         if: |
@@ -350,6 +363,61 @@ jobs:
           echo "✅ All pipeline steps completed successfully!"
           echo "🎉 Ready to merge!"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: ✅ Close Diagnostic Issue on Success
+        if: |
+          needs.security-audit.result == 'success' &&
+          needs.lint.result == 'success' &&
+          needs.build-and-test.result == 'success'
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const issueTitle = '🔍 Build Diagnostics Report';
+
+            // Search for existing diagnostic issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['build-diagnostics'],
+              per_page: 100
+            });
+
+            const existingIssue = issues.find(issue =>
+              issue.title === issueTitle
+            );
+
+            if (existingIssue) {
+              // Add success comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `## ✅ Build Fixed!
+
+            All pipeline checks are now passing.
+
+            **Branch:** \`${{ github.ref_name }}\`
+            **Commit:** ${{ github.sha }}
+            **Time:** ${new Date().toISOString()}
+            **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Closing this issue. It will be reopened automatically if builds fail again.`
+              });
+
+              // Close the issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                state: 'closed'
+              });
+
+              console.log(\`Closed diagnostic issue #\${existingIssue.number}\`);
+            } else {
+              console.log('No open diagnostic issue found - nothing to close');
+            }
 
       - name: ✅ Final Status Check
         run: |
