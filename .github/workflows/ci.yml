@@ -97,14 +97,12 @@ jobs:
 
       - name: 📦 Setup pnpm
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
       - name: 📦 Setup Node.js
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -112,7 +110,6 @@ jobs:
 
       - name: 📥 Install dependencies
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         run: pnpm install --frozen-lockfile
 
       - name: 🎨 Run ESLint
@@ -122,7 +119,6 @@ jobs:
 
       - name: 🔍 Type Check
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         run: pnpm tsc --noEmit
 
   build-and-test:
@@ -147,14 +143,12 @@ jobs:
 
       - name: 📦 Setup pnpm
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
       - name: 📦 Setup Node.js
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -162,8 +156,12 @@ jobs:
 
       - name: 📥 Install dependencies
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
-        run: pnpm install --frozen-lockfile
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "→ Installing dependencies..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          pnpm install --frozen-lockfile
+          echo "✓ Dependencies installed successfully"
 
       - name: 🧪 Run tests
         if: steps.check_package.outputs.has_package == 'true'
@@ -177,7 +175,6 @@ jobs:
 
       - name: 🏗️  Build project
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "→ Building VLN website..."
@@ -185,9 +182,15 @@ jobs:
           pnpm build
           echo "✓ Build completed successfully"
 
+          # Verify .next directory was created
+          if [ ! -d ".next" ]; then
+            echo "❌ ERROR: .next directory not created"
+            exit 1
+          fi
+          echo "✓ Build artifacts verified (.next directory exists)"
+
       - name: 📊 Upload build artifacts
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: build-output

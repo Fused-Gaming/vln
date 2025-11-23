@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 interface BaseButtonProps {
   children: ReactNode;
   variant?: "primary" | "secondary" | "ghost" | "danger";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   icon?: ReactNode;
   loading?: boolean;
 }
@@ -50,6 +50,7 @@ export default function Button({
     sm: "px-4 py-2 text-sm",
     md: "px-6 py-3 text-base",
     lg: "px-8 py-4 text-lg",
+    xl: "px-10 py-5 text-xl",
   };
 
   const content = (
