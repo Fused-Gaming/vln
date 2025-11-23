@@ -47,3 +47,4 @@ states/
 
 # Debug info
 *.dbg.json
+.github/scripts/diagnostic-report.md

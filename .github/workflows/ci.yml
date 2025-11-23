@@ -215,12 +215,19 @@ jobs:
           retention-days: 7
 
   summary:
-    name: 📋 Pipeline Summary
+    name: 📋 Pipeline Summary & Diagnostics
     runs-on: ubuntu-latest
     needs: [security-audit, lint, build-and-test]
     if: always()
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
     steps:
-      - name: 📊 Generate Final Summary
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📊 Generate Pipeline Summary
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ VLN CI/CD Pipeline Complete"
@@ -230,14 +237,125 @@ jobs:
           echo "  Lint:            ${{ needs.lint.result }}"
           echo "  Build & Test:    ${{ needs.build-and-test.result }}"
 
-      - name: ✅ Check Overall Status
+      - name: 🔍 Run Diagnostics on Failure
+        if: |
+          needs.security-audit.result != 'success' ||
+          needs.lint.result != 'success' ||
+          needs.build-and-test.result != 'success'
+        id: diagnostics
+        continue-on-error: true
+        run: |
+          chmod +x .github/scripts/analyze-build-failure.sh
+          .github/scripts/analyze-build-failure.sh
+
+      - name: 💬 Post Diagnostic Comment (PR)
+        if: |
+          github.event_name == 'pull_request' &&
+          (needs.security-audit.result != 'success' ||
+           needs.lint.result != 'success' ||
+           needs.build-and-test.result != 'success')
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const fs = require('fs');
+            const diagnosticReport = fs.existsSync('diagnostic-report.md')
+              ? fs.readFileSync('diagnostic-report.md', 'utf8')
+              : '## ⚠️ Build Failed\n\nAutomated diagnostics could not run. Please check the workflow logs.';
+
+            const comment = `${diagnosticReport}
+
+            ---
+
+            **Pipeline Results:**
+            - 🔒 Security Audit: \`${{ needs.security-audit.result }}\`
+            - 🎨 Lint & Type Check: \`${{ needs.lint.result }}\`
+            - 🔨 Build & Test: \`${{ needs.build-and-test.result }}\`
+
+            **Commit:** ${{ github.sha }}
+            **Triggered by:** @${{ github.actor }}
+
+            <sub>🤖 Automated by [VLN Build Diagnostics](.github/scripts/analyze-build-failure.sh)</sub>`;
+
+            // Find existing diagnostic comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.body.includes('VLN Build Diagnostics')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+              console.log('Updated existing diagnostic comment');
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+              console.log('Posted new diagnostic comment');
+            }
+
+      - name: 💬 Post Diagnostic Comment (Commit)
+        if: |
+          github.event_name == 'push' &&
+          (needs.security-audit.result != 'success' ||
+           needs.lint.result != 'success' ||
+           needs.build-and-test.result != 'success')
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const fs = require('fs');
+            const diagnosticReport = fs.existsSync('diagnostic-report.md')
+              ? fs.readFileSync('diagnostic-report.md', 'utf8')
+              : '## ⚠️ Build Failed\n\nAutomated diagnostics could not run.';
+
+            const comment = `${diagnosticReport}
+
+            ---
+
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+
+            <sub>🤖 Automated by VLN Build Diagnostics</sub>`;
+
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: comment
+            });
+            console.log('Posted diagnostic comment on commit');
+
+      - name: 🎉 Success Actions
+        if: |
+          needs.security-audit.result == 'success' &&
+          needs.lint.result == 'success' &&
+          needs.build-and-test.result == 'success'
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ All pipeline steps completed successfully!"
+          echo "🎉 Ready to merge!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: ✅ Final Status Check
         run: |
           if [ "${{ needs.security-audit.result }}" != "success" ] || \
              [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.build-and-test.result }}" != "success" ]; then
-            echo "❌ Pipeline failed - please review the errors above"
+            echo "❌ Pipeline failed - diagnostics posted above"
             exit 1
-          else
-            echo "✅ All pipeline steps completed successfully!"
-            echo "🎉 Ready to merge!"
           fi
