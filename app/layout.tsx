@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
-import { AnimationProvider } from "@/lib/animation-context";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vln.gg"),
@@ -100,9 +99,8 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-vln-bg text-vln-white font-sans">
-        <AnimationProvider>
+        <Providers>
           {children}
-          <Analytics />
           {/* Cloudflare Web Analytics */}
           <Script
             defer
@@ -110,7 +108,7 @@ export default function RootLayout({
             data-cf-beacon='{"token": "565db9149b914dc2aec85b7ac21da3c0"}'
             strategy="afterInteractive"
           />
-        </AnimationProvider>
+        </Providers>
       </body>
     </html>
   );
