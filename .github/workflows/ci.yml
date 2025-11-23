@@ -163,16 +163,6 @@ jobs:
           pnpm install --frozen-lockfile
           echo "✓ Dependencies installed successfully"
 
-      - name: 🧪 Run tests
-        if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
-        run: |
-          if pnpm test --help &>/dev/null; then
-            pnpm test
-          else
-            echo "⚠️  No tests configured yet"
-          fi
-
       - name: 🏗️  Build project
         if: steps.check_package.outputs.has_package == 'true'
         run: |
@@ -189,8 +179,22 @@ jobs:
           fi
           echo "✓ Build artifacts verified (.next directory exists)"
 
-      - name: 📊 Upload build artifacts
+      - name: 🧪 Run tests
         if: steps.check_package.outputs.has_package == 'true'
+        continue-on-error: true
+        run: |
+          if pnpm test --help &>/dev/null; then
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "→ Running tests against build..."
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            pnpm test
+            echo "✓ Tests completed"
+          else
+            echo "⚠️  No tests configured yet"
+          fi
+
+      - name: 📊 Upload build artifacts
+        if: steps.check_package.outputs.has_package == 'true' && success()
         uses: actions/upload-artifact@v4
         with:
           name: build-output
