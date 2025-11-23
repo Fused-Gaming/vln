@@ -53,7 +53,7 @@ export default function Home() {
                   Start Free 30-Min Scan
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Button>
-                <Button variant="secondary" size="xl" href="/contact?service=forensics" className="group border-vln-amber text-vln-amber hover:bg-vln-amber/10 glow-lift-amber">
+                <Button variant="secondary" size="xl" href="/contact?service=forensics" className="group border-vln-amber text-vln-amber hover:bg-vln-amber hover:text-vln-bg glow-lift-amber">
                   <Siren className="w-5 h-5" />
                   24/7 Emergency Forensics
                 </Button>
