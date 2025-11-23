@@ -5,14 +5,12 @@ import { motion } from "framer-motion";
 import CircuitBoardSubtle from "@/components/vln/circuit-board-subtle";
 import CircuitBoardModerate from "@/components/vln/circuit-board-moderate";
 import CircuitBoardBold from "@/components/vln/circuit-board-bold";
-import CircuitBoardBoldRandomized from "@/components/vln/circuit-board-bold-randomized";
-import PCBTraceAnimated from "@/components/vln/pcb-trace-animated";
 import CodeRain from "@/components/vln/code-rain";
 import { useAnimations } from "@/lib/animation-context";
 
 interface PageSkeletonProps {
   children: ReactNode;
-  circuitStyle?: "none" | "subtle" | "moderate" | "bold" | "bold-random" | "pcb-animated";
+  circuitStyle?: "none" | "subtle" | "moderate" | "bold";
   codeRain?: boolean;
   codeRainIntensity?: "low" | "medium" | "high";
 }
@@ -30,8 +28,6 @@ export default function PageSkeleton({
     subtle: CircuitBoardSubtle,
     moderate: CircuitBoardModerate,
     bold: CircuitBoardBold,
-    "bold-random": CircuitBoardBoldRandomized,
-    "pcb-animated": PCBTraceAnimated,
   }[circuitStyle];
 
   return (
