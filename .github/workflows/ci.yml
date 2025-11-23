@@ -53,18 +53,35 @@ jobs:
 
       - name: 📦 Setup pnpm
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
       - name: 📦 Setup Node.js
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+
+      - name: 📦 Get pnpm store directory
+        if: steps.check_package.outputs.has_package == 'true'
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 📦 Setup pnpm cache
+        if: steps.check_package.outputs.has_package == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        if: steps.check_package.outputs.has_package == 'true'
+        run: pnpm install --frozen-lockfile
 
       - name: 🔍 pnpm Audit
         if: steps.check_package.outputs.has_package == 'true'
@@ -106,7 +123,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+
+      - name: 📦 Get pnpm store directory
+        if: steps.check_package.outputs.has_package == 'true'
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 📦 Setup pnpm cache
+        if: steps.check_package.outputs.has_package == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: 📥 Install dependencies
         if: steps.check_package.outputs.has_package == 'true'
@@ -152,7 +184,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+
+      - name: 📦 Get pnpm store directory
+        if: steps.check_package.outputs.has_package == 'true'
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 📦 Setup pnpm cache
+        if: steps.check_package.outputs.has_package == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: 📥 Install dependencies
         if: steps.check_package.outputs.has_package == 'true'
