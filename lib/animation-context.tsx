@@ -7,13 +7,17 @@ interface AnimationContextType {
   toggleAnimations: () => void;
 }
 
-const AnimationContext = createContext<AnimationContextType | undefined>(undefined);
+const AnimationContext = createContext<AnimationContextType>({
+  animationsEnabled: true,
+  toggleAnimations: () => {},
+});
 
 export function AnimationProvider({ children }: { children: ReactNode }) {
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  // Load preference from localStorage on mount
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem("vln-animations-enabled");
     if (saved !== null) {
       setAnimationsEnabled(saved === "true");
@@ -23,7 +27,9 @@ export function AnimationProvider({ children }: { children: ReactNode }) {
   const toggleAnimations = () => {
     setAnimationsEnabled((prev) => {
       const newValue = !prev;
-      localStorage.setItem("vln-animations-enabled", String(newValue));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("vln-animations-enabled", String(newValue));
+      }
       return newValue;
     });
   };
@@ -36,9 +42,5 @@ export function AnimationProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAnimations() {
-  const context = useContext(AnimationContext);
-  if (context === undefined) {
-    throw new Error("useAnimations must be used within an AnimationProvider");
-  }
-  return context;
+  return useContext(AnimationContext);
 }
