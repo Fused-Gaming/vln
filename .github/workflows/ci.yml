@@ -157,6 +157,7 @@ jobs:
       - name: 📥 Install dependencies
         if: steps.check_package.outputs.has_package == 'true'
         run: |
+          set -e
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "→ Installing dependencies..."
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -166,23 +167,33 @@ jobs:
       - name: 🏗️  Build project
         if: steps.check_package.outputs.has_package == 'true'
         run: |
+          set -e
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "→ Building VLN website..."
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           pnpm build
-          echo "✓ Build completed successfully"
 
           # Verify .next directory was created
           if [ ! -d ".next" ]; then
-            echo "❌ ERROR: .next directory not created"
+            echo "❌ ERROR: Build did not produce .next directory"
             exit 1
           fi
-          echo "✓ Build artifacts verified (.next directory exists)"
+
+          echo "✓ Build completed successfully"
+          echo "✓ Output folder verified (.next/ exists)"
 
       - name: 🧪 Run tests
         if: steps.check_package.outputs.has_package == 'true'
-        continue-on-error: true
         run: |
+          set -e
+
+          # Verify build output exists before testing
+          if [ ! -d ".next" ]; then
+            echo "❌ ERROR: Output folder .next/ does not exist - cannot run tests"
+            exit 1
+          fi
+          echo "✓ Output folder verified before testing"
+
           if pnpm test --help &>/dev/null; then
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "→ Running tests against build..."
@@ -190,7 +201,7 @@ jobs:
             pnpm test
             echo "✓ Tests completed"
           else
-            echo "⚠️  No tests configured yet"
+            echo "⚠️  No tests configured - skipping"
           fi
 
       - name: 📊 Upload build artifacts
