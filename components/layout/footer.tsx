@@ -65,7 +65,7 @@ export default function Footer() {
         </div>
         <div className="pt-6 sm:pt-8 border-t border-vln-sage/20 text-center text-xs sm:text-sm text-vln-gray">
           <p className="mb-2">Securing the future of blockchain gaming</p>
-          <p className="text-xs">© 2024 VLN - Fused Gaming. All rights reserved.</p>
+          <p className="text-xs">© 2025 VLN - Fused Gaming. All rights reserved.</p>
         </div>
       </div>
     </footer>
