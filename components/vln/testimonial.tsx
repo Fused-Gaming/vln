@@ -38,7 +38,7 @@ export default function Testimonial({
         'relative p-6 sm:p-8 rounded-vln border-2 border-vln-sage/20',
         'bg-vln-bg-light hover:border-vln-sage/40',
         'transition-all duration-300 hover:-translate-y-1',
-        'glow-lift',
+        'glow-lift h-full flex flex-col',
         className
       )}
     >
@@ -63,12 +63,12 @@ export default function Testimonial({
       )}
 
       {/* Quote */}
-      <blockquote className="text-vln-gray text-base leading-relaxed mb-6">
+      <blockquote className="text-vln-gray text-base leading-relaxed mb-6 flex-grow">
         &ldquo;{quote}&rdquo;
       </blockquote>
 
       {/* Attribution */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-vln-sage/10">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-vln-sage/10 mt-auto">
         <div>
           <p className="text-vln-white font-medium">
             {author}

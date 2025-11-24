@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
+import ScrollToTop from "@/components/ui/scroll-to-top";
+import CookieConsent from "@/components/ui/cookie-consent";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vln.gg"),
@@ -101,6 +103,8 @@ export default function RootLayout({
       <body className="antialiased bg-vln-bg text-vln-white font-sans">
         <Providers>
           {children}
+          <ScrollToTop />
+          <CookieConsent />
           {/* Cloudflare Web Analytics */}
           <Script
             defer
