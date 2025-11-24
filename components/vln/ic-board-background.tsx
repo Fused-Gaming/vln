@@ -40,15 +40,6 @@ const ICBoardBackground = () => {
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Set canvas size
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initializeCircuit();
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
     // VLN sage color with variations
     const sageRgb = [134, 217, 147]; // #86d993
     const blueRgb = [125, 211, 252]; // #7dd3fc
@@ -149,7 +140,14 @@ const ICBoardBackground = () => {
       componentsRef.current = components;
     };
 
-    initializeCircuit();
+    // Set canvas size
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initializeCircuit();
+    };
+    resize();
+    window.addEventListener('resize', resize);
 
     // Animation loop
     const animate = () => {
