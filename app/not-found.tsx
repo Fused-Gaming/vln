@@ -36,14 +36,14 @@ export default function NotFound() {
 
             <CSSFade delay={400} direction="up">
               <p className="text-xl sm:text-2xl text-vln-gray max-w-2xl mx-auto leading-relaxed">
-                Unlike our security audits, this page doesn't exist. But don't worry—we've got you covered.
+                Unlike our security audits, this page doesn&apos;t exist. But don&apos;t worry—we&apos;ve got you covered.
               </p>
             </CSSFade>
 
             <CSSFade delay={600} direction="up">
               <div className="p-6 sm:p-8 rounded-vln border-2 border-vln-sage/20 bg-vln-bg-light max-w-2xl mx-auto">
                 <p className="text-lg text-vln-gray mb-6">
-                  It looks like you've stumbled upon a dead end. Here are some helpful links to get you back on track:
+                  It looks like you&apos;ve stumbled upon a dead end. Here are some helpful links to get you back on track:
                 </p>
 
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -127,7 +127,7 @@ export default function NotFound() {
             <CSSFade delay={1000}>
               <div className="mt-12 p-6 rounded-vln border border-vln-bluegray/20 bg-vln-bluegray/5">
                 <p className="text-sm text-vln-gray">
-                  <strong className="text-vln-white">Security Tip:</strong> If you believe this page should exist or you've found a broken link on our site, please{" "}
+                  <strong className="text-vln-white">Security Tip:</strong> If you believe this page should exist or you&apos;ve found a broken link on our site, please{" "}
                   <a href="/contact" className="text-vln-sage hover:underline">
                     let us know
                   </a>

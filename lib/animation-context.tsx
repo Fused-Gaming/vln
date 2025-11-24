@@ -14,10 +14,8 @@ const AnimationContext = createContext<AnimationContextType>({
 
 export function AnimationProvider({ children }: { children: ReactNode }) {
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const saved = localStorage.getItem("vln-animations-enabled");
     if (saved !== null) {
       setAnimationsEnabled(saved === "true");
