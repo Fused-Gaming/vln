@@ -26,7 +26,7 @@ export default function PrivacyPage() {
                 <section>
                   <h2 className="text-2xl font-bold text-vln-white mb-4">1. Introduction</h2>
                   <p className="text-vln-gray leading-relaxed">
-                    VLN, operated by Fused Gaming ("we," "us," or "our"), is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.
+                    VLN, operated by Fused Gaming (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.
                   </p>
                   <p className="text-vln-gray leading-relaxed mt-4">
                     By using our services, you consent to the data practices described in this policy.
@@ -175,7 +175,7 @@ export default function PrivacyPage() {
 
               <CSSFade delay={1100}>
                 <section>
-                  <h2 className="text-2xl font-bold text-vln-white mb-4">10. Children's Privacy</h2>
+                  <h2 className="text-2xl font-bold text-vln-white mb-4">10. Children&apos;s Privacy</h2>
                   <p className="text-vln-gray leading-relaxed">
                     Our services are not directed to individuals under the age of 18. We do not knowingly collect personal information from children. If you believe we have inadvertently collected information from a child, please contact us immediately.
                   </p>
@@ -186,7 +186,7 @@ export default function PrivacyPage() {
                 <section>
                   <h2 className="text-2xl font-bold text-vln-white mb-4">11. Changes to This Privacy Policy</h2>
                   <p className="text-vln-gray leading-relaxed">
-                    We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated "Last Updated" date. Material changes will be communicated via email to registered users.
+                    We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated &quot;Last Updated&quot; date. Material changes will be communicated via email to registered users.
                   </p>
                 </section>
               </CSSFade>

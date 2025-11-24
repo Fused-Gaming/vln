@@ -76,7 +76,7 @@ export default function AboutPage() {
                 Our <span className="text-vln-sage">Mission</span>
               </h2>
               <p className="text-lg sm:text-xl text-vln-gray leading-relaxed mb-6">
-                VLN exists to make blockchain gaming and DeFi safer. We believe that security isn't an afterthought—it's a fundamental requirement for building trust in decentralized systems.
+                VLN exists to make blockchain gaming and DeFi safer. We believe that security isn&apos;t an afterthought—it&apos;s a fundamental requirement for building trust in decentralized systems.
               </p>
               <p className="text-lg sm:text-xl text-vln-gray leading-relaxed">
                 Through rigorous auditing, proactive threat modeling, and rapid incident response, we protect billions of dollars in user funds and ensure that vulnerabilities are found by defenders, not attackers.
@@ -109,19 +109,19 @@ export default function AboutPage() {
 
               <CSSFade delay={600}>
                 <p>
-                  In 2021, we launched VLN as a dedicated security research lab focused exclusively on blockchain gaming and DeFi. We've since audited dozens of projects, discovered <strong className="text-vln-white">47 critical vulnerabilities</strong>, assisted in recovering <strong className="text-vln-white">$5.2M in stolen funds</strong>, and maintained a <strong className="text-vln-white">100% post-audit success rate</strong>—zero hacks for projects that implemented our recommendations.
+                  In 2021, we launched VLN as a dedicated security research lab focused exclusively on blockchain gaming and DeFi. We&apos;ve since audited dozens of projects, discovered <strong className="text-vln-white">47 critical vulnerabilities</strong>, assisted in recovering <strong className="text-vln-white">$5.2M in stolen funds</strong>, and maintained a <strong className="text-vln-white">100% post-audit success rate</strong>—zero hacks for projects that implemented our recommendations.
                 </p>
               </CSSFade>
 
               <CSSFade delay={800}>
                 <p>
-                  Our team includes government-cleared security researchers, smart contract experts with hundreds of audits under their belts, and forensic analysts who've provided expert testimony in major legal cases.
+                  Our team includes government-cleared security researchers, smart contract experts with hundreds of audits under their belts, and forensic analysts who&apos;ve provided expert testimony in major legal cases.
                 </p>
               </CSSFade>
 
               <CSSFade delay={1000}>
                 <p>
-                  We're not just auditors—we're <strong className="text-vln-white">security partners</strong> invested in your long-term success. That's why we offer free fix verification, rapid critical bug reporting, and ongoing support through retainer packages.
+                  We&apos;re not just auditors—we&apos;re <strong className="text-vln-white">security partners</strong> invested in your long-term success. That&apos;s why we offer free fix verification, rapid critical bug reporting, and ongoing support through retainer packages.
                 </p>
               </CSSFade>
             </div>

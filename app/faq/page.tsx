@@ -159,7 +159,7 @@ export default function FAQPage() {
 
             <CSSFade delay={400} direction="up">
               <p className="text-base sm:text-lg text-vln-gray max-w-2xl mx-auto">
-                Don't see your question? <a href="/contact" className="text-vln-sage hover:underline">Contact us</a> for a free consultation.
+                Don&apos;t see your question? <a href="/contact" className="text-vln-sage hover:underline">Contact us</a> for a free consultation.
               </p>
             </CSSFade>
           </div>
@@ -251,7 +251,15 @@ export default function FAQPage() {
   );
 }
 
-function Button({ variant, size, href, className, children }: any) {
+interface ButtonProps {
+  variant: 'primary' | 'secondary';
+  size: 'md' | 'lg' | 'xl';
+  href: string;
+  className?: string;
+  children: React.ReactNode;
+}
+
+function Button({ variant, size, href, className, children }: ButtonProps) {
   const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-300 rounded-vln";
 
   const variantClasses = {

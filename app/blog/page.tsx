@@ -30,7 +30,7 @@ export default function BlogPage() {
             <CSSFade delay={400}>
               <div className="max-w-2xl mx-auto p-8 sm:p-12 rounded-vln border-2 border-vln-sage/20 bg-vln-bg-light glow-lift">
                 <p className="text-lg text-vln-gray mb-6">
-                  Our blog is coming soon! We'll be publishing:
+                  Our blog is coming soon! We&apos;ll be publishing:
                 </p>
                 <ul className="text-left space-y-3 mb-8 text-vln-gray">
                   <li>✓ Deep-dive vulnerability case studies</li>

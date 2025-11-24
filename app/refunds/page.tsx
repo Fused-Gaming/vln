@@ -84,7 +84,7 @@ export default function RefundsPage() {
                     <li><strong className="text-vln-white">Cancellation 30+ days before training:</strong> Full refund</li>
                     <li><strong className="text-vln-white">Cancellation 14-29 days before training:</strong> 50% refund</li>
                     <li><strong className="text-vln-white">Cancellation less than 14 days before training:</strong> No refund, but you may reschedule once at no charge</li>
-                    <li><strong className="text-vln-white">After training begins:</strong> No refunds, but we'll work to address any concerns</li>
+                    <li><strong className="text-vln-white">After training begins:</strong> No refunds, but we&apos;ll work to address any concerns</li>
                   </ul>
                 </section>
               </CSSFade>
@@ -143,7 +143,7 @@ export default function RefundsPage() {
                     If you disagree with a refund decision, you may escalate the matter to our senior management by emailing <a href="mailto:disputes@vln.gg" className="text-vln-sage hover:underline">disputes@vln.gg</a>.
                   </p>
                   <p className="text-vln-gray leading-relaxed mt-4">
-                    We're committed to fair and reasonable outcomes. Most disputes are resolved through good-faith negotiation. If resolution cannot be reached, disputes will be handled according to the arbitration clause in our Terms of Service.
+                    We&apos;re committed to fair and reasonable outcomes. Most disputes are resolved through good-faith negotiation. If resolution cannot be reached, disputes will be handled according to the arbitration clause in our Terms of Service.
                   </p>
                 </section>
               </CSSFade>
@@ -170,7 +170,7 @@ export default function RefundsPage() {
                 <section>
                   <h2 className="text-2xl font-bold text-vln-white mb-4">10. Changes to This Policy</h2>
                   <p className="text-vln-gray leading-relaxed">
-                    We reserve the right to modify this Refund Policy at any time. Changes will be posted on this page with an updated "Last Updated" date. Your continued use of our services after changes constitutes acceptance of the modified policy.
+                    We reserve the right to modify this Refund Policy at any time. Changes will be posted on this page with an updated &quot;Last Updated&quot; date. Your continued use of our services after changes constitutes acceptance of the modified policy.
                   </p>
                   <p className="text-vln-gray leading-relaxed mt-4">
                     For services purchased before a policy change, the policy in effect at the time of purchase applies.
@@ -199,7 +199,7 @@ export default function RefundsPage() {
               <CSSFade delay={1300}>
                 <div className="mt-12 p-6 rounded-vln border-2 border-vln-sage/40 bg-vln-sage/10">
                   <p className="text-sm text-vln-gray">
-                    <strong className="text-vln-white">Our Commitment:</strong> We stand behind the quality of our work. If you're not satisfied with our services, we'll work with you to make it right. Our goal is long-term client relationships built on trust and exceptional security expertise.
+                    <strong className="text-vln-white">Our Commitment:</strong> We stand behind the quality of our work. If you&apos;re not satisfied with our services, we&apos;ll work with you to make it right. Our goal is long-term client relationships built on trust and exceptional security expertise.
                   </p>
                 </div>
               </CSSFade>

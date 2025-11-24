@@ -77,7 +77,7 @@ export default function GetHelpPage() {
 
             <CSSFade delay={200} direction="up">
               <p className="text-xl sm:text-2xl md:text-3xl text-vln-gray max-w-3xl mx-auto leading-relaxed">
-                We're here to help secure your smart contracts
+                We&apos;re here to help secure your smart contracts
               </p>
             </CSSFade>
 

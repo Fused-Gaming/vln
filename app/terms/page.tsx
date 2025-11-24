@@ -26,10 +26,10 @@ export default function TermsPage() {
                 <section>
                   <h2 className="text-2xl font-bold text-vln-white mb-4">1. Agreement to Terms</h2>
                   <p className="text-vln-gray leading-relaxed">
-                    By accessing or using VLN's security services ("Services"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use our Services.
+                    By accessing or using VLN&apos;s security services (&quot;Services&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, you may not access or use our Services.
                   </p>
                   <p className="text-vln-gray leading-relaxed mt-4">
-                    VLN is operated by Fused Gaming ("we," "us," or "our"). These Terms constitute a legally binding agreement between you and Fused Gaming.
+                    VLN is operated by Fused Gaming (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). These Terms constitute a legally binding agreement between you and Fused Gaming.
                   </p>
                 </section>
               </CSSFade>
