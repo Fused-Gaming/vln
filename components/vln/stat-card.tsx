@@ -64,11 +64,12 @@ export default function StatCard({
         'relative p-6 rounded-vln border-2 bg-vln-bg-light',
         'transition-all duration-300',
         'hover:-translate-y-1',
+        'h-full min-h-[160px] sm:min-h-[180px]',
         colorClasses[color],
         className
       )}
     >
-      <div className="flex flex-col items-center justify-center text-center space-y-3">
+      <div className="flex flex-col items-center justify-center text-center space-y-3 h-full">
         {/* Number */}
         <div className={cn('text-4xl md:text-5xl font-bold tabular-nums', textColorClasses[color])}>
           {animated && isNumeric ? (
