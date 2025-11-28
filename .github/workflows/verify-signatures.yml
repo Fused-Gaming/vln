@@ -434,7 +434,7 @@ jobs:
     name: Notify Security Team
     runs-on: ubuntu-latest
     needs: [verify-commit-signatures, verify-dependency-integrity, verify-code-integrity]
-    if: failure()
+    if: failure() && secrets.SECURITY_SLACK_WEBHOOK != ''
 
     steps:
       - name: Send Security Alert
