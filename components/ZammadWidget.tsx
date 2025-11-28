@@ -2,9 +2,16 @@
 
 import { useEffect } from 'react';
 
+interface ZammadChatConfig {
+  background: string;
+  fontSize: string;
+  chatId: number;
+  show: boolean;
+}
+
 declare global {
   interface Window {
-    ZammadChat?: any;
+    ZammadChat?: new (config: ZammadChatConfig) => void;
   }
 }
 
