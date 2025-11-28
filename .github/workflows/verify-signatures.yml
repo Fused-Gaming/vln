@@ -437,7 +437,18 @@ jobs:
     if: failure()
 
     steps:
+      - name: Check Slack Configuration
+        id: check_slack
+        run: |
+          if [[ -n "${{ secrets.SECURITY_SLACK_WEBHOOK }}" ]]; then
+            echo "slack_configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "slack_configured=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Security Slack webhook not configured. Skipping alert."
+          fi
+
       - name: Send Security Alert
+        if: steps.check_slack.outputs.slack_configured == 'true'
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
@@ -470,3 +481,22 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SECURITY_SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Log Security Alert Status
+        if: always()
+        run: |
+          if [[ "${{ steps.check_slack.outputs.slack_configured }}" == "true" ]]; then
+            echo "✅ Security alert sent to Slack"
+          else
+            echo "⚠️  Security alert not sent (Slack webhook not configured)"
+            echo "🚨 SECURITY VERIFICATION FAILED - Manual review required"
+            echo "📝 To enable Slack alerts, add SECURITY_SLACK_WEBHOOK to repository secrets"
+            echo ""
+            echo "Failed checks:"
+            echo "- Repository: ${{ github.repository }}"
+            echo "- Branch: ${{ github.ref_name }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Author: ${{ github.actor }}"
+            echo ""
+            echo "View workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi

@@ -112,6 +112,20 @@ export default function RootLayout({
             data-cf-beacon='{"token": "565db9149b914dc2aec85b7ac21da3c0"}'
             strategy="afterInteractive"
           />
+          {/* VLN Live Chat Support */}
+          <Script
+            src="https://help.vln.gg/assets/chat/chat-no-jquery.min.js"
+            strategy="lazyOnload"
+            onLoad={() => {
+              if (typeof window !== 'undefined' && (window as any).ZammadChat) {
+                new (window as any).ZammadChat({
+                  title: 'Welcome to VLN',
+                  fontSize: '12px',
+                  chatId: 1
+                });
+              }
+            }}
+          />
         </Providers>
       </body>
     </html>
