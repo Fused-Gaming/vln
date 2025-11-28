@@ -29,23 +29,17 @@ export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
   const scriptLoadedRef = useRef(false);
 
   useEffect(() => {
-    // Prevent multiple script loads
-    if (scriptLoadedRef.current) {
-      // If instance exists and show state changed, toggle visibility
-      if (window.zammadChatInstance) {
-        if (show) {
-          window.zammadChatInstance.show();
-        } else {
-          window.zammadChatInstance.hide();
-        }
+    // Prevent duplicate script loading
+    if (document.querySelector('script[src*="chat-no-jquery.min.js"]')) {
+      // Script already loaded, just initialize if needed
+      if (window.ZammadChat && !document.querySelector('.zammad-chat')) {
+        new window.ZammadChat({
+          background: 'rgb(9,13,14)',
+          fontSize: '12px',
+          chatId: 1,
+          show: show
+        });
       }
-      return;
-    }
-
-    // Check if script already exists in DOM
-    const existingScript = document.querySelector('script[src*="chat-no-jquery"]');
-    if (existingScript) {
-      scriptLoadedRef.current = true;
       return;
     }
 
@@ -87,12 +81,10 @@ export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
 
     document.body.appendChild(script);
 
-    // Cleanup function - only remove on unmount, not on re-render
+    // Cleanup: Only remove script, not the widget DOM
     return () => {
-      // Don't remove script, just hide widget
-      if (window.zammadChatInstance) {
-        window.zammadChatInstance.hide();
-      }
+      // Don't remove the script as it may be needed for navigation
+      // The widget itself persists across page changes intentionally
     };
   }, [show]);
 
