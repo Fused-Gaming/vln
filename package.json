@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest"
+    "test": "vitest",
+    "test:widget": "vitest __tests__/ZammadWidget.test.tsx",
+    "test:widget:ui": "vitest __tests__/ZammadWidget.test.tsx --ui"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
