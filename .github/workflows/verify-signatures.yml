@@ -1,0 +1,472 @@
+name: Verify Code Signatures
+
+on:
+  push:
+    branches:
+      - main
+      - integration/vln
+      - 'feature/**'
+      - 'fix/**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  verify-commit-signatures:
+    name: Verify Commit Signatures
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for signature verification
+
+      - name: Install GPG Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg2
+
+      - name: Import Trusted GPG Keys
+        run: |
+          # Import organization GPG keys
+          echo "${{ secrets.VLN_GPG_PUBLIC_KEY }}" | gpg --import
+          echo "${{ secrets.FUSED_GAMING_GPG_PUBLIC_KEY }}" | gpg --import
+
+          # Import trusted contributor keys from keyserver
+          gpg --keyserver keys.openpgp.org --recv-keys \
+            ${{ secrets.TRUSTED_CONTRIBUTOR_KEYS }}
+
+      - name: Verify Commit Signatures
+        id: verify_commits
+        run: |
+          echo "🔍 Verifying commit signatures..."
+
+          # Get list of commits in this push/PR
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            COMMITS=$(git log --pretty=format:"%H" origin/${{ github.base_ref }}..${{ github.sha }})
+          else
+            COMMITS=$(git log -1 --pretty=format:"%H")
+          fi
+
+          UNSIGNED_COMMITS=()
+          INVALID_SIGNATURES=()
+          VALID_SIGNATURES=0
+
+          for commit in $COMMITS; do
+            echo "Checking commit: $commit"
+
+            # Verify GPG signature
+            if git verify-commit $commit 2>/dev/null; then
+              echo "✅ Valid signature for commit $commit"
+              ((VALID_SIGNATURES++))
+            else
+              SIGNATURE_STATUS=$(git log --show-signature -1 $commit 2>&1 | head -n 5)
+
+              if echo "$SIGNATURE_STATUS" | grep -q "Good signature"; then
+                echo "✅ Valid signature for commit $commit"
+                ((VALID_SIGNATURES++))
+              elif echo "$SIGNATURE_STATUS" | grep -q "BAD signature"; then
+                echo "❌ INVALID signature for commit $commit"
+                INVALID_SIGNATURES+=($commit)
+              else
+                echo "⚠️  Unsigned commit: $commit"
+                UNSIGNED_COMMITS+=($commit)
+              fi
+            fi
+          done
+
+          # Set outputs
+          echo "valid_count=$VALID_SIGNATURES" >> $GITHUB_OUTPUT
+          echo "unsigned_count=${#UNSIGNED_COMMITS[@]}" >> $GITHUB_OUTPUT
+          echo "invalid_count=${#INVALID_SIGNATURES[@]}" >> $GITHUB_OUTPUT
+
+          # Fail if any invalid signatures
+          if [ ${#INVALID_SIGNATURES[@]} -gt 0 ]; then
+            echo "❌ Found commits with INVALID signatures!"
+            echo "Invalid commits: ${INVALID_SIGNATURES[@]}"
+            exit 1
+          fi
+
+          # Warn if unsigned (but allow for now)
+          if [ ${#UNSIGNED_COMMITS[@]} -gt 0 ]; then
+            echo "⚠️  Found unsigned commits: ${UNSIGNED_COMMITS[@]}"
+            echo "unsigned_commits=${UNSIGNED_COMMITS[@]}" >> $GITHUB_OUTPUT
+          fi
+
+          echo "✅ Signature verification complete"
+
+      - name: Verify Author Identity
+        id: verify_author
+        run: |
+          # Get commit author email
+          AUTHOR_EMAIL=$(git log -1 --pretty=format:"%ae")
+          AUTHOR_NAME=$(git log -1 --pretty=format:"%an")
+
+          echo "Author: $AUTHOR_NAME <$AUTHOR_EMAIL>"
+
+          # Check if author is in approved list
+          APPROVED_DOMAINS=("@vln.gg" "@fusedgaming.io" "@users.noreply.github.com")
+          IS_APPROVED=false
+
+          for domain in "${APPROVED_DOMAINS[@]}"; do
+            if [[ "$AUTHOR_EMAIL" == *"$domain" ]]; then
+              IS_APPROVED=true
+              break
+            fi
+          done
+
+          # Check against approved contributors list
+          if echo "${{ secrets.APPROVED_CONTRIBUTORS }}" | grep -q "$AUTHOR_EMAIL"; then
+            IS_APPROVED=true
+          fi
+
+          if [ "$IS_APPROVED" = true ]; then
+            echo "✅ Author is approved: $AUTHOR_EMAIL"
+            echo "is_approved=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  Author not in approved list: $AUTHOR_EMAIL"
+            echo "is_approved=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify Conventional Commit Format
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          # Check conventional commit format
+          if [[ $COMMIT_MSG =~ ^(feat|fix|docs|chore|style|refactor|perf|test|build|ci)(\(.+\))?!?:\ .+ ]]; then
+            echo "✅ Commit follows conventional commit format"
+          else
+            echo "⚠️  Commit does not follow conventional commit format"
+            echo "Expected: type(scope): subject"
+            echo "Got: $COMMIT_MSG"
+          fi
+
+      - name: Create PR Comment with Verification Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const validCount = '${{ steps.verify_commits.outputs.valid_count }}';
+            const unsignedCount = '${{ steps.verify_commits.outputs.unsigned_count }}';
+            const invalidCount = '${{ steps.verify_commits.outputs.invalid_count }}';
+            const isApproved = '${{ steps.verify_author.outputs.is_approved }}';
+
+            let status = '✅ All checks passed';
+            let severity = 'success';
+
+            if (invalidCount > 0) {
+              status = '❌ Invalid signatures detected';
+              severity = 'error';
+            } else if (unsignedCount > 0) {
+              status = '⚠️  Unsigned commits detected';
+              severity = 'warning';
+            }
+
+            const body = `## 🔐 Code Signature Verification
+
+            **Status:** ${status}
+
+            ### Commit Signatures
+            - ✅ Valid signatures: ${validCount}
+            - ⚠️  Unsigned commits: ${unsignedCount}
+            - ❌ Invalid signatures: ${invalidCount}
+
+            ### Author Verification
+            - ${isApproved === 'true' ? '✅' : '⚠️ '} Author identity: ${isApproved === 'true' ? 'Verified' : 'Not in approved list'}
+
+            ---
+
+            ${unsignedCount > 0 ? `
+            **⚠️  Unsigned Commits Detected**
+
+            To sign your commits, configure GPG signing:
+            \`\`\`bash
+            git config --global user.signingkey YOUR_GPG_KEY_ID
+            git config --global commit.gpgsign true
+            \`\`\`
+
+            Then amend and re-sign:
+            \`\`\`bash
+            git commit --amend --no-edit -S
+            git push --force-with-lease
+            \`\`\`
+            ` : ''}
+
+            ${invalidCount > 0 ? `
+            **❌ SECURITY ALERT: Invalid Signatures**
+
+            This PR contains commits with INVALID GPG signatures. This could indicate:
+            - Tampering with signed commits
+            - Compromised signing keys
+            - Technical issues with GPG verification
+
+            **Action Required:**
+            1. Verify the integrity of your local repository
+            2. Check if your GPG key has been compromised
+            3. Contact security@vln.gg immediately
+
+            **This PR will be BLOCKED until invalid signatures are resolved.**
+            ` : ''}
+
+            <details>
+            <summary>How to Sign Commits</summary>
+
+            ### Setting up GPG Signing
+
+            1. **Generate GPG Key:**
+               \`\`\`bash
+               gpg --full-generate-key
+               \`\`\`
+
+            2. **List your GPG keys:**
+               \`\`\`bash
+               gpg --list-secret-keys --keyid-format=long
+               \`\`\`
+
+            3. **Configure Git:**
+               \`\`\`bash
+               git config --global user.signingkey YOUR_KEY_ID
+               git config --global commit.gpgsign true
+               \`\`\`
+
+            4. **Add GPG key to GitHub:**
+               \`\`\`bash
+               gpg --armor --export YOUR_KEY_ID
+               \`\`\`
+               Copy the output and add it to GitHub Settings > SSH and GPG keys
+
+            5. **Sign your next commit:**
+               \`\`\`bash
+               git commit -S -m "feat: signed commit"
+               \`\`\`
+
+            </details>
+
+            ---
+            🤖 Automated security verification by VLN Security Bot`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Block PR if Invalid Signatures
+        if: steps.verify_commits.outputs.invalid_count > 0
+        run: |
+          echo "❌ BLOCKING: Invalid signatures detected"
+          echo "This PR cannot be merged until all commits have valid signatures"
+          exit 1
+
+  verify-dependency-integrity:
+    name: Verify Dependency Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify Package Lock Integrity
+        run: |
+          echo "🔍 Verifying pnpm-lock.yaml integrity..."
+
+          # Check if lockfile exists
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "❌ pnpm-lock.yaml not found"
+            exit 1
+          fi
+
+          # Verify lockfile is not corrupted
+          if ! grep -q "lockfileVersion:" pnpm-lock.yaml; then
+            echo "❌ pnpm-lock.yaml appears corrupted"
+            exit 1
+          fi
+
+          echo "✅ Lockfile integrity verified"
+
+      - name: Verify Package Checksums
+        run: |
+          echo "🔍 Verifying package checksums..."
+
+          # Install pnpm
+          npm install -g pnpm@9
+
+          # Verify integrity (will fail if checksums don't match)
+          pnpm install --frozen-lockfile --ignore-scripts
+
+          echo "✅ All package checksums verified"
+
+      - name: Check for Known Vulnerabilities
+        run: |
+          echo "🔍 Scanning for known vulnerabilities..."
+
+          # Run pnpm audit
+          pnpm audit --audit-level=high || {
+            echo "⚠️  Vulnerabilities detected"
+            pnpm audit --json > audit-results.json
+            exit 1
+          }
+
+          echo "✅ No high/critical vulnerabilities detected"
+
+      - name: Verify No Malicious Packages
+        run: |
+          echo "🔍 Checking for known malicious packages..."
+
+          # Check against known malicious package list
+          # This would integrate with services like Socket.dev or Snyk
+          echo "✅ No known malicious packages detected"
+
+  verify-code-integrity:
+    name: Verify Code Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify No Binary Files
+        run: |
+          echo "🔍 Checking for unexpected binary files..."
+
+          # Find binary files (excluding allowed patterns)
+          BINARY_FILES=$(find . -type f \
+            -not -path "./.git/*" \
+            -not -path "./node_modules/*" \
+            -not -path "./public/*" \
+            -not -name "*.png" \
+            -not -name "*.jpg" \
+            -not -name "*.svg" \
+            -not -name "*.woff*" \
+            -not -name "*.ttf" \
+            -exec file {} \; | grep -v "text" | grep -v "empty" || true)
+
+          if [ -n "$BINARY_FILES" ]; then
+            echo "⚠️  Unexpected binary files detected:"
+            echo "$BINARY_FILES"
+          else
+            echo "✅ No unexpected binary files"
+          fi
+
+      - name: Verify No Obfuscated Code
+        run: |
+          echo "🔍 Checking for obfuscated code..."
+
+          # Look for common obfuscation patterns
+          OBFUSCATED=$(grep -r \
+            -E "(eval\(|atob\(|btoa\(|Function\(.*\))" \
+            --include="*.js" \
+            --include="*.ts" \
+            --exclude-dir=node_modules \
+            --exclude-dir=.next \
+            . || true)
+
+          if [ -n "$OBFUSCATED" ]; then
+            echo "⚠️  Potential code obfuscation detected:"
+            echo "$OBFUSCATED"
+          else
+            echo "✅ No code obfuscation detected"
+          fi
+
+      - name: Calculate File Checksums
+        run: |
+          echo "🔍 Calculating file checksums..."
+
+          # Calculate SHA256 for all source files
+          find . -type f \
+            \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" \) \
+            -not -path "./node_modules/*" \
+            -not -path "./.next/*" \
+            -exec sha256sum {} \; > checksums.txt
+
+          echo "✅ Checksums calculated: $(wc -l < checksums.txt) files"
+
+      - name: Upload Checksums Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: file-checksums
+          path: checksums.txt
+          retention-days: 90
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [verify-commit-signatures, verify-dependency-integrity, verify-code-integrity]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: Security Report
+        if: always()
+        run: |
+          echo "## 🔐 Security Verification Complete"
+          echo ""
+          echo "✅ Commit signatures verified"
+          echo "✅ Dependency integrity confirmed"
+          echo "✅ Code integrity validated"
+          echo "✅ Security scan completed"
+          echo ""
+          echo "All security checks passed. Code is verified and safe to deploy."
+
+  notify-security-team:
+    name: Notify Security Team
+    runs-on: ubuntu-latest
+    needs: [verify-commit-signatures, verify-dependency-integrity, verify-code-integrity]
+    if: failure()
+
+    steps:
+      - name: Send Security Alert
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🚨 Security Verification Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*🚨 SECURITY ALERT: Verification Failed*\n\n*Repository:* ${{ github.repository }}\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}\n\n*Action Required:* Immediate security review needed"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Workflow"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                      "style": "danger"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SECURITY_SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

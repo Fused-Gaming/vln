@@ -1,0 +1,227 @@
+name: Auto-Update Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - integration/vln
+      - 'feature/**'
+      - 'fix/**'
+      - 'docs/**'
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - main
+      - integration/vln
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-documentation:
+    name: Update Documentation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper changelog generation
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Extract Commit Information
+        id: commit_info
+        run: |
+          echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          echo "commit_author=$(git log -1 --pretty=%an)" >> $GITHUB_OUTPUT
+          echo "commit_date=$(git log -1 --pretty=%cd --date=iso)" >> $GITHUB_OUTPUT
+
+          # Extract conventional commit type
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          if [[ $COMMIT_MSG =~ ^(feat|fix|docs|chore|style|refactor|perf|test)(\(.*\))?:(.*)$ ]]; then
+            echo "commit_type=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            echo "commit_scope=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
+            echo "commit_subject=${BASH_REMATCH[3]}" >> $GITHUB_OUTPUT
+          else
+            echo "commit_type=other" >> $GITHUB_OUTPUT
+            echo "commit_subject=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update CHANGELOG.md
+        run: |
+          node scripts/update-changelog.js \
+            --type "${{ steps.commit_info.outputs.commit_type }}" \
+            --scope "${{ steps.commit_info.outputs.commit_scope }}" \
+            --subject "${{ steps.commit_info.outputs.commit_subject }}" \
+            --sha "${{ steps.commit_info.outputs.commit_sha }}" \
+            --author "${{ steps.commit_info.outputs.commit_author }}" \
+            --date "${{ steps.commit_info.outputs.commit_date }}"
+
+      - name: Update Feature Status in README.md
+        run: node scripts/update-feature-status.js
+
+      - name: Update ROADMAP.md Progress
+        run: node scripts/update-roadmap.js
+
+      - name: Generate Documentation Index
+        run: node scripts/generate-doc-index.js
+
+      - name: Update Component Documentation
+        if: contains(github.event.head_commit.message, 'component')
+        run: node scripts/update-component-docs.js
+
+      - name: Update Security Documentation
+        if: contains(github.event.head_commit.message, 'security') || contains(github.event.head_commit.message, 'sec')
+        run: node scripts/update-security-docs.js
+
+      - name: Check for Documentation Changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit Documentation Updates
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.name "VLN Documentation Bot"
+          git config --local user.email "bot@vln.gg"
+          git add CHANGELOG.md README.md ROADMAP.md docs/
+          git commit -m "docs(auto): update documentation from commit ${{ steps.commit_info.outputs.commit_sha }}
+
+          Automated documentation update triggered by:
+          - Type: ${{ steps.commit_info.outputs.commit_type }}
+          - Scope: ${{ steps.commit_info.outputs.commit_scope }}
+          - Subject: ${{ steps.commit_info.outputs.commit_subject }}
+          - Author: ${{ steps.commit_info.outputs.commit_author }}
+
+          🤖 Automated by GitHub Actions"
+
+      - name: Push Documentation Changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Create or Update PR Comment
+        if: github.event_name == 'pull_request' && steps.check_changes.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## 📚 Documentation Updated\n\nAutomated documentation has been updated based on this PR:\n\n- ✅ CHANGELOG.md updated\n- ✅ Feature status in README.md refreshed\n- ✅ ROADMAP.md progress updated\n\n🤖 Generated automatically by VLN Documentation Bot'
+            })
+
+  validate-docs:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+    needs: update-documentation
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Markdown Links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          config-file: '.github/markdown-link-check-config.json'
+
+      - name: Validate CHANGELOG Format
+        run: |
+          if ! grep -q "## \[" CHANGELOG.md; then
+            echo "❌ CHANGELOG.md format is invalid"
+            exit 1
+          fi
+          echo "✅ CHANGELOG.md format is valid"
+
+      - name: Validate README Badges
+        run: |
+          if ! grep -q "!\[Build Status\]" README.md; then
+            echo "⚠️  Missing build status badge in README.md"
+          fi
+          if ! grep -q "!\[Version\]" README.md; then
+            echo "⚠️  Missing version badge in README.md"
+          fi
+          echo "✅ README badges validated"
+
+      - name: Check Documentation Coverage
+        run: |
+          # Check if all pages have corresponding documentation
+          PAGES=(
+            "app/page.tsx:docs/design/ux-flows/homepage.md"
+            "app/contact/page.tsx:docs/design/ux-flows/contact-flow.md"
+            "app/services/page.tsx:docs/design/ux-flows/services-navigation.md"
+          )
+
+          for pair in "${PAGES[@]}"; do
+            IFS=: read -r page doc <<< "$pair"
+            if [[ -f "$page" && ! -f "$doc" ]]; then
+              echo "⚠️  Missing documentation for $page"
+            fi
+          done
+          echo "✅ Documentation coverage check complete"
+
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [update-documentation, validate-docs]
+    if: always()
+
+    steps:
+      - name: Send Slack Notification
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln'
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "📚 Documentation Update",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Documentation Updated*\n\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}\n*Status:* ${{ needs.update-documentation.result == 'success' && '✅ Success' || '❌ Failed' }}"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Changes"
+                      },
+                      "url": "${{ github.event.head_commit.url }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

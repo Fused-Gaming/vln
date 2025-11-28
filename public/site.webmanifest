@@ -1,0 +1,21 @@
+{
+  "name": "VLN - Smart Contract Vulnerability Research Lab",
+  "short_name": "VLN Security",
+  "description": "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e0f",
+  "theme_color": "#86d993",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
