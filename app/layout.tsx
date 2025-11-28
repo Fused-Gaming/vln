@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import { Analytics } from "@vercel/analytics/react";
+import ZammadWidgetWrapper from "@/components/ZammadWidgetWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -109,6 +110,7 @@ export default function RootLayout({
           {children}
         </div>
         <Analytics />
+        <ZammadWidgetWrapper />
       </body>
     </html>
   );
