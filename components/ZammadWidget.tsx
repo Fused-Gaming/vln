@@ -21,6 +21,20 @@ interface ZammadWidgetProps {
 
 export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
   useEffect(() => {
+    // Prevent duplicate script loading
+    if (document.querySelector('script[src*="chat-no-jquery.min.js"]')) {
+      // Script already loaded, just initialize if needed
+      if (window.ZammadChat && !document.querySelector('.zammad-chat')) {
+        new window.ZammadChat({
+          background: 'rgb(9,13,14)',
+          fontSize: '12px',
+          chatId: 1,
+          show: show
+        });
+      }
+      return;
+    }
+
     // Load the Zammad chat script
     const script = document.createElement('script');
     script.src = 'https://help.vln.gg/assets/chat/chat-no-jquery.min.js';
@@ -40,11 +54,10 @@ export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
 
     document.body.appendChild(script);
 
-    // Cleanup function to remove script when component unmounts
+    // Cleanup: Only remove script, not the widget DOM
     return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
+      // Don't remove the script as it may be needed for navigation
+      // The widget itself persists across page changes intentionally
     };
   }, [show]);
 
