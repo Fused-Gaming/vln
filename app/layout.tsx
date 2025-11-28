@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import ScrollToTop from "@/components/ui/scroll-to-top";
 import CookieConsent from "@/components/ui/cookie-consent";
+import ZammadWidgetWrapper from "@/components/ZammadWidgetWrapper";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vln.gg"),
@@ -105,6 +106,7 @@ export default function RootLayout({
           {children}
           <ScrollToTop />
           <CookieConsent />
+          <ZammadWidgetWrapper />
           {/* Cloudflare Web Analytics */}
           <Script
             defer
