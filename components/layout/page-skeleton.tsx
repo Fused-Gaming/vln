@@ -6,6 +6,7 @@ import CircuitBoardSubtle from "@/components/vln/circuit-board-subtle";
 import CircuitBoardModerate from "@/components/vln/circuit-board-moderate";
 import CircuitBoardBold from "@/components/vln/circuit-board-bold";
 import CodeRain from "@/components/vln/code-rain";
+import { useAnimations } from "@/lib/animation-context";
 
 interface PageSkeletonProps {
   children: ReactNode;
@@ -20,6 +21,8 @@ export default function PageSkeleton({
   codeRain = false,
   codeRainIntensity = "low",
 }: PageSkeletonProps) {
+  const { animationsEnabled } = useAnimations();
+
   const CircuitComponent = {
     none: null,
     subtle: CircuitBoardSubtle,
@@ -30,7 +33,7 @@ export default function PageSkeleton({
   return (
     <div className="relative min-h-screen">
       {/* Circuit Board Background */}
-      {CircuitComponent && (
+      {CircuitComponent && animationsEnabled && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -42,7 +45,7 @@ export default function PageSkeleton({
       )}
 
       {/* Code Rain Effect */}
-      {codeRain && (
+      {codeRain && animationsEnabled && (
         <div className="fixed inset-0 pointer-events-none">
           <CodeRain intensity={codeRainIntensity} />
         </div>

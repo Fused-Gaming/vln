@@ -1,376 +1,260 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Shield, Search, Lock, GraduationCap, Check } from "lucide-react";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-import PCBTraceBackground from "@/components/vln/pcb-trace-background";
-import ScrollSection from "@/components/animations/scroll-section";
-import AlternatingFade from "@/components/animations/alternating-fade";
-import ScrollProgress from "@/components/animations/scroll-progress";
+import ICBoardBackground from "@/components/vln/ic-board-background";
+import CSSFade from "@/components/animations/css-fade";
+import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
-import Card from "@/components/ui/card";
-import ClientCarousel from "@/components/vln/client-carousel";
+import { Shield, Search, Code, Palette, GraduationCap, Check } from "lucide-react";
 
 export default function ServicesPage() {
+  const services = [
+    {
+      id: "audits",
+      icon: Shield,
+      title: "Smart Contract Audits",
+      tagline: "Find vulnerabilities before attackers do",
+      description: "Comprehensive security audits for EVM-based smart contracts with CVSS-scored findings, proof-of-concept exploits, and detailed remediation guidance.",
+      features: [
+        "Line-by-line code review",
+        "Automated + manual testing",
+        "CVSS 3.1 risk scoring",
+        "Foundry PoC exploits",
+        "30-day fix verification",
+        "Critical bugs flagged within 48 hours"
+      ],
+      pricing: "Starting at $2K",
+      color: "sage" as const,
+      cta: "Get Free 30-Min Scan",
+      ctaLink: "/contact?service=audits"
+    },
+    {
+      id: "pentest",
+      icon: Search,
+      title: "Penetration Testing",
+      tagline: "Simulate real-world attack scenarios",
+      description: "Advanced penetration testing for blockchain protocols, DeFi platforms, and Web3 infrastructure to identify exploitable vulnerabilities.",
+      features: [
+        "Black-box & white-box testing",
+        "Infrastructure assessment",
+        "API & smart contract fuzzing",
+        "Economic attack modeling",
+        "Detailed attack chain documentation",
+        "Executive summary reports"
+      ],
+      pricing: "Custom pricing",
+      color: "blue" as const,
+      cta: "Request Assessment",
+      ctaLink: "/contact?service=pentest"
+    },
+    {
+      id: "development",
+      icon: Code,
+      title: "Secure Development",
+      tagline: "Build security into your contracts from day one",
+      description: "Expert Solidity development and security consulting to help you build secure, gas-optimized smart contracts that pass audits the first time.",
+      features: [
+        "Security-first architecture design",
+        "Gas optimization strategies",
+        "Unit & integration testing",
+        "OpenZeppelin best practices",
+        "Code review & pair programming",
+        "CI/CD security integration"
+      ],
+      pricing: "Retainer or project-based",
+      color: "amber" as const,
+      cta: "Discuss Your Project",
+      ctaLink: "/contact?service=development"
+    },
+    {
+      id: "design",
+      icon: Palette,
+      title: "Security-First Design",
+      tagline: "Design secure protocols and tokenomics",
+      description: "Protocol design consulting focused on security, game theory, and economic sustainability for DeFi and blockchain gaming projects.",
+      features: [
+        "Threat modeling & risk analysis",
+        "Tokenomics security review",
+        "Game theory attack scenarios",
+        "Access control architecture",
+        "Upgrade path design",
+        "Security documentation"
+      ],
+      pricing: "Custom pricing",
+      color: "purple" as const,
+      cta: "Book Consultation",
+      ctaLink: "/contact?service=design"
+    },
+    {
+      id: "university",
+      icon: GraduationCap,
+      title: "VLN University",
+      tagline: "Train your team to write secure code",
+      description: "Hands-on security training workshops for development teams covering common vulnerabilities, secure coding patterns, and defensive programming techniques.",
+      features: [
+        "Full-day or half-day workshops",
+        "Real-world vulnerability examples",
+        "Capture-the-flag exercises",
+        "Secure coding checklist",
+        "Team certification",
+        "Post-training support"
+      ],
+      pricing: "Starting at $3K per session",
+      color: "sage" as const,
+      cta: "Schedule Training",
+      ctaLink: "/contact?service=university"
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
-      {/* Scroll Progress Indicator */}
-      <ScrollProgress />
-
-      {/* Fixed Background - Optimized PCB Trace */}
-      <PCBTraceBackground />
-
-      {/* Header */}
+      <ICBoardBackground />
       <Header />
 
-      {/* Main Content */}
-      <main className="relative z-10 pt-8 sm:pt-12 lg:pt-20">
-        {/* Section 0: Hero - Even */}
-        <ScrollSection index={0} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <AlternatingFade index={0}>
-              <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-                <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight">
-                  Our <span className="text-gradient-rainbow">Services</span>
-                </h1>
-                <p className="text-base sm:text-lg md:text-xl text-vln-gray max-w-2xl mx-auto">
-                  Comprehensive security solutions for blockchain gaming and DeFi projects
-                </p>
-              </div>
-            </AlternatingFade>
+      <main className="relative z-10">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
+          <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-8">
+            <CSSFade direction="up">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+                Elite <span className="text-gradient-rainbow">Security Services</span>
+              </h1>
+            </CSSFade>
+
+            <CSSFade delay={200} direction="up">
+              <p className="text-xl sm:text-2xl md:text-3xl text-vln-gray max-w-3xl mx-auto leading-relaxed">
+                Comprehensive security solutions for blockchain gaming and DeFi
+              </p>
+            </CSSFade>
+
+            <CSSFade delay={400} direction="up">
+              <p className="text-base sm:text-lg text-vln-gray max-w-2xl mx-auto">
+                From prevention to forensics, we protect your contracts, recover stolen funds, and train your team to build secure protocols from day one.
+              </p>
+            </CSSFade>
           </div>
-        </ScrollSection>
+        </section>
 
-        {/* Section 1: Smart Contract Audits - Odd */}
-        <ScrollSection index={1} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-8 items-start">
-                <AlternatingFade index={1}>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <Shield className="w-8 h-8 text-vln-sage" />
-                      <h2 className="text-3xl font-bold text-vln-sage">Smart Contract Audits</h2>
-                    </div>
-                    <p className="text-vln-gray leading-relaxed text-sm sm:text-base">
-                      Comprehensive security audits for your smart contracts with detailed
-                      vulnerability assessments, CVSS scoring, and actionable remediation guidance.
-                    </p>
-                    <ul className="space-y-2 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-sage mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Line-by-line code review</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-sage mr-2 mt-0.5 flex-shrink-0" />
-                        <span>CVSS-based vulnerability scoring</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-sage mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Detailed remediation recommendations</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-sage mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Post-fix verification</span>
-                      </li>
-                    </ul>
-                  </div>
-                </AlternatingFade>
+        {/* Services Grid */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+          <StaggerFade staggerDelay={150} className="space-y-12 sm:space-y-16">
+            {services.map((service, index) => {
+              const Icon = service.icon;
+              const isEven = index % 2 === 0;
 
-                <motion.div
-                  initial={{ opacity: 0, x: 60 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
+              const colorClasses = {
+                sage: {
+                  border: 'border-vln-sage/20 hover:border-vln-sage/40',
+                  text: 'text-vln-sage',
+                  bg: 'bg-vln-sage/10',
+                  glow: 'glow-lift'
+                },
+                blue: {
+                  border: 'border-vln-bluegray/20 hover:border-vln-bluegray/40',
+                  text: 'text-vln-bluegray',
+                  bg: 'bg-vln-bluegray/10',
+                  glow: 'glow-lift-blue'
+                },
+                amber: {
+                  border: 'border-vln-amber/20 hover:border-vln-amber/40',
+                  text: 'text-vln-amber',
+                  bg: 'bg-vln-amber/10',
+                  glow: 'glow-lift-amber'
+                },
+                purple: {
+                  border: 'border-vln-purple/20 hover:border-vln-purple/40',
+                  text: 'text-vln-purple',
+                  bg: 'bg-vln-purple/10',
+                  glow: 'glow-lift-purple'
+                }
+              };
+
+              const colors = colorClasses[service.color];
+
+              return (
+                <div
+                  key={service.id}
+                  id={service.id}
+                  className={`max-w-6xl mx-auto p-6 sm:p-8 lg:p-10 rounded-vln border-2 ${colors.border} bg-vln-bg-light transition-all duration-300 ${colors.glow}`}
                 >
-                  <Card className="glow-lift">
-                    <h3 className="text-xl font-bold mb-4 text-vln-white">Deliverables</h3>
-                    <ul className="space-y-3 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <span className="text-vln-sage mr-2">•</span>
-                        <span>Comprehensive audit report</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-sage mr-2">•</span>
-                        <span>Executive summary</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-sage mr-2">•</span>
-                        <span>Vulnerability findings with severity ratings</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-sage mr-2">•</span>
-                        <span>Remediation guidance</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-sage mr-2">•</span>
-                        <span>Post-audit consultation</span>
-                      </li>
-                    </ul>
-                  </Card>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </ScrollSection>
+                  <div className={`grid lg:grid-cols-2 gap-8 items-center ${!isEven ? 'lg:flex-row-reverse' : ''}`}>
+                    {/* Content */}
+                    <div className={!isEven ? 'lg:order-2' : ''}>
+                      <div className={`inline-flex items-center justify-center p-4 rounded-vln ${colors.bg} mb-6`}>
+                        <Icon className={`w-8 h-8 ${colors.text}`} />
+                      </div>
 
-        {/* Section 2: Vulnerability Research - Even */}
-        <ScrollSection index={2} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-8 items-start">
-                <motion.div
-                  initial={{ opacity: 0, x: -60 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="order-2 md:order-1"
-                >
-                  <Card className="glow-lift-blue">
-                    <h3 className="text-xl font-bold mb-4 text-vln-white">Research Methodology</h3>
-                    <ul className="space-y-3 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <span className="text-vln-bluegray mr-2">•</span>
-                        <span>Automated vulnerability scanning</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-bluegray mr-2">•</span>
-                        <span>Manual exploit discovery</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-bluegray mr-2">•</span>
-                        <span>PoC development with Foundry</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-bluegray mr-2">•</span>
-                        <span>Glider-based detection queries</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-bluegray mr-2">•</span>
-                        <span>Responsible disclosure</span>
-                      </li>
-                    </ul>
-                  </Card>
-                </motion.div>
+                      <h2 className={`text-3xl sm:text-4xl font-bold mb-3 ${colors.text}`}>
+                        {service.title}
+                      </h2>
 
-                <AlternatingFade index={2}>
-                  <div className="space-y-4 order-1 md:order-2">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <Search className="w-8 h-8 text-vln-bluegray" />
-                      <h2 className="text-3xl font-bold text-vln-bluegray">Vulnerability Research</h2>
+                      <p className="text-lg sm:text-xl text-vln-gray-dark mb-4">
+                        {service.tagline}
+                      </p>
+
+                      <p className="text-base text-vln-gray mb-6">
+                        {service.description}
+                      </p>
+
+                      <div className="flex items-center gap-4 mb-6">
+                        <span className="text-sm font-medium text-vln-gray-dark">Pricing:</span>
+                        <span className={`text-lg font-bold ${colors.text}`}>{service.pricing}</span>
+                      </div>
+
+                      <Button
+                        variant={service.color === 'sage' ? 'primary' : 'secondary'}
+                        size="lg"
+                        href={service.ctaLink}
+                        className="group"
+                      >
+                        {service.cta}
+                        <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                      </Button>
                     </div>
-                    <p className="text-vln-gray leading-relaxed text-sm sm:text-base">
-                      Deep-dive security research to discover novel vulnerabilities before malicious
-                      actors do. We develop proof-of-concept exploits and automated detection
-                      mechanisms.
-                    </p>
-                    <ul className="space-y-2 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-bluegray mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Novel vulnerability discovery</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-bluegray mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Proof-of-concept exploits</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-bluegray mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Automated detection with Glider</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-bluegray mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Professional vulnerability reports</span>
-                      </li>
-                    </ul>
-                  </div>
-                </AlternatingFade>
-              </div>
-            </div>
-          </div>
-        </ScrollSection>
 
-        {/* Section 3: Penetration Testing - Odd */}
-        <ScrollSection index={3} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-8 items-start">
-                <AlternatingFade index={3}>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <Lock className="w-8 h-8 text-vln-amber" />
-                      <h2 className="text-3xl font-bold text-vln-amber">Penetration Testing</h2>
+                    {/* Features List */}
+                    <div className={!isEven ? 'lg:order-1' : ''}>
+                      <div className="space-y-3">
+                        {service.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <Check className={`w-5 h-5 ${colors.text} flex-shrink-0 mt-0.5`} />
+                            <span className="text-vln-gray">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-vln-gray leading-relaxed text-sm sm:text-base">
-                      Simulated attacks on your smart contracts and infrastructure to identify
-                      exploitable weaknesses before they can be exploited in production.
-                    </p>
-                    <ul className="space-y-2 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-amber mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Testnet exploitation attempts</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-amber mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Business logic testing</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-amber mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Access control verification</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-amber mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Economic exploit modeling</span>
-                      </li>
-                    </ul>
                   </div>
-                </AlternatingFade>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 60 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                >
-                  <Card className="glow-lift-amber">
-                    <h3 className="text-xl font-bold mb-4 text-vln-white">Testing Scope</h3>
-                    <ul className="space-y-3 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <span className="text-vln-amber mr-2">•</span>
-                        <span>Smart contract layer</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-amber mr-2">•</span>
-                        <span>Access control mechanisms</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-amber mr-2">•</span>
-                        <span>Economic incentive models</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-amber mr-2">•</span>
-                        <span>Integration points</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-amber mr-2">•</span>
-                        <span>Third-party dependencies</span>
-                      </li>
-                    </ul>
-                  </Card>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </ScrollSection>
-
-        {/* Section 4: Technical Advisory - Even */}
-        <ScrollSection index={4} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-8 items-start">
-                <motion.div
-                  initial={{ opacity: 0, x: -60 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="order-2 md:order-1"
-                >
-                  <Card className="glow-lift-purple">
-                    <h3 className="text-xl font-bold mb-4 text-vln-white">Advisory Services</h3>
-                    <ul className="space-y-3 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <span className="text-vln-purple mr-2">•</span>
-                        <span>Security architecture review</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-purple mr-2">•</span>
-                        <span>Best practices guidance</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-purple mr-2">•</span>
-                        <span>Development team training</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-purple mr-2">•</span>
-                        <span>Incident response planning</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-vln-purple mr-2">•</span>
-                        <span>Ongoing security consultation</span>
-                      </li>
-                    </ul>
-                  </Card>
-                </motion.div>
-
-                <AlternatingFade index={4}>
-                  <div className="space-y-4 order-1 md:order-2">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <GraduationCap className="w-8 h-8 text-vln-purple" />
-                      <h2 className="text-3xl font-bold text-vln-purple">Technical Advisory</h2>
-                    </div>
-                    <p className="text-vln-gray leading-relaxed text-sm sm:text-base">
-                      Expert security guidance throughout your project lifecycle. From architecture
-                      design to deployment and beyond, we provide the expertise you need to build
-                      secure systems.
-                    </p>
-                    <ul className="space-y-2 text-vln-gray text-sm sm:text-base">
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-purple mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Architecture security reviews</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-purple mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Development best practices</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-purple mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Team training and workshops</span>
-                      </li>
-                      <li className="flex items-start">
-                        <Check className="w-5 h-5 text-vln-purple mr-2 mt-0.5 flex-shrink-0" />
-                        <span>Retainer-based support</span>
-                      </li>
-                    </ul>
-                  </div>
-                </AlternatingFade>
-              </div>
-            </div>
-          </div>
-        </ScrollSection>
-
-        {/* Section 5: Client Carousel - Odd */}
-        <ScrollSection index={5} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <ClientCarousel />
-          </div>
-        </ScrollSection>
-
-        {/* Section 6: CTA - Even */}
-        <ScrollSection index={6} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <AlternatingFade index={6}>
-              <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-                  Ready to <span className="text-vln-sage">Secure</span> Your Project?
-                </h2>
-                <p className="text-base sm:text-lg lg:text-xl text-vln-gray px-4">
-                  Get in touch to discuss your security needs and receive a custom proposal
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 px-4">
-                  <Button variant="primary" size="lg" href="/contact">
-                    Contact Us
-                  </Button>
-                  <Button variant="secondary" size="lg" href="/pricing">
-                    View Pricing
-                  </Button>
                 </div>
+              );
+            })}
+          </StaggerFade>
+        </section>
+
+        {/* CTA Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+          <CSSFade>
+            <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 p-8 sm:p-12 rounded-vln border-2 border-vln-sage/20 bg-vln-bg-light glow-lift">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                Not sure which service you need?
+              </h2>
+              <p className="text-xl text-vln-gray max-w-2xl mx-auto">
+                Schedule a free 30-minute consultation to discuss your project and security needs.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Button variant="primary" size="xl" href="/contact" className="group">
+                  Get Free Consultation
+                  <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </Button>
+                <Button variant="secondary" size="xl" href="/pricing">
+                  View Pricing
+                </Button>
               </div>
-            </AlternatingFade>
-          </div>
-        </ScrollSection>
+            </div>
+          </CSSFade>
+        </section>
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

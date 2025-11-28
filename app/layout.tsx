@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
-import PCBTraceBackground from "@/components/vln/pcb-trace-background";
-import { Analytics } from "@vercel/analytics/react";
-import ZammadWidgetWrapper from "@/components/ZammadWidgetWrapper";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
+import { Providers } from "./providers";
+import ScrollToTop from "@/components/ui/scroll-to-top";
+import CookieConsent from "@/components/ui/cookie-consent";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vln.gg"),
@@ -103,14 +91,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="antialiased bg-vln-bg text-vln-white">
-        <PCBTraceBackground />
-        <div className="relative z-10">
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased bg-vln-bg text-vln-white font-sans">
+        <Providers>
           {children}
-        </div>
-        <Analytics />
-        <ZammadWidgetWrapper />
+          <ScrollToTop />
+          <CookieConsent />
+          {/* Cloudflare Web Analytics */}
+          <Script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "565db9149b914dc2aec85b7ac21da3c0"}'
+            strategy="afterInteractive"
+          />
+        </Providers>
       </body>
     </html>
   );

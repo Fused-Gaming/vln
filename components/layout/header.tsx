@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import { Shield, Zap, ZapOff } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAnimations } from "@/lib/animation-context";
 
 export default function Header() {
   const pathname = usePathname();
+  const { animationsEnabled, toggleAnimations } = useAnimations();
 
   const isActive = (path: string) => pathname === path;
 
@@ -51,6 +53,20 @@ export default function Header() {
             >
               Contact
             </Link>
+
+            {/* Animation Toggle Button */}
+            <button
+              onClick={toggleAnimations}
+              className="p-2 rounded-md border border-vln-sage/30 hover:border-vln-sage hover:bg-vln-sage/10 transition-all"
+              aria-label={animationsEnabled ? "Disable animations" : "Enable animations"}
+              title={animationsEnabled ? "Disable animations" : "Enable animations"}
+            >
+              {animationsEnabled ? (
+                <Zap className="w-4 h-4 text-vln-sage" />
+              ) : (
+                <ZapOff className="w-4 h-4 text-vln-bluegray" />
+              )}
+            </button>
           </div>
         </div>
       </nav>

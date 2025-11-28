@@ -1,421 +1,388 @@
 "use client";
 
-import { Shield, Search, AlertTriangle, Clock, GraduationCap, Code, Check } from "lucide-react";
-import { SiSolidity } from "react-icons/si";
-import { motion } from "framer-motion";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-import PCBTraceBackground from "@/components/vln/pcb-trace-background";
-import ScrollSection from "@/components/animations/scroll-section";
-import AlternatingFade, { AlternatingFadeItem } from "@/components/animations/alternating-fade";
-import ScrollProgress from "@/components/animations/scroll-progress";
+import ICBoardBackground from "@/components/vln/ic-board-background";
+import CSSFade from "@/components/animations/css-fade";
+import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
-import Card from "@/components/ui/card";
-import ClientCarousel from "@/components/vln/client-carousel";
+import { Check, Shield, Zap, Crown } from "lucide-react";
 
 export default function PricingPage() {
-  const services = [
+  const auditTiers = [
     {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Security Audits",
-      description: "Comprehensive smart contract security audits with detailed vulnerability assessments",
-      hourly: "$500-750/hr",
-      daily: "$4,000/day",
-      project: "$15K-50K",
-      features: [
-        "Line-by-line code review",
-        "CVSS vulnerability scoring",
-        "Detailed remediation guidance",
-        "Post-fix verification",
-        "Executive summary report",
-      ],
-      color: "sage",
+      size: "Small Contract",
+      lines: "< 500 lines",
+      price: "$2,000 - $4,000",
+      timeline: "3-5 business days",
+      icon: Shield,
+      color: "sage" as const,
     },
     {
-      icon: <SiSolidity className="w-8 h-8" />,
-      title: "Smart Contract Review",
-      description: "In-depth analysis of smart contract logic, architecture, and security patterns",
-      hourly: "$600-850/hr",
-      daily: "$4,800/day",
-      project: "$20K-75K",
-      features: [
-        "Architecture review",
-        "Gas optimization analysis",
-        "Business logic validation",
-        "Integration testing",
-        "Best practices audit",
-      ],
-      color: "bluegray",
+      size: "Medium Contract",
+      lines: "500 - 2,000 lines",
+      price: "$5,000 - $8,000",
+      timeline: "5-7 business days",
+      icon: Zap,
+      color: "blue" as const,
     },
     {
-      icon: <Search className="w-8 h-8" />,
-      title: "Blockchain Forensics",
-      description: "Advanced blockchain analysis and transaction tracing for security investigations",
-      hourly: "$550-800/hr",
-      daily: "$4,400/day",
-      project: "Case-dependent",
-      features: [
-        "Transaction tracing",
-        "Wallet flow analysis",
-        "On-chain investigation",
-        "Attack vector identification",
-        "Detailed forensic reports",
-      ],
-      color: "purple",
-    },
-    {
-      icon: <AlertTriangle className="w-8 h-8" />,
-      title: "Incident Response",
-      description: "Emergency security response for active exploits and security breaches",
-      hourly: "$750-1,000/hr",
-      daily: "$6,000/day",
-      project: "$25K-100K",
-      features: [
-        "24/7 emergency response",
-        "Real-time threat mitigation",
-        "Exploit containment",
-        "Post-incident analysis",
-        "Recovery recommendations",
-      ],
-      color: "amber",
-      featured: true,
-    },
-    {
-      icon: <Clock className="w-8 h-8" />,
-      title: "Expert Witness",
-      description: "Professional testimony and expert analysis for legal proceedings",
-      hourly: "$850-1,200/hr",
-      daily: "N/A",
-      project: "Case-dependent",
-      features: [
-        "Expert testimony",
-        "Technical documentation",
-        "Case analysis",
-        "Deposition support",
-        "Court appearances",
-      ],
-      color: "purple",
-    },
-    {
-      icon: <GraduationCap className="w-8 h-8" />,
-      title: "Training & Workshops",
-      description: "Security training and workshops for development teams and organizations",
-      hourly: "$400-600/hr",
-      daily: "$3,200/day",
-      project: "$10K-30K",
-      features: [
-        "Custom curriculum",
-        "Hands-on workshops",
-        "Security best practices",
-        "Team training",
-        "Certification programs",
-      ],
-      color: "bluegray",
-    },
-    {
-      icon: <Code className="w-8 h-8" />,
-      title: "Fullstack Web Development",
-      description: "End-to-end web application development with security-first approach",
-      hourly: "$200-500/hr",
-      daily: "$4,000/day",
-      project: "$15K-50K",
-      features: [
-        "Full-stack development",
-        "Secure architecture",
-        "Web3 integration",
-        "Performance optimization",
-        "Ongoing maintenance",
-      ],
-      color: "sage",
+      size: "Large Contract",
+      lines: "2,000+ lines",
+      price: "$10,000+",
+      timeline: "7-14 business days",
+      icon: Crown,
+      color: "amber" as const,
     },
   ];
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      sage: {
-        bg: "bg-vln-sage/10",
-        border: "border-vln-sage",
-        text: "text-vln-sage",
-        glow: "glow-lift",
-      },
-      bluegray: {
-        bg: "bg-vln-bluegray/10",
-        border: "border-vln-bluegray",
-        text: "text-vln-bluegray",
-        glow: "glow-lift-blue",
-      },
-      amber: {
-        bg: "bg-vln-amber/10",
-        border: "border-vln-amber",
-        text: "text-vln-amber",
-        glow: "glow-lift-amber",
-      },
-      purple: {
-        bg: "bg-vln-purple/10",
-        border: "border-vln-purple",
-        text: "text-vln-purple",
-        glow: "glow-lift-purple",
-      },
-    };
-    return colors[color as keyof typeof colors] || colors.sage;
-  };
+  const auditInclusions = [
+    "Comprehensive vulnerability analysis",
+    "CVSS 3.1 scoring & risk assessment",
+    "Foundry PoC exploits for critical findings",
+    "30-day fix verification (free)",
+    "Critical bugs flagged within 48 hours",
+    "Detailed remediation guidance",
+    "Executive summary for stakeholders",
+    "Secure code review checklist",
+  ];
+
+  const retainerTiers = [
+    {
+      name: "Starter",
+      price: "$5,000/month",
+      commitment: "3-month minimum",
+      hours: "20 hours/month",
+      features: [
+        "Security consulting & code review",
+        "Slack/Discord integration",
+        "2 business day response time",
+        "Monthly security report",
+        "Best practices guidance",
+      ],
+      color: "sage" as const,
+    },
+    {
+      name: "Growth",
+      price: "$12,000/month",
+      commitment: "6-month minimum",
+      hours: "50 hours/month",
+      features: [
+        "All Starter features",
+        "Priority support (24-hour response)",
+        "Architecture design review",
+        "Threat modeling sessions",
+        "Quarterly team training",
+        "Dedicated security consultant",
+      ],
+      color: "blue" as const,
+      popular: true,
+    },
+    {
+      name: "Enterprise",
+      price: "Custom pricing",
+      commitment: "12-month minimum",
+      hours: "Unlimited consulting",
+      features: [
+        "All Growth features",
+        "24/7 emergency response",
+        "On-demand code audits",
+        "White-glove service",
+        "Legal & compliance support",
+        "Executive security briefings",
+        "Custom SLAs",
+      ],
+      color: "amber" as const,
+    },
+  ];
+
+  const services = [
+    {
+      name: "Penetration Testing",
+      starting: "$8,000",
+      description: "Comprehensive infrastructure and protocol security assessment",
+    },
+    {
+      name: "Incident Response",
+      starting: "$15,000",
+      description: "24/7 emergency forensics, fund recovery, and expert testimony",
+    },
+    {
+      name: "Secure Development",
+      starting: "$150/hour",
+      description: "Expert Solidity development and security consulting",
+    },
+    {
+      name: "Protocol Design",
+      starting: "$10,000",
+      description: "Security-first architecture and tokenomics consulting",
+    },
+    {
+      name: "VLN University",
+      starting: "$3,000/session",
+      description: "Full-day or half-day security training workshops",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
-      <ScrollProgress />
-
-      {/* Fixed Background - Optimized PCB Trace */}
-      <PCBTraceBackground />
-
-      {/* Header */}
+      <ICBoardBackground />
       <Header />
 
-      <main className="relative z-10 pt-8 sm:pt-12 lg:pt-20">
-        {/* Section 0: Hero - Even */}
-        <ScrollSection index={0} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32">
-            <AlternatingFade index={0}>
-              <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-                <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight">
-                  Professional <span className="text-gradient-rainbow">Security Services</span>
-                </h1>
-                <p className="text-lg sm:text-xl md:text-2xl text-vln-gray max-w-2xl mx-auto">
-                  Enterprise-grade blockchain security with transparent, competitive pricing
-                </p>
-              </div>
-            </AlternatingFade>
-          </div>
-        </ScrollSection>
+      <main className="relative z-10">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
+          <div className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-8">
+            <CSSFade direction="up">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+                Transparent <span className="text-gradient-rainbow">Pricing</span>
+              </h1>
+            </CSSFade>
 
-        {/* Section 1: Services Grid - Odd */}
-        <ScrollSection index={1} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <motion.div
-              className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.1,
-                  },
-                },
-              }}
-            >
-              {services.map((service, i) => {
-                const colorClasses = getColorClasses(service.color);
-                return (
-                  <AlternatingFadeItem key={i}>
-                    <Card
-                      className={`${colorClasses.glow} ${
-                        service.featured ? "ring-2 ring-vln-amber" : ""
-                      } relative h-full`}
-                    >
-                  {service.featured && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-vln-amber text-vln-bg text-xs font-bold px-3 py-1 rounded-full">
-                        PRIORITY
+            <CSSFade delay={200} direction="up">
+              <p className="text-xl sm:text-2xl md:text-3xl text-vln-gray max-w-3xl mx-auto leading-relaxed">
+                No hidden fees. Clear pricing based on project size and complexity.
+              </p>
+            </CSSFade>
+
+            <CSSFade delay={400} direction="up">
+              <p className="text-base sm:text-lg text-vln-gray max-w-2xl mx-auto">
+                All audits include comprehensive vulnerability analysis, CVSS scoring, and 30-day fix verification at no extra cost.
+              </p>
+            </CSSFade>
+          </div>
+        </section>
+
+        {/* Audit Pricing Tiers */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <CSSFade>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-12 sm:mb-16">
+              Smart Contract <span className="text-vln-sage">Audit Pricing</span>
+            </h2>
+          </CSSFade>
+
+          <StaggerFade staggerDelay={150} className="grid md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto mb-12">
+            {auditTiers.map((tier, index) => {
+              const Icon = tier.icon;
+              const colorClasses = {
+                sage: 'border-vln-sage/20 hover:border-vln-sage/40 text-vln-sage bg-vln-sage/10 glow-lift',
+                blue: 'border-vln-bluegray/20 hover:border-vln-bluegray/40 text-vln-bluegray bg-vln-bluegray/10 glow-lift-blue',
+                amber: 'border-vln-amber/20 hover:border-vln-amber/40 text-vln-amber bg-vln-amber/10 glow-lift-amber',
+              };
+
+              return (
+                <div
+                  key={index}
+                  className={`p-6 sm:p-8 rounded-vln border-2 ${colorClasses[tier.color].split(' ')[0]} ${colorClasses[tier.color].split(' ')[1]} bg-vln-bg-light transition-all duration-300 ${colorClasses[tier.color].split(' ').slice(-1)[0]} hover:-translate-y-1`}
+                >
+                  <div className={`inline-flex items-center justify-center p-3 rounded-vln ${colorClasses[tier.color].split(' ')[3]} mb-4`}>
+                    <Icon className={`w-6 h-6 ${colorClasses[tier.color].split(' ')[2]}`} />
+                  </div>
+
+                  <h3 className={`text-2xl font-bold mb-2 ${colorClasses[tier.color].split(' ')[2]}`}>
+                    {tier.size}
+                  </h3>
+                  <p className="text-vln-gray-dark text-sm mb-4">{tier.lines}</p>
+
+                  <div className="mb-6">
+                    <p className={`text-3xl font-bold ${colorClasses[tier.color].split(' ')[2]}`}>
+                      {tier.price}
+                    </p>
+                    <p className="text-vln-gray text-sm mt-2">{tier.timeline}</p>
+                  </div>
+
+                  <Button
+                    variant={tier.color === 'sage' ? 'primary' : 'secondary'}
+                    size="lg"
+                    href={`/contact?service=audit&tier=${tier.size.toLowerCase().replace(' ', '-')}`}
+                    className="w-full"
+                  >
+                    Get Started
+                  </Button>
+                </div>
+              );
+            })}
+          </StaggerFade>
+
+          <CSSFade delay={400}>
+            <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-vln border-2 border-vln-sage/20 bg-vln-bg-light">
+              <h3 className="text-2xl font-bold text-vln-white mb-6">All audits include:</h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {auditInclusions.map((inclusion, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-vln-sage flex-shrink-0 mt-0.5" />
+                    <span className="text-vln-gray">{inclusion}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CSSFade>
+        </section>
+
+        {/* Retainer Packages */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24 bg-vln-bg-light">
+          <CSSFade>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4">
+              Monthly <span className="text-vln-bluegray">Retainer Packages</span>
+            </h2>
+            <p className="text-vln-gray text-center text-lg mb-12 sm:mb-16 max-w-3xl mx-auto">
+              For teams that need ongoing security support and consulting
+            </p>
+          </CSSFade>
+
+          <StaggerFade staggerDelay={150} className="grid md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+            {retainerTiers.map((tier, index) => {
+              const colorClasses = {
+                sage: 'border-vln-sage/20 hover:border-vln-sage/40 text-vln-sage glow-lift',
+                blue: 'border-vln-bluegray/20 hover:border-vln-bluegray/40 text-vln-bluegray glow-lift-blue',
+                amber: 'border-vln-amber/20 hover:border-vln-amber/40 text-vln-amber glow-lift-amber',
+              };
+
+              return (
+                <div
+                  key={index}
+                  className={`relative p-6 sm:p-8 rounded-vln border-2 ${colorClasses[tier.color].split(' ')[0]} ${colorClasses[tier.color].split(' ')[1]} bg-vln-bg transition-all duration-300 ${colorClasses[tier.color].split(' ').slice(-1)[0]} hover:-translate-y-1 ${tier.popular ? 'ring-2 ring-vln-bluegray/50' : ''}`}
+                >
+                  {tier.popular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="px-4 py-1 rounded-full bg-vln-bluegray text-vln-bg text-xs font-bold uppercase">
+                        Most Popular
                       </span>
                     </div>
                   )}
 
-                  <div className={`${colorClasses.text} mb-4`}>{service.icon}</div>
-
-                  <h3 className="text-lg sm:text-xl font-bold mb-2 text-vln-white">
-                    {service.title}
+                  <h3 className={`text-2xl font-bold mb-2 ${colorClasses[tier.color].split(' ')[2]}`}>
+                    {tier.name}
                   </h3>
 
-                  <p className="text-sm text-vln-gray mb-4 min-h-[3rem]">
-                    {service.description}
-                  </p>
-
-                  <div className="space-y-2 mb-4 pb-4 border-b border-vln-sage/20">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-vln-gray">Hourly:</span>
-                      <span className={`font-semibold ${colorClasses.text}`}>
-                        {service.hourly}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-vln-gray">Daily:</span>
-                      <span className={`font-semibold ${colorClasses.text}`}>
-                        {service.daily}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-vln-gray">Project:</span>
-                      <span className={`font-semibold ${colorClasses.text}`}>
-                        {service.project}
-                      </span>
-                    </div>
+                  <div className="mb-6">
+                    <p className={`text-3xl font-bold ${colorClasses[tier.color].split(' ')[2]}`}>
+                      {tier.price}
+                    </p>
+                    <p className="text-vln-gray-dark text-sm mt-1">{tier.commitment}</p>
+                    <p className="text-vln-gray text-sm mt-2">{tier.hours}</p>
                   </div>
 
-                  <ul className="space-y-2 mb-4">
-                    {service.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start text-sm">
-                        <Check className={`w-4 h-4 ${colorClasses.text} mr-2 mt-0.5 flex-shrink-0`} />
-                        <span className="text-vln-gray">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                      <Button
-                        variant={service.featured ? "primary" : "secondary"}
-                        size="sm"
-                        className="w-full"
-                        href="/contact"
-                      >
-                        Request Quote
-                      </Button>
-                    </Card>
-                  </AlternatingFadeItem>
-                );
-              })}
-            </motion.div>
-          </div>
-        </ScrollSection>
-
-        {/* Section 2: Retainer Plans - Even */}
-        <ScrollSection index={2} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <div className="max-w-6xl mx-auto">
-              <AlternatingFade index={2}>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-16">
-                  Retainer <span className="text-vln-sage">Plans</span>
-                </h2>
-              </AlternatingFade>
-
-              <motion.div
-                className="grid md:grid-cols-3 gap-6 sm:gap-8"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.2,
-                    },
-                  },
-                }}
-              >
-                {[
-                {
-                  name: "Essential",
-                  price: "$10K/month",
-                  description: "For ongoing security needs",
-                  features: [
-                    "20 hours monthly",
-                    "Priority email support",
-                    "Quarterly security review",
-                    "Rollover up to 5 hours",
-                  ],
-                  color: "sage",
-                },
-                {
-                  name: "Professional",
-                  price: "$25K/month",
-                  description: "Comprehensive security coverage",
-                  features: [
-                    "50 hours monthly",
-                    "24/7 emergency support",
-                    "Monthly security review",
-                    "Rollover up to 15 hours",
-                    "Incident response included",
-                  ],
-                  color: "bluegray",
-                  popular: true,
-                },
-                {
-                  name: "Enterprise",
-                  price: "Custom",
-                  description: "Tailored for large organizations",
-                  features: [
-                    "Unlimited hours",
-                    "Dedicated security team",
-                    "Continuous monitoring",
-                    "Custom SLA",
-                    "On-site visits included",
-                  ],
-                  color: "purple",
-                },
-                ].map((plan, i) => {
-                  const colorClasses = getColorClasses(plan.color);
-                  return (
-                    <AlternatingFadeItem key={i}>
-                      <Card
-                        className={`${colorClasses.glow} ${
-                          plan.popular ? "ring-2 ring-vln-bluegray scale-105" : ""
-                        } relative h-full`}
-                      >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="bg-vln-bluegray text-vln-bg text-xs font-bold px-3 py-1 rounded-full">
-                          POPULAR
-                        </span>
+                  <div className="space-y-3 mb-8">
+                    {tier.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <Check className={`w-5 h-5 ${colorClasses[tier.color].split(' ')[2]} flex-shrink-0 mt-0.5`} />
+                        <span className="text-vln-gray text-sm">{feature}</span>
                       </div>
-                    )}
+                    ))}
+                  </div>
 
-                    <h3 className="text-2xl font-bold mb-2 text-vln-white">{plan.name}</h3>
-                    <div className={`text-3xl font-bold mb-2 ${colorClasses.text}`}>
-                      {plan.price}
-                    </div>
-                    <p className="text-sm text-vln-gray mb-6">{plan.description}</p>
-
-                    <ul className="space-y-3 mb-6">
-                      {plan.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start text-sm">
-                          <Check className={`w-4 h-4 ${colorClasses.text} mr-2 mt-0.5 flex-shrink-0`} />
-                          <span className="text-vln-gray">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                        <Button variant={plan.popular ? "primary" : "secondary"} className="w-full" href="/contact">
-                          Get Started
-                        </Button>
-                      </Card>
-                    </AlternatingFadeItem>
-                  );
-                })}
-              </motion.div>
-            </div>
-          </div>
-        </ScrollSection>
-
-        {/* Section 3: Who We Work With - Odd */}
-        <ScrollSection index={3} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <ClientCarousel />
-          </div>
-        </ScrollSection>
-
-        {/* Section 4: CTA - Even */}
-        <ScrollSection index={4} variant="default">
-          <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
-            <AlternatingFade index={4}>
-              <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-                  Ready to Get <span className="text-vln-sage">Started</span>?
-                </h2>
-                <p className="text-lg sm:text-xl text-vln-gray">
-                  Contact us for a custom quote tailored to your specific needs
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button variant="primary" size="lg" href="/contact">
-                    Request Consultation
-                  </Button>
-                  <Button variant="secondary" size="lg" href="/contact">
-                    Schedule Call
+                  <Button
+                    variant={tier.color === 'blue' ? 'primary' : 'secondary'}
+                    size="lg"
+                    href={`/contact?service=retainer&tier=${tier.name.toLowerCase()}`}
+                    className="w-full"
+                  >
+                    {tier.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
                   </Button>
                 </div>
+              );
+            })}
+          </StaggerFade>
+        </section>
+
+        {/* Other Services */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+          <CSSFade>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-12 sm:mb-16">
+              Additional <span className="text-vln-purple">Services</span>
+            </h2>
+          </CSSFade>
+
+          <StaggerFade staggerDelay={100} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {services.map((service, index) => (
+              <div
+                key={index}
+                className="p-6 rounded-vln border-2 border-vln-purple/20 hover:border-vln-purple/40 bg-vln-bg-light transition-all duration-300 glow-lift-purple hover:-translate-y-1"
+              >
+                <h3 className="text-xl font-bold text-vln-white mb-2">{service.name}</h3>
+                <p className="text-2xl font-bold text-vln-purple mb-4">
+                  {service.starting}
+                </p>
+                <p className="text-vln-gray text-sm mb-6">{service.description}</p>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  href={`/contact?service=${service.name.toLowerCase().replace(' ', '-')}`}
+                  className="w-full"
+                >
+                  Learn More
+                </Button>
               </div>
-            </AlternatingFade>
+            ))}
+          </StaggerFade>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 bg-vln-bg-light">
+          <CSSFade>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
+              Pricing <span className="text-vln-sage">FAQ</span>
+            </h2>
+          </CSSFade>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {[
+              {
+                q: "Do you offer discounts for multiple audits?",
+                a: "Yes! We offer volume discounts for clients who need multiple audits or ongoing work. Contact us to discuss custom pricing."
+              },
+              {
+                q: "What payment methods do you accept?",
+                a: "We accept wire transfer, stablecoins (USDC/USDT), and cryptocurrency (ETH/BTC). Payment terms are 50% upfront, 50% upon delivery."
+              },
+              {
+                q: "What's included in the 30-day fix verification?",
+                a: "After you fix the issues we found, we'll re-audit those specific sections at no charge to verify the fixes are secure. This is included in all audit packages."
+              },
+              {
+                q: "Do you offer rush audits?",
+                a: "Yes, for an additional 50% fee we can prioritize your audit and deliver in 24-48 hours for small contracts. Contact us for availability."
+              },
+              {
+                q: "Can I upgrade from a one-time audit to a retainer?",
+                a: "Absolutely! We'll credit 100% of your audit cost toward the first month of a retainer if you upgrade within 30 days."
+              }
+            ].map((faq, index) => (
+              <CSSFade key={index} delay={index * 100}>
+                <div className="p-6 rounded-vln border border-vln-sage/20 bg-vln-bg">
+                  <h3 className="text-lg font-bold text-vln-white mb-2">{faq.q}</h3>
+                  <p className="text-vln-gray">{faq.a}</p>
+                </div>
+              </CSSFade>
+            ))}
           </div>
-        </ScrollSection>
+        </section>
+
+        {/* CTA Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+          <CSSFade>
+            <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 p-8 sm:p-12 rounded-vln border-2 border-vln-sage/20 bg-vln-bg-light glow-lift">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                Ready to secure your contract?
+              </h2>
+              <p className="text-xl text-vln-gray max-w-2xl mx-auto">
+                Start with a free 30-minute security scan and get a custom quote for your project.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Button variant="primary" size="xl" href="/contact" className="group">
+                  Get Free Security Scan
+                  <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </Button>
+                <Button variant="secondary" size="xl" href="/services">
+                  View All Services
+                </Button>
+              </div>
+            </div>
+          </CSSFade>
+        </section>
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

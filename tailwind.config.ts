@@ -69,8 +69,8 @@ const config: Config = {
         "vln-lift": "0 4px 6px rgba(0, 0, 0, 0.3)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "monospace"],
+        sans: ["Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["JetBrains Mono", "Consolas", "Monaco", "Courier New", "monospace"],
       },
     },
   },

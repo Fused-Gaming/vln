@@ -5,23 +5,24 @@ import React, { useEffect, useRef } from 'react';
 // PCB Trace Animation Component
 // High-performance canvas-based circuit board animation
 // Uses native canvas API for better performance than Framer Motion
+
+interface Trace {
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  progress: number;
+  speed: number;
+  width: number;
+}
+
+interface Node {
+  x: number;
+  y: number;
+  radius: number;
+  pulsePhase: number;
+  pulseSpeed: number;
+}
+
 const PCBTraceBackground = () => {
-  interface Trace {
-    start: { x: number; y: number };
-    end: { x: number; y: number };
-    progress: number;
-    speed: number;
-    width: number;
-  }
-
-  interface Node {
-    x: number;
-    y: number;
-    radius: number;
-    pulsePhase: number;
-    pulseSpeed: number;
-  }
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const tracesRef = useRef<Trace[]>([]);
