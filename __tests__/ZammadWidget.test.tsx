@@ -42,7 +42,7 @@ describe('Zammad Widget Integration Tests', () => {
 
   describe('1. Widget Initialization', () => {
     it('should load Zammad script on component mount', () => {
-      const script = mockDocument.createElement('script');
+      const script = mockDocument.createElement();
       expect(script).toBeDefined();
       expect(script.src).toBeDefined();
     });
@@ -133,22 +133,25 @@ describe('Zammad Widget Integration Tests', () => {
 
   describe('4. Route-Aware Behavior', () => {
     it('should auto-show on homepage (pathname: /)', () => {
-      const isHomePage = '/' === '/';
+      const pathname: string = '/';
+      const isHomePage = pathname === '/';
       expect(isHomePage).toBe(true);
     });
 
     it('should NOT auto-show on /sales', () => {
-      const isSalesPage = '/sales' === '/';
+      const pathname: string = '/sales';
+      const isSalesPage = pathname === '/';
       expect(isSalesPage).toBe(false);
     });
 
     it('should NOT auto-show on /contact', () => {
-      const isContactPage = '/contact' === '/';
+      const pathname: string = '/contact';
+      const isContactPage = pathname === '/';
       expect(isContactPage).toBe(false);
     });
 
     it('should provide manual ChatButton on non-homepage', () => {
-      const pathname = '/sales';
+      const pathname: string = '/sales';
       const shouldShowButton = pathname !== '/';
       expect(shouldShowButton).toBe(true);
     });
@@ -156,7 +159,7 @@ describe('Zammad Widget Integration Tests', () => {
 
   describe('5. ChatButton Component', () => {
     it('should wait for Zammad to load before rendering', () => {
-      mockWindow.zammadChatOpen = undefined;
+      (mockWindow as any).zammadChatOpen = undefined;
       const isReady = !!mockWindow.zammadChatOpen;
       expect(isReady).toBe(false);
     });
@@ -214,7 +217,7 @@ describe('Zammad Widget Integration Tests', () => {
     });
 
     it('should handle missing ZammadChat constructor', () => {
-      mockWindow.ZammadChat = undefined;
+      (mockWindow as any).ZammadChat = undefined;
       const chatAvailable = !!mockWindow.ZammadChat;
       expect(chatAvailable).toBe(false);
     });
