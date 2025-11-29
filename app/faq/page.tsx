@@ -115,6 +115,89 @@ export default function FAQPage() {
           q: "Do you offer ongoing consulting?",
           a: "Yes! Our retainer packages provide ongoing security consulting, code review, architecture design feedback, and incident response. Packages start at $5K/month with 20 hours of consulting time. See our pricing page for details."
         },
+        {
+          q: "Can you help with protocol design and architecture?",
+          a: "Absolutely! Our Protocol Design service includes security-first architecture, threat modeling, game theory analysis, tokenomics review, and access control design. Pricing starts at $10K depending on complexity."
+        },
+        {
+          q: "Do you offer secure development as a service?",
+          a: "Yes! We provide expert Solidity development at $150/hour, including security-first architecture, gas optimization, testing support, and code review. This is ideal for teams that need temporary expertise or want to build with security baked in."
+        },
+      ]
+    },
+    {
+      name: "Legal & Compliance",
+      faqs: [
+        {
+          q: "Can you provide court-ready audit reports?",
+          a: "Yes! For an additional $1,000, we can format audit reports for legal proceedings, insurance claims, or regulatory compliance. This includes enhanced documentation, legal-friendly language, and expert testimony availability."
+        },
+        {
+          q: "Have you provided expert testimony in court?",
+          a: "Yes, our team has provided expert testimony in 3 legal cases involving smart contract exploits. We can provide technical analysis, court-ready reports, and expert witness services for litigation."
+        },
+        {
+          q: "What's your liability insurance coverage?",
+          a: "We carry $5M in professional indemnity insurance. Liability is capped at 1-3x the audit fee depending on engagement scope. We can provide insurance certificates and coordinate with your insurance carrier."
+        },
+        {
+          q: "Do you work with insurance companies?",
+          a: "Yes, we've worked with several DeFi insurance providers and can format reports to meet their requirements. We can also coordinate directly with your insurance carrier for claims or underwriting purposes."
+        },
+        {
+          q: "What confidentiality protections do you offer?",
+          a: "We routinely sign mutual NDAs with a standard 5-year term. All client code and findings are kept strictly confidential unless you request public disclosure. We use secure communication channels and encrypted storage."
+        },
+        {
+          q: "Can you help with regulatory compliance?",
+          a: "Yes, our Enterprise retainer includes legal and compliance support. We can help prepare documentation for regulatory submissions, coordinate with legal counsel, and provide technical analysis for compliance requirements."
+        },
+      ]
+    },
+    {
+      name: "Technical Details",
+      faqs: [
+        {
+          q: "What CVSS scoring system do you use?",
+          a: "We use CVSS 3.1 (Common Vulnerability Scoring System) to rate findings. Critical (9.0-10.0), High (7.0-8.9), Medium (4.0-6.9), Low (0.1-3.9), and Informational (0.0). Each finding includes severity, exploitability, and impact ratings."
+        },
+        {
+          q: "What tools do you use for audits?",
+          a: "We use a combination of automated tools (Slither, Mythril, Echidna) and manual review. However, manual review by experienced auditors is our primary method—automated tools miss business logic flaws and complex attack scenarios."
+        },
+        {
+          q: "Do you test on mainnet or testnet?",
+          a: "Audits are primarily code-based and don't require deployment. For penetration testing, we can test on mainnet (with safeguards), testnet, or local fork depending on your needs and risk tolerance."
+        },
+        {
+          q: "Can you audit non-EVM chains?",
+          a: "Our primary expertise is EVM-based chains (Ethereum, BSC, Polygon, Arbitrum, etc.). We can audit Solidity code regardless of the target chain. For non-EVM chains (Solana, Cosmos, etc.), please contact us to discuss."
+        },
+        {
+          q: "Do you audit upgradeable contracts?",
+          a: "Yes! Upgradeable contracts require special attention to proxy patterns, storage layout, initialization, and access control. We thoroughly test upgrade mechanisms and can verify upgrade transactions."
+        },
+      ]
+    },
+    {
+      name: "Service Bundles & Discounts",
+      faqs: [
+        {
+          q: "What bundle packages do you offer?",
+          a: "We offer three bundles: Launch Package ($12K - audit + pen testing + support, save 20%), Enterprise Security ($35K - large audit + pen testing + retainer + training, save 15%), and Audit-to-Retainer (100% audit credit toward first retainer month)."
+        },
+        {
+          q: "Can I get a discount for multiple audits?",
+          a: "Yes! Volume discounts are available for multiple audits. Retainer clients also receive 10-20% off additional audits depending on tier. Contact us for custom pricing."
+        },
+        {
+          q: "Do you offer discounts for open-source projects?",
+          a: "Yes, we offer preferential pricing for open-source projects and public goods. Contact us with details about your project and we'll discuss options."
+        },
+        {
+          q: "What's the best way to save money on security?",
+          a: "Start with an audit, then upgrade to a retainer within 30 days to get 100% credit toward the first month. For example, a $3K audit gives you $3K off a $5K/month Starter retainer. This makes the audit essentially free."
+        },
       ]
     },
     {
