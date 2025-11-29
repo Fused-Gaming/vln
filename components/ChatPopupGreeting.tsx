@@ -69,10 +69,10 @@ export default function ChatPopupGreeting({ autoShowDelay = 2000 }: ChatPopupGre
     <div
       className={cn(
         'fixed z-40',
-        // Mobile & Tablet: above chat button, left side
-        'bottom-20 left-6',
-        // Desktop: to the right of chat button
-        'md:bottom-6 md:left-24',
+        // Mobile: bottom center
+        'bottom-6 left-1/2 -translate-x-1/2',
+        // Desktop: bottom right (away from scroll-to-top)
+        'md:bottom-8 md:right-8 md:left-auto md:translate-x-0',
         'transition-all duration-500 ease-out',
         isVisible
           ? 'opacity-100 translate-y-0'
