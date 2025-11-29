@@ -49,6 +49,12 @@ export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
           chatId: 1,
           show: show
         });
+
+        // Small delay to ensure Zammad sets up its methods
+        setTimeout(() => {
+          // Trigger a custom event when Zammad is fully ready
+          window.dispatchEvent(new Event('zammad-ready'));
+        }, 500);
       }
     };
 
