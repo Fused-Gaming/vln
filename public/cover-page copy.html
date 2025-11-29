@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VLN Sample Security Report</title>
+<style>
+    /* ========== CSS VARIABLES ========== */
+    :root {
+      --bg-primary: #0b0c0d;
+      --bg-secondary: #121416;
+      --bg-tertiary: #181a1c;
+      --text-primary: #e8e8e8;
+      --text-secondary: #d8d8d8;
+      --text-muted: #a8a8a8;
+      --accent-green: #9be29b;
+      --accent-green-dark: #6ccf6c;
+      --accent-green-light: #c9ffd9;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-medium: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 255, 150, 0.15);
+      --shadow-strong: rgba(0, 0, 0, 0.55);
+      --high-severity: #ff6b6b;
+      --high-severity-bg: rgba(255, 0, 0, 0.08);
+    }
+
+    /* ========== PAGE SETUP FOR 8.5x11 ========== */
+    @page {
+      size: 8.5in 11in;
+      margin: 0.75in;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
+      font-size: 11pt;
+    }
+
+    /* ========== PAGE CONTAINER ========== */
+    .page {
+      width: 8.5in;
+      min-height: 11in;
+      margin: 0 auto 0.5in auto;
+      background: var(--bg-secondary);
+      box-shadow: 0 0 30px var(--shadow-strong);
+      position: relative;
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      margin-bottom: 0;
+    }
+
+    .page-content {
+      padding: 0.75in;
+      height: 100%;
+    }
+
+    /* ========== COVER PAGE ========== */
+    .cover-page {
+      background: linear-gradient(135deg, rgba(40, 60, 50, 0.95), rgba(20, 30, 25, 0.95));
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(155, 226, 155, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(108, 207, 108, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .cover-watermark {
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 300px;
+      opacity: 0.03;
+      transform: rotate(-15deg);
+    }
+
+    .cover-content {
+      position: relative;
+      z-index: 5;
+      max-width: 6in;
+    }
+
+    .cover-logo {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 5px auto;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .cover-title {
+      font-size: 42pt;
+      margin: 0 0 15px 0;
+      color: var(--accent-green-light);
+      text-shadow: 0 0 20px rgba(120, 255, 170, 0.3);
+      letter-spacing: 1px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .cover-subtitle {
+      font-size: 14pt;
+      margin: 15px 0;
+      opacity: 0.85;
+      letter-spacing: 0.5px;
+      color: #d8ffe8;
+    }
+
+    .cover-description {
+      margin: 40px auto;
+      padding: 25px;
+      background: rgba(140, 200, 160, 0.12);
+      border-left: 4px solid #8cffc4;
+      border-radius: 10px;
+      max-width: 5in;
+    }
+
+    .cover-description p {
+      font-size: 12pt;
+      color: #e6ffe9;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .cover-footer {
+      margin-top: 60px;
+      font-size: 10pt;
+      opacity: 0.6;
+    }
+
+    /* ========== HEADER ========== */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border-medium);
+    }
+
+    .header-logo {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+      fill: 00F5A0;   /* neon accent */
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(100, 255, 160, 0.25);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 24pt;
+      color: #b5ffb5;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .header-text p {
+      margin: 3px 0 0 0;
+      opacity: 0.75;
+      font-size: 9pt;
+      color: var(--text-secondary);
+    }
+
+    /* ========== TYPOGRAPHY ========== */
+    h1 {
+      font-size: 28pt;
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-bottom: 15px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 18pt;
+      font-weight: 600;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      color: #8cd88c;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 13pt;
+      font-weight: 600;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      color: #aadfaa;
+      line-height: 1.3;
+    }
+
+    p {
+      font-size: 11pt;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    p strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ========== SECTIONS ========== */
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .metadata {
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    /* ========== CALLOUTS ========== */
+    .callout {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      page-break-inside: avoid;
+    }
+
+    .callout-success {
+      background: rgba(120, 180, 140, 0.1);
+      box-shadow: inset 0 0 20px rgba(100, 255, 130, 0.05);
+    }
+
+    .callout-success p {
+      font-size: 12pt;
+      line-height: 1.6;
+      color: #d6ffd6;
+      margin: 0;
+    }
+
+    .callout-danger {
+      background: var(--high-severity-bg);
+      border-left: 4px solid var(--high-severity);
+      color: #ffb3b3;
+      font-weight: 600;
+    }
+
+    .callout-danger p {
+      margin: 0;
+      color: #ffb3b3;
+      font-size: 10.5pt;
+    }
+
+    .callout-info {
+      background: rgba(80, 140, 100, 0.12);
+      border-left: 3px solid var(--accent-green);
+    }
+
+    .callout-info p {
+      margin: 0;
+      font-size: 10.5pt;
+      line-height: 1.6;
+    }
+
+    /* ========== CODE BLOCKS ========== */
+    code {
+      display: block;
+      white-space: pre-wrap;
+      background: var(--bg-tertiary);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-medium);
+      margin: 10px 0;
+      font-size: 9pt;
+      color: #caffca;
+      line-height: 1.4;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      box-shadow: inset 0 0 15px rgba(0, 255, 120, 0.05);
+      page-break-inside: avoid;
+    }
+
+    /* ========== FINDING BOXES ========== */
+    .finding {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      page-break-inside: avoid;
+    }
+
+    .finding h3 {
+      margin-top: 0;
+    }
+
+    .cvss-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 9pt;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    .cvss-high {
+      background: var(--high-severity-bg);
+      color: var(--high-severity);
+      border: 1px solid var(--high-severity);
+    }
+
+    .cvss-medium {
+      background: rgba(255, 167, 38, 0.1);
+      color: #ffa726;
+      border: 1px solid #ffa726;
+    }
+
+    .cvss-low {
+      background: rgba(66, 165, 245, 0.1);
+      color: #42a5f5;
+      border: 1px solid #42a5f5;
+    }
+
+    /* ========== PRICING TABLE ========== */
+    .pricing-package {
+      margin: 20px 0;
+      padding: 18px;
+      background: rgba(80, 140, 100, 0.12);
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      page-break-inside: avoid;
+    }
+
+    .pricing-package h3 {
+      color: #b8ffcc;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .pricing-package ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pricing-package li {
+      font-size: 10pt;
+      line-height: 1.6;
+      margin-bottom: 5px;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .pricing-package li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* ========== BUTTONS ========== */
+    .buttons {
+      margin-bottom: 20px;
+      text-align: right;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .export-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #1f8b4c, #29a863);
+      color: #fff;
+      font-size: 10pt;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 10px var(--shadow-glow);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 255, 150, 0.25);
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+
+      .buttons {
+        display: none;
+      }
+
+      .export-btn {
+        display: none;
+      }
+    }
+
+    /* ========== NO-PRINT CLASS ========== */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- ========== COVER PAGE ========== -->
+<div class="header-text">
+<h1>VLN Security Report</h1>
+<p>Smart Contract Vulnerability Research Lab</p>
+</div>
+</div>
+<div class="buttons no-print">
+<button class="export-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="section">
+<h1>VLN Smart Contract Security Assessment</h1>
+<p class="metadata">
+<strong>Prepared by:</strong> VLN – Smart Contract Vulnerability Research Lab<br/>
+<strong>Client:</strong> Sample Protocol, Inc.<br/>
+<strong>Date:</strong> November 2025<br/>
+<strong>Assessment Period:</strong> October 15 - November 10, 2025
+        </p>
+</div>
+<div class="section">
+<h2>Executive Summary</h2>
+<div class="callout callout-success">
+<p>Our assessment applies <strong>advanced vulnerability discovery</strong>, <strong>CVSS-aligned scoring</strong>, and <strong>Foundry-based exploit validation</strong> to deliver a comprehensive security overview for smart contract ecosystems.</p>
+</div>
+<p>The VLN team conducted a targeted vulnerability discovery assessment across key smart contracts deployed on Ethereum mainnet. The review identified <strong>3 High</strong>, <strong>2 Medium</strong>, and <strong>4 Low</strong> severity findings based on CVSS v3.1 scoring methodology.</p>
+<p>Several critical vulnerabilities were confirmed through Foundry proof-of-concept exploits and automated Glider static analysis queries. Immediate remediation is recommended for all High-severity findings prior to production deployment.</p>
+</div>
+<div class="section">
+<h2>Assessment Methodology</h2>
+<p>Our security assessment employs a multi-layered approach combining:</p>
+<div class="callout callout-info">
+<p><strong>Manual Code Review:</strong> Line-by-line analysis by senior blockchain security engineers</p>
+</div>
+<div class="callout callout-info">
+<p><strong>Automated Analysis:</strong> Glider static analysis, Slither, Mythril, and custom detection scripts</p>
+</div>
+<div class="callout callout-info">
+<p><strong>Exploit Validation:</strong> Foundry-based proof-of-concept development for all high-severity findings</p>
+</div>
+<div class="callout callout-info">
+<p><strong>Gas Optimization:</strong> Identification of efficiency improvements and cost reduction opportunities</p>
+</div>
+</div>
+<div class="section">
+<h2>Findings Summary</h2>
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+<tr style="background: rgba(255,255,255,0.05); border-bottom: 2px solid var(--border-medium);">
+<th style="padding: 10px; text-align: left; color: var(--accent-green);">Severity</th>
+<th style="padding: 10px; text-align: center; color: var(--accent-green);">Count</th>
+<th style="padding: 10px; text-align: left; color: var(--accent-green);">Status</th>
+</tr>
+<tr style="border-bottom: 1px solid var(--border-subtle);">
+<td style="padding: 10px;"><span class="cvss-badge cvss-high">HIGH</span></td>
+<td style="padding: 10px; text-align: center; font-weight: 700;">3</td>
+<td style="padding: 10px; color: var(--high-severity);">Requires Immediate Action</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--border-subtle);">
+<td style="padding: 10px;"><span class="cvss-badge cvss-medium">MEDIUM</span></td>
+<td style="padding: 10px; text-align: center; font-weight: 700;">2</td>
+<td style="padding: 10px; color: #ffa726;">Recommended Fixes</td>
+</tr>
+<tr>
+<td style="padding: 10px;"><span class="cvss-badge cvss-low">LOW</span></td>
+<td style="padding: 10px; text-align: center; font-weight: 700;">4</td>
+<td style="padding: 10px; color: #42a5f5;">Best Practice Improvements</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<!-- ========== PAGE 3: HIGH SEVERITY FINDINGS ========== -->

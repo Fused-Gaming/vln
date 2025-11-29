@@ -20,7 +20,14 @@ export default function Header() {
   const isActive = (path: string) => pathname === path;
 
   useEffect(() => {
-    // Check if Zammad is loaded
+    // Listen for zammad-ready event
+    const handleZammadReady = () => {
+      if (window.zammadChatOpen) {
+        setIsChatReady(true);
+      }
+    };
+
+    // Check if Zammad is already loaded
     const checkZammad = setInterval(() => {
       if (window.zammadChatOpen) {
         setIsChatReady(true);
@@ -28,7 +35,17 @@ export default function Header() {
       }
     }, 100);
 
-    return () => clearInterval(checkZammad);
+    // Also listen for the custom event
+    window.addEventListener('zammad-ready', handleZammadReady);
+
+    // Cleanup after 10 seconds to prevent infinite polling
+    const timeout = setTimeout(() => clearInterval(checkZammad), 10000);
+
+    return () => {
+      clearInterval(checkZammad);
+      clearTimeout(timeout);
+      window.removeEventListener('zammad-ready', handleZammadReady);
+    };
   }, []);
 
   const handleChatToggle = () => {

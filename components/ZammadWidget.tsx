@@ -57,8 +57,8 @@ export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
       if (window.ZammadChat) {
         try {
           const chatInstance = new window.ZammadChat({
-            background: '#0f0f0f',
-            fontSize: '14px',
+            background: 'rgb(9,13,14)',
+            fontSize: '12px',
             chatId: 1,
             show: show
           });
@@ -66,6 +66,12 @@ export default function ZammadWidget({ show = false }: ZammadWidgetProps) {
           // Store instance globally for later access
           window.zammadChatInstance = chatInstance;
           console.log('[Zammad] Chat widget initialized');
+
+          // Small delay to ensure Zammad sets up its methods
+          setTimeout(() => {
+            // Trigger a custom event when Zammad is fully ready
+            window.dispatchEvent(new Event('zammad-ready'));
+          }, 500);
         } catch (error) {
           console.error('[Zammad] Failed to initialize chat widget:', error);
         }
