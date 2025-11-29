@@ -149,7 +149,7 @@ export default function Footer() {
                   <Facebook className="w-4 h-4" />
                 </a>
                 <a
-                  href="https://discord.gg/vlngg"
+                  href="https://discord.gg/P5XuPyJJRN"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-md bg-vln-bg-light hover:bg-vln-sage/10 hover:text-vln-sage transition-all glow-lift"

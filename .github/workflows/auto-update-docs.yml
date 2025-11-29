@@ -192,36 +192,44 @@ jobs:
     if: always()
 
     steps:
-      - name: Send Slack Notification
+      - name: Send Discord Notification
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln'
-        uses: slackapi/slack-github-action@v1
-        with:
-          payload: |
-            {
-              "text": "📚 Documentation Update",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Documentation Updated*\n\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}\n*Status:* ${{ needs.update-documentation.result == 'success' && '✅ Success' || '❌ Failed' }}"
+        run: |
+          STATUS="${{ needs.update-documentation.result == 'success' && '✅ Success' || '❌ Failed' }}"
+          COLOR=${{ needs.update-documentation.result == 'success' && '5814783' || '15548997' }}
+
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "📚 Documentation Update",
+                "description": "Automated documentation has been updated",
+                "color": '"$COLOR"',
+                "fields": [
+                  {
+                    "name": "Branch",
+                    "value": "`${{ github.ref_name }}`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Status",
+                    "value": "'"$STATUS"'",
+                    "inline": true
+                  },
+                  {
+                    "name": "Author",
+                    "value": "${{ github.actor }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "[`${{ github.sha }}`](${{ github.event.head_commit.url }})",
+                    "inline": false
                   }
+                ],
+                "footer": {
+                  "text": "VLN Documentation Bot"
                 },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View Changes"
-                      },
-                      "url": "${{ github.event.head_commit.url }}"
-                    }
-                  ]
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+              }]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}

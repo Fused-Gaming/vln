@@ -359,3 +359,70 @@ jobs:
             echo "❌ Pipeline failed - diagnostics posted above"
             exit 1
           fi
+
+      - name: 📢 Send Discord Notification
+        if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln')
+        run: |
+          # Determine overall status
+          if [ "${{ needs.security-audit.result }}" == "success" ] && \
+             [ "${{ needs.lint.result }}" == "success" ] && \
+             [ "${{ needs.build-and-test.result }}" == "success" ]; then
+            STATUS="✅ Success"
+            COLOR=5814783
+            TITLE="✅ CI/CD Pipeline Passed"
+          else
+            STATUS="❌ Failed"
+            COLOR=15548997
+            TITLE="❌ CI/CD Pipeline Failed"
+          fi
+
+          # Build field for job statuses
+          SECURITY_STATUS="${{ needs.security-audit.result == 'success' && '✅' || '❌' }} Security Audit: \`${{ needs.security-audit.result }}\`"
+          LINT_STATUS="${{ needs.lint.result == 'success' && '✅' || '❌' }} Lint & Type Check: \`${{ needs.lint.result }}\`"
+          BUILD_STATUS="${{ needs.build-and-test.result == 'success' && '✅' || '❌' }} Build & Test: \`${{ needs.build-and-test.result }}\`"
+
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "'"$TITLE"'",
+                "description": "**VLN CI/CD Pipeline Results**",
+                "color": '"$COLOR"',
+                "fields": [
+                  {
+                    "name": "Branch",
+                    "value": "`${{ github.ref_name }}`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Event",
+                    "value": "`${{ github.event_name }}`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Author",
+                    "value": "${{ github.actor }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Job Results",
+                    "value": "'"$SECURITY_STATUS"'\n'"$LINT_STATUS"'\n'"$BUILD_STATUS"'",
+                    "inline": false
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "[`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})",
+                    "inline": false
+                  },
+                  {
+                    "name": "Workflow Run",
+                    "value": "[View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                    "inline": false
+                  }
+                ],
+                "footer": {
+                  "text": "VLN CI/CD Bot"
+                },
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+              }]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
