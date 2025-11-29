@@ -118,7 +118,7 @@ MVP Launch Progress: ████████████████░░░�
 - Validates all markdown links
 - Generates documentation index
 - Creates PR comments with update status
-- Slack notifications for team
+- Discord notifications for team
 
 **Triggers:**
 - Push to `main`, `integration/vln`, `feature/**`, `fix/**`
@@ -157,7 +157,7 @@ MVP Launch Progress: ████████████████░░░�
 
 **Additional Security:**
 - CodeQL static analysis
-- Security team notifications via Slack
+- Security team notifications via Discord
 - Comprehensive PR comments with results
 - Blocks merges on security violations
 
@@ -259,14 +259,13 @@ README.md                    (ENHANCED - added badges, progress bars)
    - `FUSED_GAMING_GPG_PUBLIC_KEY`
    - `TRUSTED_CONTRIBUTOR_KEYS`
    - `APPROVED_CONTRIBUTORS`
-   - `SLACK_WEBHOOK_URL`
-   - `SECURITY_SLACK_WEBHOOK`
+   - `DISCORD_WEBHOOK_URL` (for CI/CD, docs, and security notifications)
 
 3. Create `.github/markdown-link-check-config.json`
 
 ### Recommended
 - Set up GPG signing for all team members
-- Configure Slack webhook for notifications
+- Configure Discord webhook for notifications
 - Test workflows on integration branch
 - Review and approve contributor list
 
