@@ -192,8 +192,20 @@ jobs:
     if: always()
 
     steps:
+      - name: Check Slack Configuration
+        id: check_slack
+        run: |
+          if [[ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]]; then
+            echo "slack_configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "slack_configured=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Slack webhook not configured. Skipping notification."
+          fi
+
       - name: Send Slack Notification
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln'
+        if: |
+          steps.check_slack.outputs.slack_configured == 'true' &&
+          (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln')
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
@@ -225,3 +237,13 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Log Notification Status
+        if: always()
+        run: |
+          if [[ "${{ steps.check_slack.outputs.slack_configured }}" == "true" ]]; then
+            echo "✅ Slack notification sent successfully"
+          else
+            echo "ℹ️  Slack notification skipped (webhook not configured)"
+            echo "📝 To enable Slack notifications, add SLACK_WEBHOOK_URL to repository secrets"
+          fi
