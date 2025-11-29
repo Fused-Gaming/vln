@@ -87,6 +87,16 @@ export default function Header() {
               Pricing
             </Link>
             <Link
+              href="/referrals"
+              className={`text-sm sm:text-base transition-colors ${
+                isActive("/referrals")
+                  ? "text-vln-sage font-semibold"
+                  : "text-vln-white hover:text-vln-sage"
+              }`}
+            >
+              Referrals
+            </Link>
+            <Link
               href="/contact"
               className={`text-sm sm:text-base transition-colors ${
                 isActive("/contact")
