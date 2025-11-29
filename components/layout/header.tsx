@@ -1,15 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Zap, ZapOff } from "lucide-react";
+import { Shield, Zap, ZapOff, MessageCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAnimations } from "@/lib/animation-context";
+import { useState, useEffect } from "react";
+
+declare global {
+  interface Window {
+    zammadChatOpen?: () => void;
+  }
+}
 
 export default function Header() {
   const pathname = usePathname();
   const { animationsEnabled, toggleAnimations } = useAnimations();
+  const [isChatReady, setIsChatReady] = useState(false);
 
   const isActive = (path: string) => pathname === path;
+
+  useEffect(() => {
+    // Check if Zammad is loaded
+    const checkZammad = setInterval(() => {
+      if (window.zammadChatOpen) {
+        setIsChatReady(true);
+        clearInterval(checkZammad);
+      }
+    }, 100);
+
+    return () => clearInterval(checkZammad);
+  }, []);
+
+  const handleChatToggle = () => {
+    if (window.zammadChatOpen) {
+      window.zammadChatOpen();
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-vln-sage/20 backdrop-blur-md bg-vln-bg/80">
@@ -53,6 +79,18 @@ export default function Header() {
             >
               Contact
             </Link>
+
+            {/* Chat Toggle Button */}
+            {isChatReady && (
+              <button
+                onClick={handleChatToggle}
+                className="p-2 rounded-md border border-vln-sage/30 hover:border-vln-sage hover:bg-vln-sage/10 transition-all glow-lift"
+                aria-label="Open chat support"
+                title="Chat with us"
+              >
+                <MessageCircle className="w-4 h-4 text-vln-sage" />
+              </button>
+            )}
 
             {/* Animation Toggle Button */}
             <button
