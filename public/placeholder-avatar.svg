@@ -1,0 +1,14 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#0f0f0f"/>
+
+  <!-- Circle Background -->
+  <circle cx="100" cy="100" r="90" fill="#1a1a1a"/>
+
+  <!-- User Icon -->
+  <circle cx="100" cy="80" r="30" fill="#a6c3a7" opacity="0.3"/>
+  <path d="M140 150C140 127.909 122.091 110 100 110C77.9086 110 60 127.909 60 150L60 160L140 160L140 150Z" fill="#a6c3a7" opacity="0.3"/>
+
+  <!-- Border -->
+  <circle cx="100" cy="100" r="90" stroke="#a6c3a7" stroke-width="2" opacity="0.2"/>
+</svg>

@@ -6,6 +6,7 @@ import ICBoardBackground from "@/components/vln/ic-board-background";
 import CSSFade from "@/components/animations/css-fade";
 import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
+import EmployeeCard from "@/components/vln/employee-card";
 import { Shield, Target, Users, Award } from "lucide-react";
 
 export default function AboutPage() {
@@ -43,6 +44,39 @@ export default function AboutPage() {
     { year: "2023", event: "Expert Testimony", description: "Provided expert witness testimony in major DeFi exploit case" },
     { year: "2024", event: "47 Critical Vulns Found", description: "Discovered and helped remediate critical vulnerabilities across audited projects" },
     { year: "2025", event: "$5.2M Recovered", description: "Assisted in recovering stolen funds through forensic analysis" },
+  ];
+
+  const employees = [
+    {
+      name: "J. Lucus",
+      role: "Lead Security Researcher",
+      shortIntro: "Expert in smart contract security with over 8 years of experience auditing DeFi protocols and blockchain gaming platforms. Specialized in finding critical vulnerabilities before they reach production.",
+      fullBio: "J. Lucus brings deep expertise in smart contract security, having audited over 100 blockchain projects across DeFi, NFT, and gaming sectors. With a background in cryptography and distributed systems, J. has discovered numerous critical vulnerabilities and developed innovative security testing methodologies.\n\nJ. holds government security clearances and has provided expert testimony in several high-profile blockchain exploit cases, helping recover millions in stolen funds.",
+      github: "https://github.com/jlucus",
+      linkedin: "https://www.linkedin.com/in/supitsj",
+      email: "j.lucus@vln.gg",
+      telegram: "https://t.me/supitsj"
+    },
+    {
+      name: "Marc Xavier",
+      role: "Principal Smart Contract Auditor",
+      shortIntro: "Blockchain security specialist focusing on EVM-based smart contracts and Layer 2 solutions. Known for rigorous testing methodologies and comprehensive security assessments.",
+      fullBio: "Marc Xavier is a seasoned smart contract auditor with expertise in Solidity, Vyper, and formal verification methods. His work has protected billions of dollars in total value locked across numerous DeFi protocols.\n\nWith a Ph.D. in Computer Science and specialization in formal methods, Marc combines academic rigor with practical security engineering. He has contributed to multiple open-source security tools and regularly speaks at blockchain security conferences.",
+      github: "https://github.com/ccheshirecat",
+      linkedin: "https://www.linkedin.com/in/",
+      email: "marc.xavier@vln.gg",
+      telegram: "https://t.me/cccccccccxcccccccccc"
+    },
+    {
+      name: "Jamie Vargas",
+      role: "Security Operations & Incident Response",
+      shortIntro: "Incident response specialist with expertise in blockchain forensics, threat intelligence, and rapid vulnerability mitigation. First responder for critical security incidents.",
+      fullBio: "Jamie Vargas leads VLN's incident response operations, coordinating rapid response to security threats and coordinating vulnerability disclosures. With a background in cybersecurity operations and digital forensics, Jamie has successfully managed numerous critical security incidents.\n\nJamie specializes in on-chain forensics, helping trace stolen funds and identify attack vectors in real-time. She works closely with law enforcement and has assisted in recovering over $5M in compromised assets.",
+      github: "https://github.com/jmenichole",
+      linkedin: "https://www.linkedin.com/in/jmenichole0",
+      email: "jmenichole@vln.gg",
+      telegram: "https://t.me/jmenichole"
+    }
   ];
 
   return (
@@ -126,6 +160,31 @@ export default function AboutPage() {
               </CSSFade>
             </div>
           </div>
+        </section>
+
+        {/* Meet the Team */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
+          <CSSFade>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-12 sm:mb-16 text-center">
+              Meet the <span className="text-vln-sage">Team</span>
+            </h2>
+          </CSSFade>
+
+          <StaggerFade staggerDelay={150} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            {employees.map((employee, index) => (
+              <EmployeeCard
+                key={index}
+                name={employee.name}
+                role={employee.role}
+                shortIntro={employee.shortIntro}
+                fullBio={employee.fullBio}
+                github={employee.github}
+                linkedin={employee.linkedin}
+                email={employee.email}
+                telegram={employee.telegram}
+              />
+            ))}
+          </StaggerFade>
         </section>
 
         {/* Core Values */}

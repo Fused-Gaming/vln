@@ -32,7 +32,8 @@ docs/design/
 ├── tokens/
 │   └── colors.md - Color palette and usage (WCAG AAA)
 ├── components/
-│   └── animations.md - Animation system & best practices
+│   ├── animations.md - Animation system & best practices
+│   └── employee-cards.md - Team member card component
 ├── pages/
 │   └── homepage.md - Homepage design spec & wireframes
 └── performance/
@@ -103,6 +104,12 @@ docs/design/
 ---
 
 ## Changelog
+
+### v2.1 - December 2025
+- Added EmployeeCard component for team member profiles
+- Implemented expandable bios with social media links
+- Created employee cards documentation
+- Enhanced About page with "Meet the Team" section
 
 ### v2.0 - November 2024
 - Added conversion-focused sales page design
