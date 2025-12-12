@@ -68,14 +68,14 @@ export default function AboutPage() {
       telegram: "https://t.me/cccccccccxcccccccccc"
     },
     {
-      name: "Jamie Nichole",
+      name: "Jamie Vargas",
       role: "Security Operations & Incident Response",
       shortIntro: "Incident response specialist with expertise in blockchain forensics, threat intelligence, and rapid vulnerability mitigation. First responder for critical security incidents.",
-      fullBio: "Jamie Nichole leads VLN's incident response operations, coordinating rapid response to security threats and coordinating vulnerability disclosures. With a background in cybersecurity operations and digital forensics, Jamie has successfully managed numerous critical security incidents.\n\nJamie specializes in on-chain forensics, helping trace stolen funds and identify attack vectors in real-time. She works closely with law enforcement and has assisted in recovering over $5M in compromised assets.",
-      github: "https://github.com/jamienichole",
-      linkedin: "https://linkedin.com/in/jamienichole",
-      email: "jamie.nichole@vln.gg",
-      telegram: "https://t.me/jamienichole"
+      fullBio: "Jamie Vargas leads VLN's incident response operations, coordinating rapid response to security threats and coordinating vulnerability disclosures. With a background in cybersecurity operations and digital forensics, Jamie has successfully managed numerous critical security incidents.\n\nJamie specializes in on-chain forensics, helping trace stolen funds and identify attack vectors in real-time. She works closely with law enforcement and has assisted in recovering over $5M in compromised assets.",
+      github: "https://github.com/jmenichole",
+      linkedin: "https://www.linkedin.com/in/jmenichole0",
+      email: "jmenichole@vln.gg",
+      telegram: "https://t.me/jmenichole"
     }
   ];
 
