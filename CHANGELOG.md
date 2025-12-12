@@ -16,6 +16,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.10.0] - 2025-12-12
+
+### Added
+- **Referrals page** with comprehensive referral program details and legal terms
+- **Partner logos** including Gamba, Stake, FullHouse, Razed, and Thrill
+- **VLN report templates** with branded HTML layouts
+- **VLN Hero image** for Open Graph and marketing materials
+- **Getting Started documentation** for new developers
+- **Design System Components documentation** for component library
+- **Discord webhooks documentation** for DevOps integration
+
+### Changed
+- **CI/CD notifications migrated from Slack to Discord** webhooks
+- **Pricing page expanded** with additional legal terms and referral program information
+- **FAQ page enhanced** with additional questions and improved organization
+- **Chat widget improvements** with better error handling and state management
+- **Header navigation** redesigned with integrated chat toggle
+- **Sitemap updated** to include new referrals page
+- **GitHub workflows** now use Discord for all notifications with secret management
+
+### Removed
+- **ChatButton component** (functionality moved to header navigation)
+- **Slack webhook references** replaced with Discord webhooks
+
+### Security
+- **Discord webhook URLs** now use GitHub secrets instead of hardcoded values
+- **CSP updated** to allow Zammad chat widget integration
+
+### DevOps
+- **Workflow improvements** with better error handling and conditional checks
+- **PR body templates** updated for better documentation
+- **Brand documentation** enhanced with partner logos and assets
+
+---
+
 ## [0.9.0] - 2025-01-24
 
 ### Added
