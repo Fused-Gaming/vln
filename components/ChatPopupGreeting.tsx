@@ -27,6 +27,13 @@ export default function ChatPopupGreeting({ autoShowDelay = 2000 }: ChatPopupGre
       return;
     }
 
+    // Listen for zammad-ready event
+    const handleZammadReady = () => {
+      if (window.zammadChatOpen) {
+        setIsReady(true);
+      }
+    };
+
     // Check if Zammad is loaded
     const checkZammad = setInterval(() => {
       if (window.zammadChatOpen) {
@@ -35,18 +42,27 @@ export default function ChatPopupGreeting({ autoShowDelay = 2000 }: ChatPopupGre
       }
     }, 100);
 
-    // Show popup after delay
-    const timer = setTimeout(() => {
-      if (!dismissed) {
+    // Also listen for the custom event
+    window.addEventListener('zammad-ready', handleZammadReady);
+
+    // Cleanup after 10 seconds
+    const timeout = setTimeout(() => clearInterval(checkZammad), 10000);
+
+    // Show popup after delay (only if ready)
+    let timer: NodeJS.Timeout;
+    if (isReady && !dismissed) {
+      timer = setTimeout(() => {
         setIsVisible(true);
-      }
-    }, autoShowDelay);
+      }, autoShowDelay);
+    }
 
     return () => {
       clearInterval(checkZammad);
+      clearTimeout(timeout);
       clearTimeout(timer);
+      window.removeEventListener('zammad-ready', handleZammadReady);
     };
-  }, [autoShowDelay]);
+  }, [autoShowDelay, isReady]);
 
   const handleStartChat = () => {
     if (window.zammadChatOpen) {
@@ -69,17 +85,17 @@ export default function ChatPopupGreeting({ autoShowDelay = 2000 }: ChatPopupGre
     <div
       className={cn(
         'fixed z-40',
-        // Mobile & Tablet: above chat button, left side
-        'bottom-20 left-6',
-        // Desktop: to the right of chat button
-        'md:bottom-6 md:left-24',
+        // Mobile: bottom center with padding, max-width to prevent overflow
+        'bottom-20 left-4 right-4 mx-auto',
+        // Desktop: bottom left (more visible)
+        'md:bottom-6 md:left-6 md:right-auto md:max-w-sm',
         'transition-all duration-500 ease-out',
         isVisible
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-4 pointer-events-none'
       )}
     >
-      <div className="bg-vln-bg-light border border-vln-sage/30 rounded-lg shadow-2xl max-w-sm overflow-hidden">
+      <div className="bg-vln-bg-light border border-vln-sage/30 rounded-lg shadow-2xl w-full md:max-w-sm overflow-hidden">
         {/* Header with gradient */}
         <div className="bg-gradient-to-r from-vln-sage/20 to-vln-bg-light border-b border-vln-sage/30 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
