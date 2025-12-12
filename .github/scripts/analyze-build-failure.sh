@@ -1,0 +1,197 @@
+#!/bin/bash
+set -euo pipefail
+
+# VLN Build Failure Diagnostic Analyzer
+# Analyzes common build failures and provides actionable feedback
+
+DIAGNOSTICS=""
+CRITICAL_ISSUES=0
+WARNINGS=0
+
+add_critical() {
+  CRITICAL_ISSUES=$((CRITICAL_ISSUES + 1))
+  DIAGNOSTICS="${DIAGNOSTICS}### ❌ CRITICAL: $1\n\n$2\n\n"
+}
+
+add_warning() {
+  WARNINGS=$((WARNINGS + 1))
+  DIAGNOSTICS="${DIAGNOSTICS}### ⚠️  WARNING: $1\n\n$2\n\n"
+}
+
+add_info() {
+  DIAGNOSTICS="${DIAGNOSTICS}### 💡 INFO: $1\n\n$2\n\n"
+}
+
+echo "🔍 Running VLN Build Diagnostics..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Check 1: CSS Dependencies in Wrong Section
+if [ -f "package.json" ]; then
+  if grep -A 20 '"devDependencies"' package.json | grep -qE 'tailwindcss|postcss|autoprefixer'; then
+    add_critical "CSS Build Tools in devDependencies" \
+"Production builds do not install devDependencies. The following packages must be in \`dependencies\`:
+- \`tailwindcss\`
+- \`postcss\`
+- \`autoprefixer\`
+
+**Fix:**
+\`\`\`bash
+# Move packages from devDependencies to dependencies in package.json
+pnpm install
+git add package.json pnpm-lock.yaml
+git commit -m \"fix(deps): move CSS tooling to production dependencies\"
+\`\`\`"
+  else
+    echo "✓ CSS dependencies correctly placed"
+  fi
+fi
+
+# Check 2: Missing Next.js Configuration
+if [ ! -f "next.config.ts" ] && [ ! -f "next.config.js" ] && [ ! -f "next.config.mjs" ]; then
+  add_warning "Missing Next.js Configuration" \
+"No Next.js configuration file found. While optional, this may cause build issues.
+
+**Recommended:** Create \`next.config.ts\` with basic settings."
+else
+  echo "✓ Next.js config found"
+fi
+
+# Check 3: Tailwind Config
+if [ -f "package.json" ] && grep -q '"tailwindcss"' package.json; then
+  if [ ! -f "tailwind.config.ts" ] && [ ! -f "tailwind.config.js" ]; then
+    add_critical "Tailwind CSS Config Missing" \
+"Tailwind CSS is installed but no configuration file found.
+
+**Fix:**
+\`\`\`bash
+npx tailwindcss init -p
+\`\`\`"
+  else
+    echo "✓ Tailwind config found"
+  fi
+fi
+
+# Check 4: TypeScript Errors
+if [ -f "tsconfig.json" ]; then
+  echo "✓ TypeScript config found"
+  add_info "TypeScript Check" \
+"If build failed due to type errors, run locally:
+\`\`\`bash
+pnpm tsc --noEmit
+\`\`\`"
+fi
+
+# Check 5: Missing .next directory (build didn't complete)
+if [ ! -d ".next" ]; then
+  add_warning "Build Output Missing" \
+"The \`.next\` directory was not created, indicating the build did not complete successfully.
+
+**Common causes:**
+1. Dependency installation failed
+2. CSS compilation failed (check Tailwind/PostCSS)
+3. TypeScript errors
+4. Import errors (missing modules)
+
+**Debug locally:**
+\`\`\`bash
+pnpm install
+pnpm build
+\`\`\`"
+else
+  echo "✓ Build output directory exists"
+fi
+
+# Check 6: Package-lock conflicts (pnpm)
+if [ -f "package-lock.json" ] || [ -f "yarn.lock" ]; then
+  add_warning "Multiple Lockfiles Detected" \
+"Found non-pnpm lockfiles. This project uses pnpm.
+
+**Fix:**
+\`\`\`bash
+rm -f package-lock.json yarn.lock
+pnpm install
+\`\`\`"
+else
+  echo "✓ No conflicting lockfiles"
+fi
+
+# Check 7: Environment Variables
+if grep -r "process.env" app/ --include="*.tsx" --include="*.ts" 2>/dev/null | grep -qv "NODE_ENV"; then
+  add_info "Environment Variables Found" \
+"Your code references environment variables. Ensure they're set in your deployment platform.
+
+**For local testing:**
+Create \`.env.local\` with required variables."
+fi
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📊 Diagnostic Summary:"
+echo "   Critical Issues: $CRITICAL_ISSUES"
+echo "   Warnings: $WARNINGS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Generate markdown report
+cat > diagnostic-report.md <<EOF
+## 🔍 VLN Build Failure Diagnostics
+
+**Analysis Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+**Critical Issues:** $CRITICAL_ISSUES
+**Warnings:** $WARNINGS
+
+---
+
+$DIAGNOSTICS
+
+---
+
+### 🛠️ Quick Fixes
+
+<details>
+<summary>Click to expand common solutions</summary>
+
+#### CSS Not Loading in Production
+\`\`\`bash
+# Ensure CSS dependencies are in "dependencies" not "devDependencies"
+grep -A 20 '"dependencies"' package.json | grep -E 'tailwindcss|postcss|autoprefixer'
+\`\`\`
+
+#### Clean Build
+\`\`\`bash
+rm -rf .next node_modules pnpm-lock.yaml
+pnpm install
+pnpm build
+\`\`\`
+
+#### Type Errors
+\`\`\`bash
+pnpm tsc --noEmit
+# Fix all type errors before committing
+\`\`\`
+
+</details>
+
+---
+
+**📚 Documentation:** See [CLAUDE.md](../CLAUDE.md) for build requirements
+**🤖 Generated by:** VLN Build Diagnostics v1.0
+EOF
+
+echo "✓ Diagnostic report generated: diagnostic-report.md"
+
+# Output for GitHub Actions
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  echo "critical_count=$CRITICAL_ISSUES" >> "$GITHUB_OUTPUT"
+  echo "warning_count=$WARNINGS" >> "$GITHUB_OUTPUT"
+fi
+
+# Exit with appropriate code
+if [ $CRITICAL_ISSUES -gt 0 ]; then
+  echo "❌ Critical issues detected - manual intervention required"
+  exit 1
+elif [ $WARNINGS -gt 0 ]; then
+  echo "⚠️  Warnings detected - review recommended"
+  exit 0
+else
+  echo "✅ No issues detected"
+  exit 0
+fi
