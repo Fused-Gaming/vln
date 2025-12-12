@@ -212,7 +212,7 @@ jobs:
             COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
           fi
 
-          # Send Discord webhook
+          # Send Discord webhook (use secret for security)
           curl -H "Content-Type: application/json" \
             -d '{
               "embeds": [{
@@ -247,4 +247,4 @@ jobs:
                 }
               }]
             }' \
-            "https://discord.com/api/webhooks/1444218952329859073/vxCLYe1fp5VrNbIbTHh1IjXEIA1UXUB2rRNoajaNh_jCnOU60Hjy4vDeNavi6qC7C82w"
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"
