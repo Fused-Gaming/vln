@@ -2,7 +2,7 @@
 
 Strategic timeline for VLN platform development and feature releases.
 
-**Current Version:** 0.9.0 (MVP - Pre-Launch)
+**Current Version:** 0.11.0 (MVP - Pre-Launch)
 **Target Launch:** February 2025
 **Vision:** Become the leading smart contract security platform for blockchain gaming and DeFi
 
@@ -19,9 +19,29 @@ Q4 2025: Enterprise & Ecosystem
 
 ---
 
+## Version 0.11.0 - OG Image System ✅
+**Release Date:** February 13, 2026
+**Status:** ✅ Complete
+
+### Objectives
+- Dynamic Open Graph images for all VLN routes and subdomains
+- Brand-consistent social media previews using full design system
+- API-driven OG generation for design.vln.gg and future subdomains
+
+### Delivered
+- [x] Convention-based OG images for 7 routes (homepage, services, contact, about, pricing, blog, FAQ)
+- [x] Dedicated API endpoint for design.vln.gg (`/api/og/design`)
+- [x] Generic dynamic OG API (`/api/og`) with configurable params
+- [x] Shared OG utility library (`lib/og/utils.ts`) with design tokens
+- [x] ASCII wireframe documentation for all variants
+- [x] Mermaid architecture and branching diagrams
+- [x] Build verification (pnpm build passes)
+
+---
+
 ## Version 1.0.0 - Production Launch 🚀
-**Target Date:** February 1, 2025
-**Status:** ⏳ In Progress (80% complete)
+**Target Date:** February 2025
+**Status:** ⏳ In Progress (85% complete)
 
 ### Objectives
 - Launch production-ready VLN.gg website
@@ -425,6 +445,7 @@ We welcome feedback on our roadmap!
 
 | Date | Change | Version Affected |
 |------|--------|------------------|
+| 2026-02-13 | Added v0.11.0 OG Image System milestone | 0.11.0 |
 | 2025-01-24 | Initial roadmap created | All |
 | 2025-01-24 | Added Version 1.0.0 details | 1.0.0 |
 | 2025-01-24 | Defined Q1-Q4 2025 strategy | 1.x - 3.x |
@@ -433,8 +454,8 @@ We welcome feedback on our roadmap!
 
 **Note:** This roadmap is subject to change based on market conditions, client feedback, and technical constraints. Dates are estimates and may shift as priorities evolve.
 
-**Last Updated:** 2025-01-24
-**Version:** 1.0
+**Last Updated:** 2026-02-13
+**Version:** 1.1
 **Maintainer:** VLN Product Team
 
 ---
