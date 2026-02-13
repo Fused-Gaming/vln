@@ -31,16 +31,16 @@ jobs:
           fetch-depth: 0  # Fetch all history for proper changelog generation
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -192,36 +192,59 @@ jobs:
     if: always()
 
     steps:
-      - name: Send Slack Notification
+      - name: Send Discord Notification
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln'
-        uses: slackapi/slack-github-action@v1
-        with:
-          payload: |
-            {
-              "text": "📚 Documentation Update",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Documentation Updated*\n\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}\n*Status:* ${{ needs.update-documentation.result == 'success' && '✅ Success' || '❌ Failed' }}"
+        run: |
+          # Determine status emoji and color
+          if [ "${{ needs.update-documentation.result }}" == "success" ]; then
+            STATUS_EMOJI="✅"
+            STATUS_TEXT="Success"
+            COLOR="3066993"  # Green
+          else
+            STATUS_EMOJI="❌"
+            STATUS_TEXT="Failed"
+            COLOR="15158332"  # Red
+          fi
+
+          # Get commit URL
+          COMMIT_URL="${{ github.event.head_commit.url }}"
+          if [ -z "$COMMIT_URL" ]; then
+            COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          fi
+
+          # Send Discord webhook (use secret for security)
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "📚 Documentation Update",
+                "description": "Automated documentation has been updated",
+                "color": '"$COLOR"',
+                "fields": [
+                  {
+                    "name": "Branch",
+                    "value": "`${{ github.ref_name }}`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Status",
+                    "value": "'"$STATUS_EMOJI"' '"$STATUS_TEXT"'",
+                    "inline": true
+                  },
+                  {
+                    "name": "Author",
+                    "value": "${{ github.actor }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "[`'"${GITHUB_SHA:0:7}"'`]('"$COMMIT_URL"')",
+                    "inline": false
                   }
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View Changes"
-                      },
-                      "url": "${{ github.event.head_commit.url }}"
-                    }
-                  ]
+                ],
+                "timestamp": "'"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"'",
+                "footer": {
+                  "text": "VLN Documentation Bot"
                 }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+              }]
+            }' \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"

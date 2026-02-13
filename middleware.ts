@@ -45,11 +45,11 @@ export function middleware(request: NextRequest) {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com https://help.vln.gg",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https:",
-      "connect-src 'self' https://cloudflareinsights.com",
+      "connect-src 'self' https://cloudflareinsights.com https://help.vln.gg wss://help.vln.gg",
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",

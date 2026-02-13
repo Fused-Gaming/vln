@@ -16,6 +16,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.0] - 2026-02-13
+
+### Added
+- **Dynamic Open Graph Image System** using Next.js `ImageResponse` (`next/og`)
+  - Convention-based OG images for all routes: homepage, services, contact, about, pricing, blog, FAQ
+  - Dedicated API endpoint for design.vln.gg (`/api/og/design`)
+  - Generic dynamic API endpoint (`/api/og`) supporting all subdomains with configurable title, subtitle, accent color, and badges
+- **Shared OG Utilities** (`lib/og/utils.ts`)
+  - Full VLN design token export for OG context (all brand colors, dimensions)
+  - Font loading helpers for Inter and JetBrains Mono
+  - Accent color helpers with glow effect generation
+- **OG Design Documentation** (`docs/design/og-images.md`)
+  - ASCII wireframes for all 9 OG image variants
+  - Mermaid architecture diagrams (generation strategy, subdomain coverage)
+  - Git branching and merge strategy diagrams (gitGraph, sequenceDiagram, flowchart)
+  - File structure reference and testing guide
+
+### Changed
+- Removed static SVG OG image references from root `layout.tsx` metadata
+- OG images now auto-discovered by Next.js convention (opengraph-image.tsx per route)
+- All OG images use edge runtime with force-dynamic for on-demand generation
+
+### Technical
+- All OG images render at 1200x630px with exact VLN design tokens
+- Circuit trace SVG decorations match IC board background aesthetic
+- Rainbow gradient text effect on homepage hero matches live site
+- Trust metric badges with per-stat accent colors (sage, blue, purple)
+- WCAG AAA compliant text contrast on matte charcoal backgrounds
+
+---
+
+## [0.10.0] - 2025-12-12
+
+### Added
+- **Referrals page** with comprehensive referral program details and legal terms
+- **Partner logos** including Gamba, Stake, FullHouse, Razed, and Thrill
+- **VLN report templates** with branded HTML layouts
+- **VLN Hero image** for Open Graph and marketing materials
+- **Getting Started documentation** for new developers
+- **Design System Components documentation** for component library
+- **Discord webhooks documentation** for DevOps integration
+
+### Changed
+- **CI/CD notifications migrated from Slack to Discord** webhooks
+- **Pricing page expanded** with additional legal terms and referral program information
+- **FAQ page enhanced** with additional questions and improved organization
+- **Chat widget improvements** with better error handling and state management
+- **Header navigation** redesigned with integrated chat toggle
+- **Sitemap updated** to include new referrals page
+- **GitHub workflows** now use Discord for all notifications with secret management
+
+### Removed
+- **ChatButton component** (functionality moved to header navigation)
+- **Slack webhook references** replaced with Discord webhooks
+
+### Security
+- **Discord webhook URLs** now use GitHub secrets instead of hardcoded values
+- **CSP updated** to allow Zammad chat widget integration
+
+### DevOps
+- **Workflow improvements** with better error handling and conditional checks
+- **PR body templates** updated for better documentation
+- **Brand documentation** enhanced with partner logos and assets
+
+---
+
 ## [0.9.0] - 2025-01-24
 
 ### Added
@@ -213,7 +279,9 @@ Versions follow [Semantic Versioning](https://semver.org/):
 
 | Version | Status | Release Date | Milestone |
 |---------|--------|--------------|-----------|
-| 0.9.0 | ✅ Current | 2025-01-24 | MVP Complete |
+| 0.11.0 | ✅ Current | 2026-02-13 | OG Image System |
+| 0.10.0 | ✅ Released | 2025-12-12 | Referrals, Partner Logos, Discord CI |
+| 0.9.0 | ✅ Released | 2025-01-24 | MVP Complete |
 | 1.0.0 | ⏳ Planned | 2025-02-01 | Production Launch |
 | 1.1.0 | ⏳ Planned | 2025-02-15 | Backend Integration |
 | 1.2.0 | ⏳ Planned | 2025-03-01 | Client Dashboard |
@@ -275,11 +343,13 @@ For questions about releases or version history:
 
 ---
 
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-02-13
 **Maintainer:** VLN Development Team
 **License:** Proprietary - © 2025 VLN - Fused Gaming
 
-[Unreleased]: https://github.com/Fused-Gaming/vln/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/Fused-Gaming/vln/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/Fused-Gaming/vln/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/Fused-Gaming/vln/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/Fused-Gaming/vln/releases/tag/v0.9.0
 [0.8.0]: https://github.com/Fused-Gaming/vln/releases/tag/v0.8.0
 [0.7.0]: https://github.com/Fused-Gaming/vln/releases/tag/v0.7.0
