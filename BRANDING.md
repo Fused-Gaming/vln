@@ -26,9 +26,9 @@
 - **💬 Telegram**: [@vlngg](https://t.me/vlngg)
 - **🐙 GitHub**: [github.com/Fused-Gaming/vln](https://github.com/Fused-Gaming/vln)
 
-### Social Media (Future)
+### Social Media
+- **Discord**: [discord.gg/P5XuPyJJRN](https://discord.gg/P5XuPyJJRN)
 - **Twitter/X**: @vlngg (to be created)
-- **Discord**: discord.gg/vln (to be created)
 - **Medium/Blog**: medium.com/@vln (to be created)
 
 ---

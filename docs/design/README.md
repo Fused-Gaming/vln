@@ -2,8 +2,8 @@
 
 > Security & Smart Contract Vulnerability Lab Brand Guidelines
 
-**Last Updated:** November 2024
-**Version:** 2.0
+**Last Updated:** February 2026
+**Version:** 2.2
 **Status:** Active
 
 ---
@@ -29,6 +29,7 @@ docs/design/
 ├── README.md (this file)
 ├── ROUTES_AND_ELEMENTS.md - Complete inventory of pages & components
 ├── DESIGN_ASSETS.md - Reusable patterns, icons, gradients
+├── og-images.md - Open Graph image system, wireframes & architecture
 ├── tokens/
 │   └── colors.md - Color palette and usage (WCAG AAA)
 ├── components/
@@ -36,6 +37,10 @@ docs/design/
 │   └── employee-cards.md - Team member card component
 ├── pages/
 │   └── homepage.md - Homepage design spec & wireframes
+├── ux-flows/
+│   ├── homepage.md - Homepage UX flows & mockups
+│   ├── contact-flow.md - Contact form UX flow
+│   └── services-navigation.md - Services navigation UX
 └── performance/
     └── guidelines.md - Performance optimization (17 rules)
 ```
@@ -90,7 +95,8 @@ docs/design/
 1. **Review Brand Guidelines:** Start with `/tokens/colors.md`
 2. **Understand Components:** Read `/components/animations.md`
 3. **Follow Patterns:** Reference `/pages/homepage.md`
-4. **Optimize Performance:** Apply `/performance/guidelines.md`
+4. **OG Images:** Review `/og-images.md` for social preview system
+5. **Optimize Performance:** Apply `/performance/guidelines.md`
 
 ---
 
@@ -104,6 +110,14 @@ docs/design/
 ---
 
 ## Changelog
+
+### v2.2 - February 2026
+- Dynamic Open Graph image system for all routes and subdomains
+- ASCII wireframe documentation for 9 OG variants
+- Mermaid architecture diagrams (branching, deployment, validation)
+- Shared OG utility library with full design token support
+- design.vln.gg dedicated OG endpoint
+- Generic dynamic OG API for all planned subdomains
 
 ### v2.1 - December 2025
 - Added EmployeeCard component for team member profiles

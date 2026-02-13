@@ -1,15 +1,58 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Zap, ZapOff } from "lucide-react";
+import { Shield, Zap, ZapOff, MessageCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAnimations } from "@/lib/animation-context";
+import { useState, useEffect } from "react";
+
+declare global {
+  interface Window {
+    zammadChatOpen?: () => void;
+  }
+}
 
 export default function Header() {
   const pathname = usePathname();
   const { animationsEnabled, toggleAnimations } = useAnimations();
+  const [isChatReady, setIsChatReady] = useState(false);
 
   const isActive = (path: string) => pathname === path;
+
+  useEffect(() => {
+    // Listen for zammad-ready event
+    const handleZammadReady = () => {
+      if (window.zammadChatOpen) {
+        setIsChatReady(true);
+      }
+    };
+
+    // Check if Zammad is already loaded
+    const checkZammad = setInterval(() => {
+      if (window.zammadChatOpen) {
+        setIsChatReady(true);
+        clearInterval(checkZammad);
+      }
+    }, 100);
+
+    // Also listen for the custom event
+    window.addEventListener('zammad-ready', handleZammadReady);
+
+    // Cleanup after 10 seconds to prevent infinite polling
+    const timeout = setTimeout(() => clearInterval(checkZammad), 10000);
+
+    return () => {
+      clearInterval(checkZammad);
+      clearTimeout(timeout);
+      window.removeEventListener('zammad-ready', handleZammadReady);
+    };
+  }, []);
+
+  const handleChatToggle = () => {
+    if (window.zammadChatOpen) {
+      window.zammadChatOpen();
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-vln-sage/20 backdrop-blur-md bg-vln-bg/80">
@@ -44,6 +87,16 @@ export default function Header() {
               Pricing
             </Link>
             <Link
+              href="/referrals"
+              className={`text-sm sm:text-base transition-colors ${
+                isActive("/referrals")
+                  ? "text-vln-sage font-semibold"
+                  : "text-vln-white hover:text-vln-sage"
+              }`}
+            >
+              Referrals
+            </Link>
+            <Link
               href="/contact"
               className={`text-sm sm:text-base transition-colors ${
                 isActive("/contact")
@@ -53,6 +106,18 @@ export default function Header() {
             >
               Contact
             </Link>
+
+            {/* Chat Toggle Button */}
+            {isChatReady && (
+              <button
+                onClick={handleChatToggle}
+                className="p-2 rounded-md border border-vln-sage/30 hover:border-vln-sage hover:bg-vln-sage/10 transition-all glow-lift"
+                aria-label="Open chat support"
+                title="Chat with us"
+              >
+                <MessageCircle className="w-4 h-4 text-vln-sage" />
+              </button>
+            )}
 
             {/* Animation Toggle Button */}
             <button
