@@ -360,7 +360,7 @@ All icons from **Lucide React** (tree-shakeable, lightweight):
 ### Images
 - `/public/vln-logo-dark.svg` - Dark theme logo
 - `/public/vln-logo-light.svg` - Light theme logo
-- `/public/VLN2.svg` - Social media preview
+- `/public/VLN2.svg` - Legacy social media preview (replaced by dynamic OG)
 
 ### Icons
 - All from Lucide React (no custom SVGs needed)
@@ -389,6 +389,23 @@ All icons from **Lucide React** (tree-shakeable, lightweight):
 - Twitter Card tags
 - Canonical URL
 - Structured data (Organization, WebSite)
+
+### Dynamic OG Images (v0.10.0+)
+OG images are now generated dynamically using `next/og` (ImageResponse API):
+
+| Route | OG Source | Accent |
+|-------|-----------|--------|
+| `/` | `app/opengraph-image.tsx` | Rainbow |
+| `/services` | `app/services/opengraph-image.tsx` | Multi |
+| `/contact` | `app/contact/opengraph-image.tsx` | Sage |
+| `/about` | `app/about/opengraph-image.tsx` | Multi |
+| `/pricing` | `app/pricing/opengraph-image.tsx` | Sage |
+| `/blog` | `app/blog/opengraph-image.tsx` | Blue |
+| `/faq` | `app/faq/opengraph-image.tsx` | Sage |
+| `/api/og` | Dynamic API (query params) | Configurable |
+| `/api/og/design` | design.vln.gg dedicated | Purple |
+
+See `docs/design/og-images.md` for full wireframes and architecture.
 
 ### Sitemap
 - `/sitemap.xml` - Dynamic generation
