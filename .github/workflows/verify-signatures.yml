@@ -259,112 +259,97 @@ jobs:
               statusIcon = ':warning:';
             }
 
-            const body = `## Code Signature Verification
+            let unsignedSection = '';
+            if (unsignedCount > 0) {
+              unsignedSection = '\n\n**:warning: Unsigned Commits Detected**\n\n' +
+                'Sign your commits using **SSH** (recommended) or **GPG**:\n\n' +
+                '**SSH Signing (recommended):**\n' +
+                '```bash\n' +
+                'git config --global gpg.format ssh\n' +
+                'git config --global user.signingkey ~/.ssh/id_ed25519.pub\n' +
+                'git config --global commit.gpgsign true\n' +
+                '```\n\n' +
+                '**GPG Signing:**\n' +
+                '```bash\n' +
+                'git config --global user.signingkey YOUR_GPG_KEY_ID\n' +
+                'git config --global commit.gpgsign true\n' +
+                '```\n\n' +
+                'Then amend and re-sign:\n' +
+                '```bash\n' +
+                'git commit --amend --no-edit -S\n' +
+                'git push --force-with-lease\n' +
+                '```';
+            }
 
-**Status:** ${statusIcon} ${status}
+            let invalidSection = '';
+            if (invalidCount > 0) {
+              invalidSection = '\n\n**:x: SECURITY ALERT: Invalid Signatures**\n\n' +
+                'This PR contains commits with INVALID signatures. This could indicate:\n' +
+                '- Tampering with signed commits\n' +
+                '- Compromised signing keys\n' +
+                '- Technical issues with signature verification\n\n' +
+                '**Action Required:**\n' +
+                '1. Verify the integrity of your local repository\n' +
+                '2. Check if your signing key has been compromised\n' +
+                '3. Contact security@vln.gg immediately\n\n' +
+                '**This PR will be BLOCKED until invalid signatures are resolved.**';
+            }
 
-### Commit Signatures
-| Check | Count |
-|-------|-------|
-| Valid signatures | ${validCount} (SSH: ${sshSigned}, GPG: ${gpgSigned}) |
-| Unsigned commits | ${unsignedCount} |
-| Invalid signatures | ${invalidCount} |
+            const authorVerification = isApproved === 'true' ?
+              ':white_check_mark: Author identity: Verified' :
+              ':warning: Author identity: Not in approved list';
 
-### Author Verification
-- ${isApproved === 'true' ? ':white_check_mark:' : ':warning:'} Author identity: ${isApproved === 'true' ? 'Verified' : 'Not in approved list'}
-
----
-
-${unsignedCount > 0 ? `
-**:warning: Unsigned Commits Detected**
-
-Sign your commits using **SSH** (recommended) or **GPG**:
-
-**SSH Signing (recommended):**
-\`\`\`bash
-git config --global gpg.format ssh
-git config --global user.signingkey ~/.ssh/id_ed25519.pub
-git config --global commit.gpgsign true
-\`\`\`
-
-**GPG Signing:**
-\`\`\`bash
-git config --global user.signingkey YOUR_GPG_KEY_ID
-git config --global commit.gpgsign true
-\`\`\`
-
-Then amend and re-sign:
-\`\`\`bash
-git commit --amend --no-edit -S
-git push --force-with-lease
-\`\`\`
-` : ''}
-
-${invalidCount > 0 ? `
-**:x: SECURITY ALERT: Invalid Signatures**
-
-This PR contains commits with INVALID signatures. This could indicate:
-- Tampering with signed commits
-- Compromised signing keys
-- Technical issues with signature verification
-
-**Action Required:**
-1. Verify the integrity of your local repository
-2. Check if your signing key has been compromised
-3. Contact security@vln.gg immediately
-
-**This PR will be BLOCKED until invalid signatures are resolved.**
-` : ''}
-
-<details>
-<summary>How to Sign Commits</summary>
-
-### Option 1: SSH Signing (Recommended)
-
-1. **Generate an SSH key (if needed):**
-   \`\`\`bash
-   ssh-keygen -t ed25519 -C "your_email@example.com"
-   \`\`\`
-
-2. **Configure Git for SSH signing:**
-   \`\`\`bash
-   git config --global gpg.format ssh
-   git config --global user.signingkey ~/.ssh/id_ed25519.pub
-   git config --global commit.gpgsign true
-   \`\`\`
-
-3. **Add your SSH key to GitHub:**
-   Go to GitHub Settings > SSH and GPG keys > New SSH key
-   Select "Signing Key" as the key type
-
-### Option 2: GPG Signing
-
-1. **Generate GPG Key:**
-   \`\`\`bash
-   gpg --full-generate-key
-   \`\`\`
-
-2. **List your GPG keys:**
-   \`\`\`bash
-   gpg --list-secret-keys --keyid-format=long
-   \`\`\`
-
-3. **Configure Git:**
-   \`\`\`bash
-   git config --global user.signingkey YOUR_KEY_ID
-   git config --global commit.gpgsign true
-   \`\`\`
-
-4. **Add GPG key to GitHub:**
-   \`\`\`bash
-   gpg --armor --export YOUR_KEY_ID
-   \`\`\`
-   Copy the output and add it to GitHub Settings > SSH and GPG keys
-
-</details>
-
----
-Automated security verification by VLN Security Bot`;
+            const body = '## Code Signature Verification\n\n' +
+              '**Status:** ' + statusIcon + ' ' + status + '\n\n' +
+              '### Commit Signatures\n' +
+              '| Check | Count |\n' +
+              '|-------|-------|\n' +
+              '| Valid signatures | ' + validCount + ' (SSH: ' + sshSigned + ', GPG: ' + gpgSigned + ') |\n' +
+              '| Unsigned commits | ' + unsignedCount + ' |\n' +
+              '| Invalid signatures | ' + invalidCount + ' |\n\n' +
+              '### Author Verification\n' +
+              '- ' + authorVerification + '\n\n' +
+              '---' +
+              unsignedSection +
+              invalidSection +
+              '\n\n<details>\n' +
+              '<summary>How to Sign Commits</summary>\n\n' +
+              '### Option 1: SSH Signing (Recommended)\n\n' +
+              '1. **Generate an SSH key (if needed):**\n' +
+              '   ```bash\n' +
+              '   ssh-keygen -t ed25519 -C "your_email@example.com"\n' +
+              '   ```\n\n' +
+              '2. **Configure Git for SSH signing:**\n' +
+              '   ```bash\n' +
+              '   git config --global gpg.format ssh\n' +
+              '   git config --global user.signingkey ~/.ssh/id_ed25519.pub\n' +
+              '   git config --global commit.gpgsign true\n' +
+              '   ```\n\n' +
+              '3. **Add your SSH key to GitHub:**\n' +
+              '   Go to GitHub Settings > SSH and GPG keys > New SSH key\n' +
+              '   Select "Signing Key" as the key type\n\n' +
+              '### Option 2: GPG Signing\n\n' +
+              '1. **Generate GPG Key:**\n' +
+              '   ```bash\n' +
+              '   gpg --full-generate-key\n' +
+              '   ```\n\n' +
+              '2. **List your GPG keys:**\n' +
+              '   ```bash\n' +
+              '   gpg --list-secret-keys --keyid-format=long\n' +
+              '   ```\n\n' +
+              '3. **Configure Git:**\n' +
+              '   ```bash\n' +
+              '   git config --global user.signingkey YOUR_KEY_ID\n' +
+              '   git config --global commit.gpgsign true\n' +
+              '   ```\n\n' +
+              '4. **Add GPG key to GitHub:**\n' +
+              '   ```bash\n' +
+              '   gpg --armor --export YOUR_KEY_ID\n' +
+              '   ```\n' +
+              '   Copy the output and add it to GitHub Settings > SSH and GPG keys\n\n' +
+              '</details>\n\n' +
+              '---\n' +
+              'Automated security verification by VLN Security Bot';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -529,7 +514,7 @@ Automated security verification by VLN Security Bot`;
       - name: Run CodeQL Analysis
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript, typescript
+          languages: javascript-typescript
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
