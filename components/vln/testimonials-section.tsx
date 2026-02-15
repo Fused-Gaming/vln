@@ -78,7 +78,7 @@ export default function TestimonialsSection() {
         </StaggerFade>
 
         <CSSFade delay={600} className="text-center">
-          <Button variant="secondary" size="lg" href="/testimonials">
+          <Button variant="secondary" size="lg" href="/contact">
             View All 47 Reviews
           </Button>
         </CSSFade>
