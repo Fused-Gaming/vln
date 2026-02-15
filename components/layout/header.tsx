@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Zap, ZapOff, MessageCircle } from "lucide-react";
+import Image from "next/image";
+import { Zap, ZapOff, MessageCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAnimations } from "@/lib/animation-context";
 import { useState, useEffect } from "react";
@@ -59,11 +60,13 @@ export default function Header() {
       <nav className="container mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <Shield className="w-6 h-6 text-vln-sage" />
-            <span className="text-xl sm:text-2xl font-bold text-vln-sage">VLN</span>
-            <span className="text-xs sm:text-sm text-vln-bluegray hidden sm:inline">
-              by Fused Gaming
-            </span>
+            <Image
+              src="/vln-logo-dark.svg"
+              width={164}
+              height={40}
+              alt="VLN.gg"
+              priority
+            />
           </Link>
           <div className="flex items-center space-x-4 sm:space-x-8">
             <Link

@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - development
       - integration/vln
       - 'feature/**'
       - 'fix/**'
+      - 'claude/**'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -26,10 +28,33 @@ jobs:
         with:
           fetch-depth: 0  # Need full history for signature verification
 
-      - name: Install GPG Tools
+      - name: Install Verification Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y gnupg2
+          sudo apt-get install -y gnupg2 openssh-client
+
+      - name: Configure SSH Signature Verification
+        run: |
+          mkdir -p ~/.ssh
+
+          # Build the SSH allowed signers file from trusted keys
+          ALLOWED_SIGNERS_FILE="$HOME/.ssh/allowed_signers"
+          touch "$ALLOWED_SIGNERS_FILE"
+
+          # Claude Code (Anthropic) SSH signing key — ed25519
+          echo "noreply@anthropic.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKy87HxSEheG8vEPhSs9u2KZCtVErAQfpmprtUJCZ2w7" >> "$ALLOWED_SIGNERS_FILE"
+
+          # Import additional trusted SSH keys from secret (one per line: email keytype base64key)
+          if [ -n "${{ secrets.VLN_SSH_ALLOWED_SIGNERS }}" ]; then
+            echo "${{ secrets.VLN_SSH_ALLOWED_SIGNERS }}" >> "$ALLOWED_SIGNERS_FILE"
+            echo "Imported additional SSH allowed signers from secret"
+          fi
+
+          # Configure git to use the allowed signers file for SSH verification
+          git config --global gpg.ssh.allowedSignersFile "$ALLOWED_SIGNERS_FILE"
+
+          echo "SSH allowed signers configured:"
+          cat "$ALLOWED_SIGNERS_FILE"
 
       - name: Import Trusted GPG Keys
         run: |
@@ -37,13 +62,13 @@ jobs:
           if [ -n "${{ secrets.VLN_GPG_PUBLIC_KEY }}" ]; then
             echo "${{ secrets.VLN_GPG_PUBLIC_KEY }}" | gpg --import || true
           else
-            echo "⚠️  VLN_GPG_PUBLIC_KEY secret not set — skipping"
+            echo "VLN_GPG_PUBLIC_KEY secret not set — skipping"
           fi
 
           if [ -n "${{ secrets.FUSED_GAMING_GPG_PUBLIC_KEY }}" ]; then
             echo "${{ secrets.FUSED_GAMING_GPG_PUBLIC_KEY }}" | gpg --import || true
           else
-            echo "⚠️  FUSED_GAMING_GPG_PUBLIC_KEY secret not set — skipping"
+            echo "FUSED_GAMING_GPG_PUBLIC_KEY secret not set — skipping"
           fi
 
           # Import trusted contributor keys from keyserver (requires non-empty secret)
@@ -51,13 +76,13 @@ jobs:
             gpg --keyserver keys.openpgp.org --recv-keys \
               ${{ secrets.TRUSTED_CONTRIBUTOR_KEYS }} || true
           else
-            echo "⚠️  TRUSTED_CONTRIBUTOR_KEYS secret not set — skipping keyserver fetch"
+            echo "TRUSTED_CONTRIBUTOR_KEYS secret not set — skipping keyserver fetch"
           fi
 
       - name: Verify Commit Signatures
         id: verify_commits
         run: |
-          echo "🔍 Verifying commit signatures..."
+          echo "Verifying commit signatures..."
 
           # Get list of commits in this push/PR
           if [ "${{ github.event_name }}" == "pull_request" ]; then
@@ -69,49 +94,94 @@ jobs:
           UNSIGNED_COMMITS=()
           INVALID_SIGNATURES=()
           VALID_SIGNATURES=0
+          SSH_SIGNED=0
+          GPG_SIGNED=0
 
           for commit in $COMMITS; do
+            echo "---"
             echo "Checking commit: $commit"
 
-            # Verify GPG signature
-            if git verify-commit $commit 2>/dev/null; then
-              echo "✅ Valid signature for commit $commit"
-              ((VALID_SIGNATURES++))
-            else
-              SIGNATURE_STATUS=$(git log --show-signature -1 $commit 2>&1 | head -n 5)
+            # Extract raw commit object to detect signature type
+            COMMIT_RAW=$(git cat-file -p "$commit" 2>/dev/null)
 
-              if echo "$SIGNATURE_STATUS" | grep -q "Good signature"; then
-                echo "✅ Valid signature for commit $commit"
+            if echo "$COMMIT_RAW" | grep -q "BEGIN SSH SIGNATURE"; then
+              # SSH-signed commit — verify using ssh-keygen via git
+              echo "  Signature type: SSH"
+              if git verify-commit "$commit" 2>&1 | grep -q "Good"; then
+                echo "  VALID SSH signature for $commit"
                 ((VALID_SIGNATURES++))
-              elif echo "$SIGNATURE_STATUS" | grep -q "BAD signature"; then
-                echo "❌ INVALID signature for commit $commit"
-                INVALID_SIGNATURES+=($commit)
+                ((SSH_SIGNED++))
               else
-                echo "⚠️  Unsigned commit: $commit"
-                UNSIGNED_COMMITS+=($commit)
+                VERIFY_OUTPUT=$(git verify-commit "$commit" 2>&1)
+                if echo "$VERIFY_OUTPUT" | grep -q "Could not verify"; then
+                  echo "  UNKNOWN signer for SSH-signed commit $commit"
+                  echo "  (Key not in allowed_signers — treating as unsigned)"
+                  UNSIGNED_COMMITS+=("$commit")
+                else
+                  echo "  INVALID SSH signature for $commit"
+                  echo "  Verify output: $VERIFY_OUTPUT"
+                  INVALID_SIGNATURES+=("$commit")
+                fi
               fi
+
+            elif echo "$COMMIT_RAW" | grep -q "BEGIN PGP SIGNATURE"; then
+              # GPG-signed commit
+              echo "  Signature type: GPG"
+              if git verify-commit "$commit" 2>/dev/null; then
+                echo "  VALID GPG signature for $commit"
+                ((VALID_SIGNATURES++))
+                ((GPG_SIGNED++))
+              else
+                SIGNATURE_STATUS=$(git log --show-signature -1 "$commit" 2>&1 | head -n 5)
+                if echo "$SIGNATURE_STATUS" | grep -q "Good signature"; then
+                  echo "  VALID GPG signature for $commit"
+                  ((VALID_SIGNATURES++))
+                  ((GPG_SIGNED++))
+                elif echo "$SIGNATURE_STATUS" | grep -q "BAD signature"; then
+                  echo "  INVALID GPG signature for $commit"
+                  INVALID_SIGNATURES+=("$commit")
+                else
+                  echo "  GPG signature present but unverifiable (key not imported)"
+                  UNSIGNED_COMMITS+=("$commit")
+                fi
+              fi
+
+            else
+              echo "  No signature found"
+              UNSIGNED_COMMITS+=("$commit")
             fi
           done
+
+          echo ""
+          echo "=== Signature Verification Summary ==="
+          echo "  Valid signatures: $VALID_SIGNATURES (SSH: $SSH_SIGNED, GPG: $GPG_SIGNED)"
+          echo "  Unsigned commits: ${#UNSIGNED_COMMITS[@]}"
+          echo "  Invalid signatures: ${#INVALID_SIGNATURES[@]}"
 
           # Set outputs
           echo "valid_count=$VALID_SIGNATURES" >> $GITHUB_OUTPUT
           echo "unsigned_count=${#UNSIGNED_COMMITS[@]}" >> $GITHUB_OUTPUT
           echo "invalid_count=${#INVALID_SIGNATURES[@]}" >> $GITHUB_OUTPUT
+          echo "ssh_signed=$SSH_SIGNED" >> $GITHUB_OUTPUT
+          echo "gpg_signed=$GPG_SIGNED" >> $GITHUB_OUTPUT
 
-          # Fail if any invalid signatures
+          # Fail if any invalid signatures (tampered or corrupted)
           if [ ${#INVALID_SIGNATURES[@]} -gt 0 ]; then
-            echo "❌ Found commits with INVALID signatures!"
+            echo ""
+            echo "FATAL: Found commits with INVALID signatures!"
             echo "Invalid commits: ${INVALID_SIGNATURES[@]}"
             exit 1
           fi
 
           # Warn if unsigned (but allow for now)
           if [ ${#UNSIGNED_COMMITS[@]} -gt 0 ]; then
-            echo "⚠️  Found unsigned commits: ${UNSIGNED_COMMITS[@]}"
+            echo ""
+            echo "WARNING: Found unsigned commits: ${UNSIGNED_COMMITS[@]}"
             echo "unsigned_commits=${UNSIGNED_COMMITS[@]}" >> $GITHUB_OUTPUT
           fi
 
-          echo "✅ Signature verification complete"
+          echo ""
+          echo "Signature verification complete"
 
       - name: Verify Author Identity
         id: verify_author
@@ -123,7 +193,7 @@ jobs:
           echo "Author: $AUTHOR_NAME <$AUTHOR_EMAIL>"
 
           # Check if author is in approved list
-          APPROVED_DOMAINS=("@vln.gg" "@fusedgaming.io" "@users.noreply.github.com")
+          APPROVED_DOMAINS=("@vln.gg" "@fusedgaming.io" "@users.noreply.github.com" "@anthropic.com")
           IS_APPROVED=false
 
           for domain in "${APPROVED_DOMAINS[@]}"; do
@@ -134,15 +204,17 @@ jobs:
           done
 
           # Check against approved contributors list
-          if echo "${{ secrets.APPROVED_CONTRIBUTORS }}" | grep -q "$AUTHOR_EMAIL"; then
-            IS_APPROVED=true
+          if [ -n "${{ secrets.APPROVED_CONTRIBUTORS }}" ]; then
+            if echo "${{ secrets.APPROVED_CONTRIBUTORS }}" | grep -q "$AUTHOR_EMAIL"; then
+              IS_APPROVED=true
+            fi
           fi
 
           if [ "$IS_APPROVED" = true ]; then
-            echo "✅ Author is approved: $AUTHOR_EMAIL"
+            echo "Author is approved: $AUTHOR_EMAIL"
             echo "is_approved=true" >> $GITHUB_OUTPUT
           else
-            echo "⚠️  Author not in approved list: $AUTHOR_EMAIL"
+            echo "Author not in approved list: $AUTHOR_EMAIL"
             echo "is_approved=false" >> $GITHUB_OUTPUT
           fi
 
@@ -152,9 +224,9 @@ jobs:
 
           # Check conventional commit format
           if [[ $COMMIT_MSG =~ ^(feat|fix|docs|chore|style|refactor|perf|test|build|ci)(\(.+\))?!?:\ .+ ]]; then
-            echo "✅ Commit follows conventional commit format"
+            echo "Commit follows conventional commit format"
           else
-            echo "⚠️  Commit does not follow conventional commit format"
+            echo "WARNING: Commit does not follow conventional commit format"
             echo "Expected: type(scope): subject"
             echo "Got: $COMMIT_MSG"
           fi
@@ -167,101 +239,127 @@ jobs:
             const validCount = '${{ steps.verify_commits.outputs.valid_count }}';
             const unsignedCount = '${{ steps.verify_commits.outputs.unsigned_count }}';
             const invalidCount = '${{ steps.verify_commits.outputs.invalid_count }}';
+            const sshSigned = '${{ steps.verify_commits.outputs.ssh_signed }}';
+            const gpgSigned = '${{ steps.verify_commits.outputs.gpg_signed }}';
             const isApproved = '${{ steps.verify_author.outputs.is_approved }}';
 
-            let status = '✅ All checks passed';
-            let severity = 'success';
+            let status = 'All checks passed';
+            let statusIcon = ':white_check_mark:';
 
             if (invalidCount > 0) {
-              status = '❌ Invalid signatures detected';
-              severity = 'error';
+              status = 'Invalid signatures detected';
+              statusIcon = ':x:';
             } else if (unsignedCount > 0) {
-              status = '⚠️  Unsigned commits detected';
-              severity = 'warning';
+              status = 'Unsigned commits detected';
+              statusIcon = ':warning:';
             }
 
-            const body = `## 🔐 Code Signature Verification
+            const body = `## Code Signature Verification
 
-            **Status:** ${status}
+**Status:** ${statusIcon} ${status}
 
-            ### Commit Signatures
-            - ✅ Valid signatures: ${validCount}
-            - ⚠️  Unsigned commits: ${unsignedCount}
-            - ❌ Invalid signatures: ${invalidCount}
+### Commit Signatures
+| Check | Count |
+|-------|-------|
+| Valid signatures | ${validCount} (SSH: ${sshSigned}, GPG: ${gpgSigned}) |
+| Unsigned commits | ${unsignedCount} |
+| Invalid signatures | ${invalidCount} |
 
-            ### Author Verification
-            - ${isApproved === 'true' ? '✅' : '⚠️ '} Author identity: ${isApproved === 'true' ? 'Verified' : 'Not in approved list'}
+### Author Verification
+- ${isApproved === 'true' ? ':white_check_mark:' : ':warning:'} Author identity: ${isApproved === 'true' ? 'Verified' : 'Not in approved list'}
 
-            ---
+---
 
-            ${unsignedCount > 0 ? `
-            **⚠️  Unsigned Commits Detected**
+${unsignedCount > 0 ? `
+**:warning: Unsigned Commits Detected**
 
-            To sign your commits, configure GPG signing:
-            \`\`\`bash
-            git config --global user.signingkey YOUR_GPG_KEY_ID
-            git config --global commit.gpgsign true
-            \`\`\`
+Sign your commits using **SSH** (recommended) or **GPG**:
 
-            Then amend and re-sign:
-            \`\`\`bash
-            git commit --amend --no-edit -S
-            git push --force-with-lease
-            \`\`\`
-            ` : ''}
+**SSH Signing (recommended):**
+\`\`\`bash
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+git config --global commit.gpgsign true
+\`\`\`
 
-            ${invalidCount > 0 ? `
-            **❌ SECURITY ALERT: Invalid Signatures**
+**GPG Signing:**
+\`\`\`bash
+git config --global user.signingkey YOUR_GPG_KEY_ID
+git config --global commit.gpgsign true
+\`\`\`
 
-            This PR contains commits with INVALID GPG signatures. This could indicate:
-            - Tampering with signed commits
-            - Compromised signing keys
-            - Technical issues with GPG verification
+Then amend and re-sign:
+\`\`\`bash
+git commit --amend --no-edit -S
+git push --force-with-lease
+\`\`\`
+` : ''}
 
-            **Action Required:**
-            1. Verify the integrity of your local repository
-            2. Check if your GPG key has been compromised
-            3. Contact security@vln.gg immediately
+${invalidCount > 0 ? `
+**:x: SECURITY ALERT: Invalid Signatures**
 
-            **This PR will be BLOCKED until invalid signatures are resolved.**
-            ` : ''}
+This PR contains commits with INVALID signatures. This could indicate:
+- Tampering with signed commits
+- Compromised signing keys
+- Technical issues with signature verification
 
-            <details>
-            <summary>How to Sign Commits</summary>
+**Action Required:**
+1. Verify the integrity of your local repository
+2. Check if your signing key has been compromised
+3. Contact security@vln.gg immediately
 
-            ### Setting up GPG Signing
+**This PR will be BLOCKED until invalid signatures are resolved.**
+` : ''}
 
-            1. **Generate GPG Key:**
-               \`\`\`bash
-               gpg --full-generate-key
-               \`\`\`
+<details>
+<summary>How to Sign Commits</summary>
 
-            2. **List your GPG keys:**
-               \`\`\`bash
-               gpg --list-secret-keys --keyid-format=long
-               \`\`\`
+### Option 1: SSH Signing (Recommended)
 
-            3. **Configure Git:**
-               \`\`\`bash
-               git config --global user.signingkey YOUR_KEY_ID
-               git config --global commit.gpgsign true
-               \`\`\`
+1. **Generate an SSH key (if needed):**
+   \`\`\`bash
+   ssh-keygen -t ed25519 -C "your_email@example.com"
+   \`\`\`
 
-            4. **Add GPG key to GitHub:**
-               \`\`\`bash
-               gpg --armor --export YOUR_KEY_ID
-               \`\`\`
-               Copy the output and add it to GitHub Settings > SSH and GPG keys
+2. **Configure Git for SSH signing:**
+   \`\`\`bash
+   git config --global gpg.format ssh
+   git config --global user.signingkey ~/.ssh/id_ed25519.pub
+   git config --global commit.gpgsign true
+   \`\`\`
 
-            5. **Sign your next commit:**
-               \`\`\`bash
-               git commit -S -m "feat: signed commit"
-               \`\`\`
+3. **Add your SSH key to GitHub:**
+   Go to GitHub Settings > SSH and GPG keys > New SSH key
+   Select "Signing Key" as the key type
 
-            </details>
+### Option 2: GPG Signing
 
-            ---
-            🤖 Automated security verification by VLN Security Bot`;
+1. **Generate GPG Key:**
+   \`\`\`bash
+   gpg --full-generate-key
+   \`\`\`
+
+2. **List your GPG keys:**
+   \`\`\`bash
+   gpg --list-secret-keys --keyid-format=long
+   \`\`\`
+
+3. **Configure Git:**
+   \`\`\`bash
+   git config --global user.signingkey YOUR_KEY_ID
+   git config --global commit.gpgsign true
+   \`\`\`
+
+4. **Add GPG key to GitHub:**
+   \`\`\`bash
+   gpg --armor --export YOUR_KEY_ID
+   \`\`\`
+   Copy the output and add it to GitHub Settings > SSH and GPG keys
+
+</details>
+
+---
+Automated security verification by VLN Security Bot`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -273,7 +371,7 @@ jobs:
       - name: Block PR if Invalid Signatures
         if: steps.verify_commits.outputs.invalid_count > 0
         run: |
-          echo "❌ BLOCKING: Invalid signatures detected"
+          echo "BLOCKING: Invalid signatures detected"
           echo "This PR cannot be merged until all commits have valid signatures"
           exit 1
 

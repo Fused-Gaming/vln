@@ -113,7 +113,7 @@ export default function Footer() {
               {/* Social Media Icons */}
               <div className="flex flex-wrap gap-2">
                 <a
-                  href="https://github.com/vlngg"
+                  href="https://github.com/Fused-Gaming"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-md bg-vln-bg-light hover:bg-vln-sage/10 hover:text-vln-sage transition-all glow-lift"

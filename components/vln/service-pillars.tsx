@@ -69,7 +69,7 @@ export default function ServicePillars() {
       price: 'Free - $500',
       turnaround: 'Self-paced',
       cta: 'Start Free Module',
-      ctaHref: '/vise',
+      ctaHref: '/services',
       color: 'purple',
     },
   ];
