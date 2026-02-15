@@ -77,6 +77,87 @@ export const metadata: Metadata = {
   category: "technology",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://vln.gg/#organization",
+      name: "VLN - Vulnerability Lab Network",
+      alternateName: "VLN",
+      url: "https://vln.gg",
+      logo: "https://vln.gg/vln-logo-dark.svg",
+      description:
+        "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects.",
+      foundingDate: "2024",
+      parentOrganization: {
+        "@type": "Organization",
+        name: "Fused Gaming",
+      },
+      sameAs: [
+        "https://github.com/Fused-Gaming",
+        "https://linkedin.com/company/vlngg",
+      ],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "sales",
+        url: "https://vln.gg/contact",
+        availableLanguage: "English",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vln.gg/#website",
+      url: "https://vln.gg",
+      name: "VLN Security",
+      publisher: { "@id": "https://vln.gg/#organization" },
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://vln.gg/#service",
+      name: "VLN Smart Contract Auditing",
+      provider: { "@id": "https://vln.gg/#organization" },
+      serviceType: "Smart Contract Security Audit",
+      areaServed: "Worldwide",
+      description:
+        "CVSS-based smart contract security audits, vulnerability research, forensic investigation, and incident response for blockchain gaming and DeFi.",
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Security Services",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Prevention Audit",
+              description:
+                "Comprehensive smart contract audit with CVSS scoring and Foundry PoC exploits",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Emergency Forensics",
+              description:
+                "24/7 incident response, fund tracing, and exploit analysis",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Security Training",
+              description:
+                "Team training workshops and secure development bootcamps",
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -90,6 +171,10 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap"
           rel="stylesheet"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className="antialiased bg-vln-bg text-vln-white font-sans">
