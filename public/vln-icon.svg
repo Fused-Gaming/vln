@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- VLN Icon - Simplified for favicon use -->
+  <!-- Brand Colors: Sage Green #a6c3a7, Matte Charcoal #0f0f0f -->
+
+  <g transform="translate(106,56)">
+    <!-- Shield Outline (scaled up for icon) -->
+    <path d="M150 0 L300 60 L300 210 C300 285 225 345 150 375 C75 345 0 285 0 210 L0 60 Z"
+          fill="#0f0f0f"
+          stroke="#a6c3a7"
+          stroke-width="9"/>
+
+    <!-- Inner Accent Geometry -->
+    <path d="M60 120 L150 75 L240 120"
+          stroke="#a6c3a7"
+          stroke-width="12"
+          fill="none"
+          stroke-linecap="round"/>
+
+    <!-- VLN Text -->
+    <text x="150" y="245"
+          text-anchor="middle"
+          font-family="Inter, sans-serif"
+          font-size="96"
+          font-weight="700"
+          fill="#a6c3a7"
+          letter-spacing="6">
+      VLN
+    </text>
+  </g>
+</svg>
