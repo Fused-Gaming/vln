@@ -1,6 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="164" height="40" viewBox="0 0 164 40" fill="none">
-  <!-- PLACEHOLDER: Replace with official VLN brand logo SVG (dark variant) -->
-  <!-- This file will be updated with the final brand logo artwork -->
-  <rect width="164" height="40" rx="4" fill="#0f0f0f"/>
-  <text x="82" y="25" text-anchor="middle" fill="#a6c3a7" font-family="Inter, sans-serif" font-size="18" font-weight="700">VLN</text>
+<svg width="480" height="150" viewBox="0 0 480 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- VLN.gg Logo - Dark Variant (for dark backgrounds) -->
+  <!-- Brand Colors: Sage Green #a6c3a7, Warm Blue-Gray #aab7c8, Matte Charcoal #0f0f0f -->
+
+  <!-- Shield Icon with integrated VLN text -->
+  <g transform="translate(20,20)">
+    <!-- Shield Outline -->
+    <path d="M50 0 L100 20 L100 70 C100 95 75 115 50 125 C25 115 0 95 0 70 L0 20 Z"
+          fill="#0f0f0f"
+          stroke="#a6c3a7"
+          stroke-width="3"/>
+
+    <!-- Inner Accent Geometry - represents circuit/security structure -->
+    <path d="M20 40 L50 25 L80 40"
+          stroke="#a6c3a7"
+          stroke-width="4"
+          fill="none"
+          stroke-linecap="round"/>
+
+    <!-- VLN Text Integrated into Shield -->
+    <text x="50" y="78"
+          text-anchor="middle"
+          font-family="Inter, sans-serif"
+          font-size="32"
+          font-weight="700"
+          fill="#a6c3a7"
+          letter-spacing="2">
+      VLN
+    </text>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(160,55)">
+    <!-- Main VLN Text -->
+    <text font-family="Inter, sans-serif"
+          font-size="42"
+          font-weight="700"
+          fill="#FFFFFF"
+          letter-spacing="4">
+      VLN
+    </text>
+
+    <!-- Tagline -->
+    <text y="32"
+          font-family="Inter, sans-serif"
+          font-size="14"
+          fill="#aab7c8"
+          letter-spacing="2">
+      SMART CONTRACT SECURITY LAB
+    </text>
+  </g>
 </svg>

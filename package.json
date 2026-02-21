@@ -9,7 +9,9 @@
     "lint": "next lint",
     "test": "vitest",
     "test:widget": "vitest __tests__/ZammadWidget.test.tsx",
-    "test:widget:ui": "vitest __tests__/ZammadWidget.test.tsx --ui"
+    "test:widget:ui": "vitest __tests__/ZammadWidget.test.tsx --ui",
+    "generate:favicons": "node scripts/generate-favicons.js && node scripts/generate-favicon-ico.js",
+    "generate:icons": "pnpm generate:favicons"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
@@ -33,6 +35,8 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.5.6",
+    "sharp": "^0.34.5",
+    "to-ico": "^1.1.5",
     "typescript": "^5.9.3",
     "vitest": "^2.1.9"
   }

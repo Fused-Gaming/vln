@@ -32,7 +32,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 9
 
@@ -65,6 +65,7 @@ jobs:
           fi
 
       - name: Update CHANGELOG.md
+        if: hashFiles('scripts/update-changelog.js') != ''
         run: |
           node scripts/update-changelog.js \
             --type "${{ steps.commit_info.outputs.commit_type }}" \
@@ -75,20 +76,23 @@ jobs:
             --date "${{ steps.commit_info.outputs.commit_date }}"
 
       - name: Update Feature Status in README.md
+        if: hashFiles('scripts/update-feature-status.js') != ''
         run: node scripts/update-feature-status.js
 
       - name: Update ROADMAP.md Progress
+        if: hashFiles('scripts/update-roadmap.js') != ''
         run: node scripts/update-roadmap.js
 
       - name: Generate Documentation Index
+        if: hashFiles('scripts/generate-doc-index.js') != ''
         run: node scripts/generate-doc-index.js
 
       - name: Update Component Documentation
-        if: contains(github.event.head_commit.message, 'component')
+        if: hashFiles('scripts/update-component-docs.js') != '' && contains(github.event.head_commit.message, 'component')
         run: node scripts/update-component-docs.js
 
       - name: Update Security Documentation
-        if: contains(github.event.head_commit.message, 'security') || contains(github.event.head_commit.message, 'sec')
+        if: hashFiles('scripts/update-security-docs.js') != '' && (contains(github.event.head_commit.message, 'security') || contains(github.event.head_commit.message, 'sec'))
         run: node scripts/update-security-docs.js
 
       - name: Check for Documentation Changes

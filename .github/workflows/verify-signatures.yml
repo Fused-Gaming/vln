@@ -58,6 +58,11 @@ jobs:
 
       - name: Import Trusted GPG Keys
         run: |
+          # Import GitHub's official GPG signing key for merge commits
+          echo "Importing GitHub's GPG signing keys..."
+          curl -sL https://github.com/web-flow.gpg | gpg --import || true
+          echo "GitHub GPG keys imported"
+
           # Import organization GPG keys (skip silently if secrets not configured)
           if [ -n "${{ secrets.VLN_GPG_PUBLIC_KEY }}" ]; then
             echo "${{ secrets.VLN_GPG_PUBLIC_KEY }}" | gpg --import || true
@@ -193,7 +198,7 @@ jobs:
           echo "Author: $AUTHOR_NAME <$AUTHOR_EMAIL>"
 
           # Check if author is in approved list
-          APPROVED_DOMAINS=("@vln.gg" "@fusedgaming.io" "@users.noreply.github.com" "@anthropic.com")
+          APPROVED_DOMAINS=("@vln.gg" "@fusedgaming.io" "@users.noreply.github.com" "@anthropic.com" "@github.com")
           IS_APPROVED=false
 
           for domain in "${APPROVED_DOMAINS[@]}"; do
