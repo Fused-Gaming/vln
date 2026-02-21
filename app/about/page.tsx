@@ -55,7 +55,8 @@ export default function AboutPage() {
       github: "https://github.com/jlucus",
       linkedin: "https://www.linkedin.com/in/supitsj",
       email: "j.lucus@vln.gg",
-      telegram: "https://t.me/supitsj"
+      telegram: "https://t.me/supitsj",
+      imageUrl: "https://avatars.githubusercontent.com/jlucus"
     },
     {
       name: "Jamie Vargas",
@@ -65,7 +66,8 @@ export default function AboutPage() {
       github: "https://github.com/jmenichole",
       linkedin: "https://www.linkedin.com/in/jmenichole0",
       email: "jmenichole@vln.gg",
-      telegram: "https://t.me/jmenichole"
+      telegram: "https://t.me/jmenichole",
+      imageUrl: "https://avatars.githubusercontent.com/jmenichole"
     }
   ];
 
@@ -172,6 +174,7 @@ export default function AboutPage() {
                 linkedin={employee.linkedin}
                 email={employee.email}
                 telegram={employee.telegram}
+                imageUrl={employee.imageUrl}
               />
             ))}
           </StaggerFade>
