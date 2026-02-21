@@ -4,6 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://vln.gg";
 
   return [
+    // Core pages — highest priority
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -26,13 +27,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/contact`,
       lastModified: new Date(),
       changeFrequency: "monthly",
+      priority: 0.9,
+    },
+
+    // Location-specific landing pages — high priority for local SEO
+    {
+      url: `${baseUrl}/services/san-francisco`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+
+    // Supporting pages
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/referrals`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.7,
     },
     {
       url: `${baseUrl}/faq`,
@@ -40,17 +57,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+
+    // Blog — updated frequently, strong for SEO
     {
-      url: `${baseUrl}/about`,
+      url: `${baseUrl}/blog`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
-      url: `${baseUrl}/home-enhanced`,
-      lastModified: new Date(),
+      url: `${baseUrl}/blog/top-smart-contract-vulnerabilities-defi`,
+      lastModified: new Date("2025-01-15"),
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blog/web3-security-checklist-bay-area-startups`,
+      lastModified: new Date("2025-02-01"),
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
   ];
 }
