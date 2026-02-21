@@ -56,7 +56,7 @@ jobs:
         continue-on-error: true
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: 📦 Setup Node.js
         if: steps.check_package.outputs.has_package == 'true'
@@ -64,7 +64,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: 🔍 pnpm Audit
         if: steps.check_package.outputs.has_package == 'true'
@@ -99,7 +98,7 @@ jobs:
         if: steps.check_package.outputs.has_package == 'true'
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: 📦 Setup Node.js
         if: steps.check_package.outputs.has_package == 'true'
@@ -119,7 +118,7 @@ jobs:
 
       - name: 🔍 Type Check
         if: steps.check_package.outputs.has_package == 'true'
-        run: pnpm tsc --noEmit
+        run: pnpm exec tsc --noEmit
 
   build-and-test:
     name: 🔨 Build & Test
@@ -145,7 +144,7 @@ jobs:
         if: steps.check_package.outputs.has_package == 'true'
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: 📦 Setup Node.js
         if: steps.check_package.outputs.has_package == 'true'
