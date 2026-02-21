@@ -1,465 +1,369 @@
 # VLN Product Roadmap
 
-Strategic timeline for VLN platform development and feature releases.
+**Vision:** Become the leading security infrastructure platform for blockchain gaming and DeFi.
 
-**Current Version:** 0.11.0 (MVP - Pre-Launch)
-**Target Launch:** February 2025
-**Vision:** Become the leading smart contract security platform for blockchain gaming and DeFi
-
----
-
-## 📊 Release Overview
-
-```
-Q1 2025: MVP Launch & Backend Integration
-Q2 2025: Client Features & Automation
-Q3 2025: Advanced Features & Scaling
-Q4 2025: Enterprise & Ecosystem
-```
+**Current Version:** 0.11.0 — Pre-Launch (MVP foundation complete)
+**Next Milestone:** v1.0.0 — Production Launch
+**Identity:** Security infrastructure for Web3 builders — not just smart contract audits.
 
 ---
 
-## Version 0.11.0 - OG Image System ✅
-**Release Date:** February 13, 2026
-**Status:** ✅ Complete
+## Product Strategy Overview
 
-### Objectives
-- Dynamic Open Graph images for all VLN routes and subdomains
-- Brand-consistent social media previews using full design system
-- API-driven OG generation for design.vln.gg and future subdomains
+VLN evolves in four phases. Each phase builds on the previous one. Nothing in v2.x functions correctly unless v1.x is structurally sound.
 
-### Delivered
-- [x] Convention-based OG images for 7 routes (homepage, services, contact, about, pricing, blog, FAQ)
-- [x] Dedicated API endpoint for design.vln.gg (`/api/og/design`)
+```
+Phase 1 — Establish Trust          (v0.11.0 → v1.0.0)
+Phase 2 — Operationalize Audits    (v1.1.0 → v1.3.0)
+Phase 3 — Productize Security      (v2.0.0 → v2.2.0)
+Phase 4 — Platform & Ecosystem     (v3.0.0)
+```
+
+---
+
+## Phase 1 — Establish Trust (v0.11.0 → v1.0.0)
+
+**Objective:** Launch a production-ready public platform capable of accepting real client requests and operating securely.
+
+This phase is about credibility, infrastructure, and operational readiness.
+
+---
+
+### v0.11.0 — Brand & Distribution Layer ✅
+
+**Release Date:** 2026-02-13
+**Status:** Complete
+
+**Purpose:** Control presentation and link-sharing visibility.
+
+**Delivered:**
+- [x] Dynamic Open Graph generation for all VLN routes
+- [x] Subdomain OG API (`/api/og/design` for design.vln.gg)
 - [x] Generic dynamic OG API (`/api/og`) with configurable params
 - [x] Shared OG utility library (`lib/og/utils.ts`) with design tokens
-- [x] ASCII wireframe documentation for all variants
-- [x] Mermaid architecture and branching diagrams
-- [x] Build verification (pnpm build passes)
+- [x] Design-token-based rendering across all variants
+- [x] ASCII wireframe + Mermaid architecture documentation
+- [x] Verified build pipeline (pnpm build passes)
+
+**Impact:**
+- Professional social presence
+- SEO foundation established
+- Brand consistency across all link previews
+- Technical credibility signaled externally
 
 ---
 
-## Version 1.0.0 - Production Launch 🚀
-**Target Date:** February 2025
-**Status:** ⏳ In Progress (85% complete)
+### v1.0.0 — Production Launch
 
-### Objectives
-- Launch production-ready VLN.gg website
-- Enable client onboarding and service requests
-- Establish operational security processes
+**Status:** In Progress (85% complete)
+**Target:** Q1 2026
 
-### Features
+**What "launch ready" means:**
+- Contact intake works end-to-end
+- Tickets route correctly to the team
+- Infrastructure is stable under load
+- Monitoring is live
+- Legal and compliance pages exist
+- No critical security vulnerabilities
 
-#### Backend & API Integration
-- [ ] Contact form API endpoint
-  - Email notification system
-  - Form validation and spam protection
-  - Auto-response emails
-  - CRM integration (HubSpot/Salesforce)
+---
 
-- [ ] Service request pipeline
-  - Automated ticket creation
-  - Priority routing (emergency vs. standard)
-  - Status tracking system
+#### Pillar 1 — Intake & Pipeline
 
-#### Operational
-- [ ] Production environment setup
-  - Database provisioning (PostgreSQL)
-  - Redis caching layer
-  - CDN configuration (Cloudflare)
+This establishes a controlled, auditable entry point for revenue.
 
-- [ ] Monitoring & Alerting
-  - Uptime monitoring (status.vln.gg)
-  - Error tracking (Sentry)
-  - Performance monitoring (Vercel Analytics)
-  - Security scanning (Snyk)
+- [ ] Contact API endpoint
+- [ ] Spam protection (rate limiting, honeypot, Cloudflare Turnstile)
+- [ ] Auto-response emails (acknowledgment + SLA expectations)
+- [ ] CRM integration (HubSpot or equivalent)
+- [ ] Service request classification (standard vs. emergency)
+- [ ] Ticket creation logic with priority routing
 
-#### Documentation
-- [x] Complete website content
+---
+
+#### Pillar 2 — Production Infrastructure
+
+This reduces operational risk and enables the phases above it.
+
+- [ ] PostgreSQL provisioning
+- [ ] Redis session layer
+- [ ] Cloudflare CDN configuration
+- [ ] Uptime monitoring (status.vln.gg)
+- [ ] Error tracking (Sentry)
+- [ ] Performance monitoring (Vercel Analytics)
+- [ ] Security scanning (Snyk / npm audit --production)
+
+---
+
+#### Pillar 3 — Documentation & Transparency
+
+This builds client trust before any sales call happens.
+
+- [x] Complete website content and legal pages (Terms, Privacy, Refunds)
 - [x] SEO optimization
-- [x] Legal pages (Terms, Privacy, Refunds)
-- [ ] Public API documentation
-
-### Success Metrics
-- Website uptime: 99.9%
-- Average response time: < 500ms
-- Lighthouse Performance: > 90
-- Zero critical security vulnerabilities
+- [ ] Public API documentation (placeholder acceptable at launch)
+- [ ] Security methodology explanation (public-facing)
+- [ ] Service scope clarity (what is and is not included)
 
 ---
 
-## Version 1.1.0 - Backend Integration
-**Target Date:** February 15, 2025
-**Status:** ⏳ Planned
+#### Success Criteria
 
-### Objectives
-- Enable automated workflows
-- Implement authentication system
-- Launch audit request system
-
-### Features
-
-#### Authentication System
-- [ ] NextAuth.js integration
-  - Email/password authentication
-  - OAuth providers (Google, GitHub)
-  - Magic link sign-in
-  - Two-factor authentication (2FA)
-
-#### Audit Request System
-- [ ] Audit intake form
-  - Contract upload (GitHub integration)
-  - Scope definition wizard
-  - Automatic complexity estimation
-  - Instant quote generation
-
-- [ ] Request dashboard
-  - Request status tracking
-  - Team assignment
-  - Progress milestones
-  - Communication portal
-
-#### Email System
-- [ ] Transactional emails
-  - Welcome emails
-  - Request confirmations
-  - Status updates
-  - Report delivery notifications
-
-### Dependencies
-- PostgreSQL database
-- Redis for session management
-- Email service provider (SendGrid/Postmark)
+| Metric | Target |
+|--------|--------|
+| Uptime | 99.9% |
+| Avg. response time | < 500ms |
+| Lighthouse score | > 90 |
+| Critical vulnerabilities | 0 |
+| Real inquiries | First 20 |
 
 ---
 
-## Version 1.2.0 - Client Dashboard
-**Target Date:** March 1, 2025
-**Status:** ⏳ Planned
+## Phase 2 — Operationalize Audits (v1.1.0 → v1.3.0)
 
-### Objectives
-- Empower clients with self-service portal
-- Enable secure report viewing
-- Facilitate ongoing communication
+**Objective:** Move from marketing site to security product. Intake is live — now build the pipeline that processes it.
 
-### Features
+---
 
-#### Client Portal
-- [ ] Dashboard homepage
-  - Active audits overview
-  - Recent activity feed
-  - Quick actions menu
-  - Notification center
+### v1.1.0 — Authentication & Audit Requests
 
-- [ ] Audit Reports Section
-  - Secure report viewing
-  - PDF export functionality
-  - Vulnerability filtering
-  - Finding severity breakdown
+**Status:** Planned
+**Depends on:** PostgreSQL + Redis from v1.0.0
 
-- [ ] Project Management
-  - Multiple project support
-  - Team member management
-  - Role-based access control
+**Authentication System:**
+- [ ] Email/password via NextAuth.js
+- [ ] OAuth (Google, GitHub)
+- [ ] Magic link sign-in
+- [ ] Two-factor authentication (2FA)
 
-#### Report Viewer
-- [ ] Interactive report interface
-  - Syntax-highlighted code snippets
-  - Inline vulnerability annotations
-  - Fix verification status
-  - Remediation guidance links
+**Audit Intake System:**
+- [ ] Contract upload (GitHub integration)
+- [ ] Scope definition wizard
+- [ ] Automated complexity estimation
+- [ ] Instant quote generation
 
-- [ ] Collaboration features
-  - Comments and discussions
-  - Status updates
-  - File attachments
-  - Real-time notifications
+**Internal Dashboard:**
+- [ ] Request status tracking
+- [ ] Team assignment
+- [ ] Progress milestones
+- [ ] Communication portal
 
-### Technical Requirements
-- WebSocket support for real-time updates
-- File storage system (AWS S3 or Vercel Blob)
+**Email System:**
+- [ ] Transactional emails (welcome, confirmations, status updates, report delivery)
+- [ ] Email service provider integration (SendGrid or Postmark)
+
+**Impact:** Transforms VLN from a static service site into an interactive security platform.
+
+---
+
+### v1.2.0 — Client Dashboard
+
+**Status:** Planned
+**Depends on:** v1.1.0 Auth + Audit system
+
+**Client Portal:**
+- [ ] Dashboard homepage (active audits, activity feed, quick actions, notifications)
+- [ ] Secure report viewing with PDF export
+- [ ] Vulnerability filtering and severity breakdown
+- [ ] Multiple project support
+- [ ] Role-based access control
+
+**Report Viewer:**
+- [ ] Interactive report interface with syntax-highlighted code snippets
+- [ ] Inline vulnerability annotations
+- [ ] Fix verification status tracking
+- [ ] Comments, discussions, and file attachments
+- [ ] Real-time notifications (WebSocket)
+
+**Technical Additions:**
+- File storage (AWS S3 or Vercel Blob)
 - PDF generation library
-- Syntax highlighting engine
+- Real-time WebSocket infrastructure
+
+**Impact:** Clients stop emailing PDFs. Everything lives in-platform.
 
 ---
 
-## Version 1.3.0 - Payment Integration
-**Target Date:** March 15, 2025
-**Status:** ⏳ Planned
+### v1.3.0 — Payment & Automation
 
-### Objectives
-- Enable online payment processing
-- Support multiple payment methods
-- Automate invoicing and receipts
+**Status:** Planned
+**Depends on:** v1.2.0 Client Dashboard
 
-### Features
-
-#### Payment System
-- [ ] Stripe integration
-  - Credit/debit card payments
-  - ACH/wire transfer support
-  - Invoice generation
-  - Subscription management (retainers)
-
-- [ ] Crypto payments (optional)
-  - USDC/USDT support
-  - Ethereum mainnet
-  - Polygon network
-  - Payment gateway integration
-
-#### Pricing & Quoting
+**Payment System:**
+- [ ] Stripe integration (cards, ACH, invoices, subscriptions/retainers)
+- [ ] Crypto payments — USDC/USDT, Ethereum, Polygon (optional)
 - [ ] Dynamic pricing calculator
-  - Contract complexity analysis
-  - Instant quote generation
-  - Custom quote builder (admin)
-  - Discount code system
+- [ ] Custom quote builder (admin)
+- [ ] Refund workflow
 
-### Compliance
-- PCI DSS compliance
-- Tax calculation (Stripe Tax)
-- Invoice archival
-- Refund processing
+**Compliance:**
+- [ ] PCI DSS alignment
+- [ ] Stripe Tax integration
+- [ ] Invoice archival
 
----
-
-## Version 2.0.0 - API v2 Launch
-**Target Date:** Q2 2025
-**Status:** ⏳ Planned
-
-### Objectives
-- Public API for integrations
-- Developer ecosystem
-- Automation capabilities
-
-### Features
-
-#### Public API
-- [ ] RESTful API v2
-  - Authentication (API keys, OAuth)
-  - Rate limiting
-  - Webhook support
-  - Comprehensive documentation
-
-- [ ] API Endpoints
-  - Submit audit requests
-  - Check request status
-  - Download reports
-  - Manage projects
-
-#### Developer Tools
-- [ ] SDK libraries
-  - JavaScript/TypeScript SDK
-  - Python SDK
-  - Go SDK
-  - CLI tool
-
-- [ ] Integration marketplace
-  - GitHub App
-  - GitLab integration
-  - Hardhat plugin
-  - Foundry integration
-
-### Documentation
-- Interactive API explorer
-- Code examples in multiple languages
-- Integration tutorials
-- Best practices guide
+**Impact:** Audit request → Quote → Payment → Execution becomes automated. Revenue scales.
 
 ---
 
-## Version 2.1.0 - Advanced Features
-**Target Date:** Q2 2025
-**Status:** ⏳ Planned
+## Phase 3 — Productize Security (v2.0.0 → v2.2.0)
 
-### Features
-
-#### Automated Scanning
-- [ ] Continuous monitoring
-  - GitHub repository watching
-  - Automatic scan on commits
-  - Pull request integration
-  - Slack/Discord notifications
-
-- [ ] Quick scan tool
-  - Free public scanning
-  - Common vulnerability detection
-  - Best practice checks
-  - Educational reporting
-
-#### Analytics & Insights
-- [ ] Security dashboard
-  - Vulnerability trends
-  - Risk scoring over time
-  - Comparison with industry
-  - Compliance tracking
-
-#### Educational Platform
-- [ ] VLN University
-  - Video courses
-  - Interactive tutorials
-  - Security challenges
-  - Certification program
+**Objective:** Transform VLN from a services company into infrastructure.
 
 ---
 
-## Version 2.2.0 - Enterprise Features
-**Target Date:** Q3 2025
-**Status:** ⏳ Planned
+### v2.0.0 — Public API
 
-### Features
+**Status:** Planned
+**Depends on:** All of Phase 2
 
-#### Enterprise Tier
+**REST API v2:**
+- [ ] API key + OAuth authentication
+- [ ] Rate limiting
+- [ ] Webhook support
+- [ ] Interactive API explorer and documentation
+- [ ] Code examples in multiple languages
+
+**Developer Tools:**
+- [ ] JavaScript/TypeScript SDK
+- [ ] Python SDK
+- [ ] Go SDK
+- [ ] CLI tool
+- [ ] GitHub App
+- [ ] Hardhat plugin
+- [ ] Foundry integration
+
+**Impact:** Projects integrate VLN directly into CI pipelines. Security becomes embedded, not manual.
+
+---
+
+### v2.1.0 — Continuous Security
+
+**Status:** Planned
+
+**Continuous Monitoring:**
+- [ ] GitHub repository watching
+- [ ] Automatic scan on commit
+- [ ] Pull request checks
+- [ ] Slack / Discord alert integrations
+
+**Quick Scan Tool:**
+- [ ] Free public scanning
+- [ ] Common vulnerability detection
+- [ ] Best practice checks
+- [ ] Educational reporting output
+
+**Analytics & Insights:**
+- [ ] Vulnerability trend tracking
+- [ ] Risk scoring over time
+- [ ] Compliance tracking dashboard
+
+**Impact:** Recurring engagement. Subscription revenue model expansion.
+
+---
+
+### v2.2.0 — Enterprise Layer
+
+**Status:** Planned
+
+**Enterprise Tier:**
 - [ ] White-label reports
-- [ ] Dedicated security researcher
+- [ ] Dedicated security researcher tier
 - [ ] Custom SLA agreements
-- [ ] Priority support (1-hour response)
-- [ ] Annual security retainer
-
-#### Advanced Reporting
-- [ ] Executive summaries
-- [ ] Board-ready presentations
-- [ ] Compliance reports (SOC 2, ISO 27001)
-- [ ] Risk quantification
-
-#### Team Features
-- [ ] Multi-user organizations
-- [ ] Role-based permissions
+- [ ] SAML SSO
+- [ ] Compliance reporting (SOC 2, ISO 27001)
 - [ ] Audit trails
-- [ ] SSO integration (SAML)
+- [ ] Executive board reports and presentations
+
+**Impact:** Higher contract value. Long-term enterprise relationships.
 
 ---
 
-## Version 3.0.0 - Ecosystem & Platform
-**Target Date:** Q4 2025
-**Status:** ⏳ Conceptual
+## Phase 4 — Ecosystem Platform (v3.0.0)
 
-### Vision
-Transform VLN into a comprehensive security platform ecosystem
+**Status:** Conceptual
+**Vision:** VLN becomes a security marketplace and intelligence layer — transitioning from company → platform → protocol-adjacent ecosystem.
 
-### Features
-
-#### Marketplace
+**Marketplace:**
 - [ ] Third-party auditor network
 - [ ] Bug bounty integration
-- [ ] Tool integrations
-- [ ] Security researcher community
+- [ ] Researcher reputation system
+- [ ] Tool ecosystem
 
-#### AI-Powered Features
+**AI Features:**
 - [ ] AI-assisted vulnerability detection
-- [ ] Code suggestion engine
-- [ ] Automated fix generation
-- [ ] Natural language reporting
+- [ ] Fix suggestion engine
+- [ ] Natural language report generation
 
-#### Blockchain Features
-- [ ] On-chain verification
+**On-Chain Layer:**
+- [ ] Audit verification registry
 - [ ] NFT certificates
-- [ ] Reputation system
-- [ ] Decentralized audit registry
+- [ ] Decentralized audit records
 
 ---
 
-## Feature Requests & Backlog
+## Dependency Map
 
-### High Priority
-1. Blog content management system
-2. Case study templates
-3. Referral program
-4. Affiliate system
-5. Multi-language support
+```
+Infrastructure → Auth → Audit System → Dashboard → Payments → API → Automation → Enterprise
+```
 
-### Medium Priority
-1. Mobile app (iOS/Android)
-2. Browser extension
-3. VS Code extension
-4. Slack bot
-5. Discord bot
-
-### Low Priority
-1. Podcast integration
-2. Newsletter automation
-3. Event management
-4. Community forum
-5. Job board
+If infrastructure fails, everything above it collapses. Do not skip layers.
 
 ---
 
-## Dependencies & Blockers
+## Business Blockers (Gating Constraints)
 
-### Technical Dependencies
-| Dependency | Required For | Status |
-|------------|--------------|--------|
-| PostgreSQL | v1.1.0+ | ⏳ Pending |
-| Redis | v1.1.0+ | ⏳ Pending |
-| Stripe | v1.3.0 | ⏳ Pending |
-| NextAuth | v1.1.0 | ⏳ Pending |
-| AWS S3 | v1.2.0 | ⏳ Pending |
+These are not tasks — they are prerequisites for enterprise growth.
 
-### Business Blockers
 - [ ] Legal entity formation
 - [ ] Business insurance
 - [ ] Payment processor approval
-- [ ] Security certifications
-- [ ] Compliance audits
+- [ ] Compliance roadmap (SOC 2 pathway)
 
 ---
 
-## Success Metrics by Quarter
+## Backlog — Prioritized by Revenue Impact
 
-### Q1 2025 (Launch)
-- Website traffic: 10,000 monthly visitors
-- Audit requests: 20+ inquiries
-- Conversion rate: 15% inquiry-to-client
-- Client satisfaction: > 4.5/5
+### Revenue Acceleration
+- Referral program
+- Case studies and client testimonials
+- CMS for blog content
+- Affiliate system
 
-### Q2 2025 (Growth)
-- Monthly active users: 500+
-- Completed audits: 30+
-- Revenue: $250K+
-- Team size: 5+ researchers
+### Retention Drivers
+- Multi-language support
+- Slack bot
+- Discord bot
 
-### Q3 2025 (Scale)
-- Monthly active users: 2,000+
-- Completed audits: 100+
-- Revenue: $750K+
-- Team size: 10+ researchers
-
-### Q4 2025 (Market Leader)
-- Monthly active users: 5,000+
-- Completed audits: 200+
-- Revenue: $1.5M+
-- Team size: 15+ researchers
+### Brand Expansion
+- Newsletter automation
+- Events and hackathon presence
+- Podcast integration
+- Community forum
 
 ---
 
-## Feedback & Contributions
+## Quarterly Targets
 
-We welcome feedback on our roadmap!
-
-- **Feature Requests**: [GitHub Issues](https://github.com/Fused-Gaming/vln/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Fused-Gaming/vln/discussions)
-- **Email**: [product@vln.gg](mailto:product@vln.gg)
-
----
-
-## Changelog
-
-| Date | Change | Version Affected |
-|------|--------|------------------|
-| 2026-02-13 | Added v0.11.0 OG Image System milestone | 0.11.0 |
-| 2025-01-24 | Initial roadmap created | All |
-| 2025-01-24 | Added Version 1.0.0 details | 1.0.0 |
-| 2025-01-24 | Defined Q1-Q4 2025 strategy | 1.x - 3.x |
+| Quarter | Objective |
+|---------|-----------|
+| Q1 2026 | Launch & First Revenue |
+| Q2 2026 | Productized Audit Flow |
+| Q3 2026 | Automation & Recurring Revenue |
+| Q4 2026 | Enterprise Contracts & Ecosystem Positioning |
 
 ---
 
-**Note:** This roadmap is subject to change based on market conditions, client feedback, and technical constraints. Dates are estimates and may shift as priorities evolve.
+## Roadmap Changelog
 
-**Last Updated:** 2026-02-13
-**Version:** 1.1
+| Date | Change |
+|------|--------|
+| 2026-02-21 | Full roadmap rewrite — phase structure, vision, dependency map, business blockers, quarterly targets |
+| 2026-02-13 | Added v0.11.0 OG Image System milestone |
+| 2025-01-24 | Initial roadmap created |
+
+---
+
+**Last Updated:** 2026-02-21
+**Version:** 2.0
 **Maintainer:** VLN Product Team
-
----
-
-*Building the future of blockchain security, one feature at a time.*
-
-© 2025 VLN - Fused Gaming. All rights reserved.
