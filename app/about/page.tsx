@@ -58,16 +58,6 @@ export default function AboutPage() {
       telegram: "https://t.me/supitsj"
     },
     {
-      name: "Marc Xavier",
-      role: "Principal Smart Contract Auditor",
-      shortIntro: "Blockchain security specialist focusing on EVM-based smart contracts and Layer 2 solutions. Known for rigorous testing methodologies and comprehensive security assessments.",
-      fullBio: "Marc Xavier is a seasoned smart contract auditor with expertise in Solidity, Vyper, and formal verification methods. His work has protected billions of dollars in total value locked across numerous DeFi protocols.\n\nWith a Ph.D. in Computer Science and specialization in formal methods, Marc combines academic rigor with practical security engineering. He has contributed to multiple open-source security tools and regularly speaks at blockchain security conferences.",
-      github: "https://github.com/ccheshirecat",
-      linkedin: "https://www.linkedin.com/in/",
-      email: "marc.xavier@vln.gg",
-      telegram: "https://t.me/cccccccccxcccccccccc"
-    },
-    {
       name: "Jamie Vargas",
       role: "Security Operations & Incident Response",
       shortIntro: "Incident response specialist with expertise in blockchain forensics, threat intelligence, and rapid vulnerability mitigation. First responder for critical security incidents.",
@@ -170,7 +160,7 @@ export default function AboutPage() {
             </h2>
           </CSSFade>
 
-          <StaggerFade staggerDelay={150} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+          <StaggerFade staggerDelay={150} className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
             {employees.map((employee, index) => (
               <EmployeeCard
                 key={index}
