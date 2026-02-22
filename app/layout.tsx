@@ -290,6 +290,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
         {/* End Google Tag Manager */}
+        {/* Google Analytics 4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YGDJT8YMYX" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YGDJT8YMYX');`,
+          }}
+        />
+        {/* End Google Analytics 4 */}
       </head>
       <body className="antialiased bg-vln-bg text-vln-white font-sans">
         {/* Google Tag Manager (noscript) */}
