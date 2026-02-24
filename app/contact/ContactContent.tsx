@@ -1,11 +1,12 @@
 "use client";
 
-import { Mail, Send, Globe, Github, Check } from "lucide-react";
+import { Mail, Send, Globe, Github, Check, Calendar } from "lucide-react";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import CSSFade from "@/components/animations/css-fade";
 import Card from "@/components/ui/card";
+import BookingForm from "@/components/booking/BookingForm";
 
 export default function ContactPage() {
   return (
@@ -28,6 +29,25 @@ export default function ContactPage() {
               <p className="text-base sm:text-lg md:text-xl text-vln-gray max-w-2xl mx-auto">
                 Ready to secure your blockchain project? Let&apos;s discuss your security needs.
               </p>
+            </div>
+          </CSSFade>
+        </section>
+
+        {/* Booking Form Section */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <CSSFade delay={100} direction="up">
+            <div className="max-w-2xl mx-auto mb-12">
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <Calendar className="w-5 h-5 text-vln-sage" />
+                <h2 className="text-2xl sm:text-3xl font-bold text-vln-sage">Schedule a Consultation</h2>
+              </div>
+              <p className="text-center text-vln-gray text-base sm:text-lg mb-8">
+                Book a free 30-minute consultation with our security team. Choose between virtual or in-person meetings.
+              </p>
+            </div>
+
+            <div className="max-w-2xl mx-auto bg-vln-bg-light/50 border border-vln-sage/20 rounded-vln p-6 sm:p-8">
+              <BookingForm />
             </div>
           </CSSFade>
         </section>
