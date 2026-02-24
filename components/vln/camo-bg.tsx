@@ -351,9 +351,10 @@ export default function CamoBg({
   const scheduleGlitch = useCallback(() => {
     if (prefersReduced || staticOnly) return;
 
-    // Exponential inter-arrival (Poisson process)
+    // Exponential inter-arrival (Poisson process).
+    // Use (1 - U) instead of U so Math.random() == 0 never yields -Infinity.
     const LAMBDA = 1 / 15; // mean 15 s between glitches
-    const delay  = -Math.log(Math.random()) / LAMBDA;
+    const delay  = -Math.log(1 - Math.random()) / LAMBDA;
 
     glitchTimerRef.current = setTimeout(() => {
       const container = containerRef.current;
@@ -373,17 +374,21 @@ export default function CamoBg({
       const stagger = pattern === "cascade" ? 0.04 : 0.008;
       const repeats = pattern === "cascade" ? 1 : 3;
 
+      // steps(1): instantaneous snap to glitch color — signal corruption feel.
+      // ease:"none" (linear) produces a gradual fade which reads as intentional
+      // design rather than a digital fault. steps(1) is the correct model.
       gsap.to(glitchCells, {
         backgroundColor: "#86d993",
         duration: 0.06,
         yoyo: true,
         repeat: repeats,
-        ease: "none",
+        ease: "steps(1)",
         stagger,
         onComplete: () => {
           gsap.to(glitchCells, {
             backgroundColor: (i) => originals[i] ?? "#004d00",
             duration: 0.25,
+            ease: "steps(1)",
           });
           // Schedule next via ref so resize never creates duplicate timers
           scheduleGlitchRef.current?.();
@@ -405,11 +410,12 @@ export default function CamoBg({
             duration: 0.04,
             yoyo: true,
             repeat: 1,
-            ease: "none",
+            ease: "steps(1)",
             onComplete: () => {
               gsap.to(burst.cells, {
                 backgroundColor: (i) => burstOrig[i] ?? "#004d00",
                 duration: 0.2,
+                ease: "steps(1)",
               });
             },
           });
