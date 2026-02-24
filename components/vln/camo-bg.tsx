@@ -4,16 +4,16 @@
  * CamoBg — VLN Digital Camouflage Background Motion System
  * Spec: 0x3-camo-bg  |  Internal — direct URL access only
  *
- * Animation stack:
- *   GSAP 3   — stagger reveal (mount) + ScrollTrigger parallax drift
- *   Framer Motion — per-cell idle pulse variants
+ * Animation ownership (no conflicts):
+ *   GSAP      → container opacity (reveal) + container y (ScrollTrigger parallax)
+ *   Framer Motion → per-cell opacity pulse only (cells start at opacity 1)
+ *   GSAP glitch   → backgroundColor on ≤3 cells (temporary, limited scope)
  *
  * Performance rules:
- *   - Only opacity / transform are animated on the container (GPU-composited)
- *   - backgroundColor is animated on ≤3 glitch cells at a time
- *   - will-change is on the container, NOT individual cells
+ *   - will-change on the container, NOT on individual cells
+ *   - backgroundColor animated on ≤3 glitch cells at a time
  *   - Mobile < 768 px: 50% cell reduction, no parallax
- *   - prefers-reduced-motion: all animation disabled, opacity fixed at 0.55
+ *   - prefers-reduced-motion: all animation off, container opacity fixed at 0.55
  */
 
 import { useEffect, useRef, useCallback, useState } from "react";
@@ -54,10 +54,9 @@ function calcCellCount(isMobile: boolean): { cols: number; rows: number } {
   // 110% overflow to cover parallax shift
   const cols = Math.ceil((window.innerWidth * 1.1) / unit);
   const rows = Math.ceil((window.innerHeight * 1.1) / unit);
-  if (isMobile) {
-    return { cols: Math.ceil(cols / 2), rows: Math.ceil(rows / 2) };
-  }
-  return { cols, rows };
+  return isMobile
+    ? { cols: Math.ceil(cols / 2), rows: Math.ceil(rows / 2) }
+    : { cols, rows };
 }
 
 // ─── Cell data ────────────────────────────────────────────────────────────────
@@ -79,22 +78,20 @@ function buildCells(count: number): CellData[] {
 }
 
 // ─── Framer Motion variants ───────────────────────────────────────────────────
+// Cells start at opacity 1 — the container controls overall opacity via GSAP.
+// FM owns cell opacity only; GSAP owns container opacity + y. No overlap.
 
 const cellVariants = {
-  hidden: { opacity: 0, scale: 0.85 },
-  // GSAP drives the reveal; Framer Motion takes over for the idle pulse
-  idle: { opacity: 0.72 },
-  pulse: {
-    opacity: [0.72, 0.45, 0.72] as number[],
-  },
+  visible: { opacity: 1 },
+  pulse: { opacity: [1, 0.6, 1] as number[] },
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface CamoBgProps {
-  /** Override container opacity (default: 0.72). Use 0.3 for dashboards. */
+  /** Overall layer opacity after reveal (default 0.72). Use 0.3 for dashboards. */
   opacity?: number;
-  /** Disable all animation (use for doc pages). */
+  /** Disable all animation (doc pages). Renders static grid only. */
   staticOnly?: boolean;
   className?: string;
 }
@@ -140,34 +137,23 @@ export default function CamoBg({
     };
   }, [ready]);
 
-  // ── GSAP stagger reveal ───────────────────────────────────────────────────
+  // ── GSAP: container reveal (opacity 0 → target) ───────────────────────────
+  // GSAP owns container opacity. FM owns cell opacity. Zero conflict.
   useEffect(() => {
     if (!ready || prefersReduced || staticOnly) return;
     const container = containerRef.current;
     if (!container) return;
 
-    const cellEls = container.querySelectorAll<HTMLElement>(".camo-cell");
-    if (cellEls.length === 0) return;
-
-    const tl = gsap.timeline();
-    tl.fromTo(
-      cellEls,
-      { opacity: 0, scale: 0.85 },
-      {
-        opacity: opacity,
-        scale: 1,
-        duration: 2.4,
-        stagger: { each: 0.008, from: "random" },
-        ease: "power2.inOut",
-      }
+    const tween = gsap.fromTo(
+      container,
+      { opacity: 0 },
+      { opacity: opacity, duration: 2.4, ease: "power2.inOut" }
     );
 
-    return () => {
-      tl.kill();
-    };
+    return () => { tween.kill(); };
   }, [ready, prefersReduced, staticOnly, opacity]);
 
-  // ── GSAP ScrollTrigger parallax (desktop only) ────────────────────────────
+  // ── GSAP: ScrollTrigger parallax (desktop only) ───────────────────────────
   useEffect(() => {
     if (!ready || prefersReduced || staticOnly || isMobile) return;
     const container = containerRef.current;
@@ -203,7 +189,6 @@ export default function CamoBg({
       );
       if (allCells.length < 3) return;
 
-      // Pick 2–3 random cells
       const count = Math.floor(Math.random() * 2) + 2;
       const glitchCells: HTMLElement[] = [];
       const taken = new Set<number>();
@@ -215,7 +200,6 @@ export default function CamoBg({
         }
       }
 
-      // Store original colors
       const originals = glitchCells.map((el) => el.style.backgroundColor);
 
       gsap.to(glitchCells, {
@@ -248,16 +232,19 @@ export default function CamoBg({
 
   if (!ready) return null;
 
-  const effectiveOpacity = prefersReduced ? 0.55 : opacity;
+  // For static/reduced: container opacity is set directly; no GSAP needed.
+  const staticOpacity = prefersReduced ? 0.55 : opacity;
 
   return (
     <div
       ref={containerRef}
       className={`camo-bg fixed inset-0 pointer-events-none z-[-1] overflow-hidden ${className}`}
-      style={{ opacity: effectiveOpacity }}
+      // Only set opacity as static style for static/reduced-motion cases.
+      // For animated cases, GSAP starts at 0 and drives the opacity itself.
+      style={staticOnly || prefersReduced ? { opacity: staticOpacity } : undefined}
       aria-hidden="true"
     >
-      {/* 110% grid to prevent edge gaps on parallax */}
+      {/* 110% grid to cover parallax travel */}
       <div
         className="absolute"
         style={{
@@ -272,18 +259,18 @@ export default function CamoBg({
       >
         {cells.map((cell) =>
           staticOnly || prefersReduced ? (
-            // Static render — no Framer Motion overhead
             <div
               key={cell.id}
               className="camo-cell"
               style={{ backgroundColor: cell.color }}
             />
           ) : (
+            // FM owns cell opacity only. Container opacity is owned by GSAP.
             <motion.div
               key={cell.id}
               className="camo-cell"
               style={{ backgroundColor: cell.color }}
-              initial="hidden"
+              initial="visible"
               animate="pulse"
               variants={cellVariants}
               transition={{
@@ -291,8 +278,6 @@ export default function CamoBg({
                 delay: cell.pulseDelay,
                 repeat: Infinity,
                 ease: "easeInOut",
-                // GSAP overrides initial opacity; Framer Motion handles the
-                // infinite pulse thereafter.
                 times: [0, 0.5, 1],
               }}
             />

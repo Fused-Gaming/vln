@@ -52,7 +52,9 @@ export default function CamoPreviewClient() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0a0e0f] text-[#f8f9fa] font-sans overflow-x-hidden">
+    // No background color here — the body already provides #0a0e0f via globals.css.
+    // A bg-* on this div would be an opaque layer that buries the z-[-1] camo grid.
+    <div className="relative min-h-screen text-[#f8f9fa] font-sans overflow-x-hidden">
       {/* ── Background layer ─────────────────────────────────────────── */}
       <CamoBg
         key={variant} // remount on variant change to restart animations
@@ -60,12 +62,12 @@ export default function CamoPreviewClient() {
         staticOnly={variant === "static"}
       />
 
-      {/* ── Semi-transparent overlay so text remains readable ────────── */}
+      {/* ── Minimal scrim — just enough contrast for text, not enough to bury camo */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(10,14,15,0.65) 0%, rgba(10,14,15,0.45) 50%, rgba(10,14,15,0.65) 100%)",
+            "linear-gradient(to bottom, rgba(10,14,15,0.30) 0%, rgba(10,14,15,0.15) 50%, rgba(10,14,15,0.30) 100%)",
         }}
         aria-hidden="true"
       />
