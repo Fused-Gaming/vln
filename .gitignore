@@ -48,3 +48,11 @@ states/
 # Debug info
 *.dbg.json
 .github/scripts/diagnostic-report.md
+
+# Astro documentation site build outputs
+docs-site/dist/
+docs-site/.astro/
+
+# Monorepo build artifacts
+dist/
+.turbo/

@@ -1,3 +1,7 @@
+packages:
+  - '.'
+  - 'docs-site'
+
 ignoredBuiltDependencies:
   - esbuild
   - sharp

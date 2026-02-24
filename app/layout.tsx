@@ -9,17 +9,33 @@ import ZammadWidgetWrapper from "@/components/ZammadWidgetWrapper";
 export const metadata: Metadata = {
   metadataBase: new URL("https://vln.gg"),
   title: {
-    default: "VLN - Smart Contract Vulnerability Research Lab",
+    default: "VLN - Smart Contract Audit & Web3 Security | San Francisco Bay Area",
     template: "%s | VLN Security",
   },
   description:
-    "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects. Expert CVSS-based assessments, proof-of-concept exploits, and incident response by Fused Gaming.",
+    "San Francisco's trusted smart contract audit and Web3 security firm. Expert EVM audits, DeFi vulnerability research, blockchain forensics, and security training for Bay Area startups and DeFi teams. Serving Silicon Valley and the SF Bay Area.",
   keywords: [
+    // Primary service keywords
     "smart contract audit",
+    "smart contract audit San Francisco",
+    "EVM audit services San Francisco",
+    "DeFi security audit San Francisco",
+    "Bay Area smart contract audit",
+    "Bay Area blockchain security",
+    "Web3 security services Bay Area",
+    "Silicon Valley smart contract audit",
+    // Long-tail local keywords
+    "DeFi contract vulnerability audit San Francisco",
+    "blockchain security training Bay Area developers",
+    "smart contract forensics San Francisco",
+    "Web3 penetration testing Bay Area",
+    "Solidity audit services Bay Area",
+    "EVM vulnerability research San Francisco",
+    "DeFi startup security audit Bay Area",
+    // General service keywords
     "blockchain security",
     "vulnerability research",
     "blockchain gaming security",
-    "DeFi security audit",
     "NFT security",
     "web3 security",
     "smart contract penetration testing",
@@ -39,9 +55,9 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: "VLN - Smart Contract Vulnerability Research Lab",
+    title: "VLN - Smart Contract Audit & Web3 Security | San Francisco Bay Area",
     description:
-      "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects.",
+      "San Francisco's trusted smart contract audit and Web3 security firm. Expert EVM audits, DeFi vulnerability research, and blockchain forensics for Bay Area startups and DeFi teams.",
     url: "https://vln.gg",
     siteName: "VLN Security",
     locale: "en_US",
@@ -49,9 +65,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "VLN - Smart Contract Vulnerability Research Lab",
+    title: "VLN - Smart Contract Audit & Web3 Security | San Francisco Bay Area",
     description:
-      "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects.",
+      "San Francisco's trusted smart contract audit and Web3 security firm. Expert EVM audits, DeFi vulnerability research, and blockchain forensics for Bay Area startups.",
     creator: "@vlngg",
   },
   robots: {
@@ -81,19 +97,51 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization",
+      "@type": ["Organization", "LocalBusiness"],
       "@id": "https://vln.gg/#organization",
       name: "VLN - Vulnerability Lab Network",
-      alternateName: "VLN",
+      alternateName: ["VLN", "VLN Security"],
       url: "https://vln.gg",
       logo: "https://vln.gg/vln-logo-dark.svg",
+      image: "https://vln.gg/vln-logo-dark.svg",
       description:
-        "Professional smart contract security audits and vulnerability research for blockchain gaming, DeFi, and Web3 projects.",
-      foundingDate: "2024",
+        "San Francisco Bay Area smart contract audit and Web3 security firm. Expert EVM audits, DeFi vulnerability research, blockchain forensics, and security training for blockchain startups and DeFi protocols.",
+      foundingDate: "2021",
       parentOrganization: {
         "@type": "Organization",
         name: "Fused Gaming",
       },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "San Francisco",
+        addressRegion: "CA",
+        addressCountry: "US",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: "37.7749",
+        longitude: "-122.4194",
+      },
+      areaServed: [
+        {
+          "@type": "City",
+          name: "San Francisco",
+        },
+        {
+          "@type": "State",
+          name: "California",
+        },
+        {
+          "@type": "AdministrativeArea",
+          name: "San Francisco Bay Area",
+        },
+        {
+          "@type": "AdministrativeArea",
+          name: "Silicon Valley",
+        },
+        "Worldwide",
+      ],
+      priceRange: "$$-$$$",
       sameAs: [
         "https://github.com/Fused-Gaming",
         "https://linkedin.com/company/vlngg",
@@ -102,6 +150,7 @@ const jsonLd = {
         "@type": "ContactPoint",
         contactType: "sales",
         url: "https://vln.gg/contact",
+        email: "info@vln.gg",
         availableLanguage: "English",
       },
     },
@@ -111,6 +160,11 @@ const jsonLd = {
       url: "https://vln.gg",
       name: "VLN Security",
       publisher: { "@id": "https://vln.gg/#organization" },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://vln.gg/blog?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
     },
     {
       "@type": "ProfessionalService",
@@ -118,42 +172,86 @@ const jsonLd = {
       name: "VLN Smart Contract Auditing",
       provider: { "@id": "https://vln.gg/#organization" },
       serviceType: "Smart Contract Security Audit",
-      areaServed: "Worldwide",
+      areaServed: [
+        "San Francisco Bay Area",
+        "Silicon Valley",
+        "California",
+        "Worldwide",
+      ],
       description:
-        "CVSS-based smart contract security audits, vulnerability research, forensic investigation, and incident response for blockchain gaming and DeFi.",
+        "CVSS-based smart contract security audits, vulnerability research, forensic investigation, and incident response for blockchain gaming and DeFi. Serving San Francisco Bay Area startups and global DeFi protocols.",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
-        name: "Security Services",
+        name: "Web3 Security Services",
         itemListElement: [
           {
             "@type": "Offer",
             itemOffered: {
               "@type": "Service",
-              name: "Prevention Audit",
+              name: "Smart Contract Audit",
               description:
-                "Comprehensive smart contract audit with CVSS scoring and Foundry PoC exploits",
+                "Comprehensive EVM smart contract audit with CVSS scoring and Foundry PoC exploits. Serving San Francisco and Bay Area DeFi startups.",
             },
           },
           {
             "@type": "Offer",
             itemOffered: {
               "@type": "Service",
-              name: "Emergency Forensics",
+              name: "Emergency Blockchain Forensics",
               description:
-                "24/7 incident response, fund tracing, and exploit analysis",
+                "24/7 incident response, on-chain fund tracing, and exploit analysis for DeFi protocols.",
             },
           },
           {
             "@type": "Offer",
             itemOffered: {
               "@type": "Service",
-              name: "Security Training",
+              name: "Web3 Security Training",
               description:
-                "Team training workshops and secure development bootcamps",
+                "Team training workshops and secure Solidity development bootcamps for Bay Area blockchain developers.",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "DeFi Penetration Testing",
+              description:
+                "Black-box and white-box penetration testing for DeFi platforms and blockchain protocols.",
             },
           },
         ],
       },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://vln.gg/#faq",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Do you offer smart contract audits for San Francisco Bay Area startups?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, VLN provides professional smart contract audits for Web3 startups and DeFi teams in San Francisco, Silicon Valley, and the greater Bay Area. We offer both remote and on-site engagements.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What types of blockchain security services does VLN offer?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "VLN offers smart contract audits, EVM penetration testing, blockchain forensics and incident response, secure Solidity development consulting, and security training workshops for development teams.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How much does a smart contract audit cost?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Smart contract audit pricing starts at $2,000 for small contracts (under 500 lines), $5,000-$8,000 for medium projects, and $10,000+ for large or complex protocols. We offer a free 30-minute initial security scan.",
+          },
+        },
+      ],
     },
   ],
 };
@@ -172,12 +270,46 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap"
           rel="stylesheet"
         />
+        {/* Geographic meta tags for local SEO */}
+        <meta name="geo.region" content="US-CA" />
+        <meta name="geo.placename" content="San Francisco, California" />
+        <meta name="geo.position" content="37.7749;-122.4194" />
+        <meta name="ICBM" content="37.7749, -122.4194" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TQLNNHSS');`,
+          }}
+        />
+        {/* End Google Tag Manager */}
+        {/* Google Analytics 4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YGDJT8YMYX" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YGDJT8YMYX');`,
+          }}
+        />
+        {/* End Google Analytics 4 */}
       </head>
       <body className="antialiased bg-vln-bg text-vln-white font-sans">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TQLNNHSS"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <Providers>
           {children}
           <ScrollToTop />
