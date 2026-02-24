@@ -10,24 +10,24 @@ export function DocFooter() {
             <h3 className="font-semibold text-white">VLN</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="/" className="hover:text-sage-400 transition-colors">
+                <Link href="/" className="hover:text-sage-400 transition-colors">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/services" className="hover:text-sage-400 transition-colors">
+                <Link href="/services" className="hover:text-sage-400 transition-colors">
                   Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/pricing" className="hover:text-sage-400 transition-colors">
+                <Link href="/pricing" className="hover:text-sage-400 transition-colors">
                   Pricing
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="hover:text-sage-400 transition-colors">
+                <Link href="/about" className="hover:text-sage-400 transition-colors">
                   About
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -37,14 +37,14 @@ export function DocFooter() {
             <h3 className="font-semibold text-white">Resources</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="/docs" className="hover:text-sage-400 transition-colors">
+                <Link href="/docs" className="hover:text-sage-400 transition-colors">
                   Documentation
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/blog" className="hover:text-sage-400 transition-colors">
+                <Link href="/blog" className="hover:text-sage-400 transition-colors">
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
                 <a
@@ -64,19 +64,19 @@ export function DocFooter() {
             <h3 className="font-semibold text-white">Legal</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="/privacy" className="hover:text-sage-400 transition-colors">
+                <Link href="/privacy" className="hover:text-sage-400 transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="hover:text-sage-400 transition-colors">
+                <Link href="/terms" className="hover:text-sage-400 transition-colors">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/security" className="hover:text-sage-400 transition-colors">
+                <Link href="/security" className="hover:text-sage-400 transition-colors">
                   Security
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -86,9 +86,9 @@ export function DocFooter() {
             <h3 className="font-semibold text-white">Contact</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="/contact" className="hover:text-sage-400 transition-colors">
+                <Link href="/contact" className="hover:text-sage-400 transition-colors">
                   Get in Touch
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="mailto:info@vln.gg" className="hover:text-sage-400 transition-colors">

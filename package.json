@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint .",
+    "lint": "eslint .",
     "test": "vitest",
     "test:widget": "vitest __tests__/ZammadWidget.test.tsx",
     "test:widget:ui": "vitest __tests__/ZammadWidget.test.tsx --ui",
