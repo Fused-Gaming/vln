@@ -11,7 +11,14 @@
     "test:widget": "vitest __tests__/ZammadWidget.test.tsx",
     "test:widget:ui": "vitest __tests__/ZammadWidget.test.tsx --ui",
     "generate:favicons": "node scripts/generate-favicons.js && node scripts/generate-favicon-ico.js",
-    "generate:icons": "pnpm generate:favicons"
+    "generate:icons": "pnpm generate:favicons",
+    "docs:dev": "cd docs-site && pnpm dev",
+    "docs:build": "cd docs-site && pnpm build",
+    "docs:preview": "cd docs-site && pnpm preview",
+    "docs:lint": "cd docs-site && pnpm lint",
+    "monorepo:build": "pnpm -r build",
+    "monorepo:lint": "pnpm -r lint",
+    "monorepo:test": "pnpm --filter=vln-website test && pnpm --filter=vln-docs-site test || true"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
