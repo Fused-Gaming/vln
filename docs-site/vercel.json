@@ -1,10 +1,10 @@
 {
-  "framework": "nextjs",
+  "framework": "astro",
   "regions": ["iad1"],
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm build",
-  "outputDirectory": ".next",
-  "devCommand": "pnpm dev",
+  "outputDirectory": "dist",
+  "devCommand": "pnpm dev --port $PORT",
   "git": {
     "deploymentEnabled": {
       "main": true,
