@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, Menu } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export function DocHeader() {
   return (
