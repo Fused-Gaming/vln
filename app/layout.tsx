@@ -266,6 +266,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap"
           rel="stylesheet"
@@ -280,7 +281,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {/* Google Tag Manager */}
-        <script
+        <Script
+          id="google-tag-manager"
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -288,14 +290,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-TQLNNHSS');`,
           }}
+          strategy="afterInteractive"
         />
         {/* End Google Tag Manager */}
         {/* Google Analytics 4 */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YGDJT8YMYX" />
-        <script
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-YGDJT8YMYX" strategy="afterInteractive" />
+        <Script
+          id="google-analytics"
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YGDJT8YMYX');`,
           }}
+          strategy="afterInteractive"
         />
         {/* End Google Analytics 4 */}
       </head>

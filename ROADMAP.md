@@ -354,16 +354,227 @@ These are not tasks — they are prerequisites for enterprise growth.
 
 ---
 
+## Running Checklists & Prerequisites
+
+This section ensures **ALL running checklists are executed at prerequisite events** — preventing skipped steps and maintaining consistency.
+
+---
+
+### 📋 Master Checklist Registry
+
+| Checklist | Purpose | Location | Prerequisites | Trigger Event |
+|-----------|---------|----------|---------------|---------------|
+| **Pre-Build Checklist** | Verify readiness before building | [PROJECT_STATUS.md](./PROJECT_STATUS.md#daily-checklist) | Code committed locally | Before `pnpm build` |
+| **Pull Request Checklist** | Ensure PR quality before submission | [PROJECT_STATUS.md](./PROJECT_STATUS.md#pull-request-checklist) | Pre-Build passing | Before pushing to GitHub |
+| **Deployment Checklist** | Verify production readiness | [PROJECT_STATUS.md](./PROJECT_STATUS.md#deployment-checklist) | PR merged to integration/vln | Before deploying to production |
+| **Post-Release Checklist** | Monitor and document release | [PROJECT_STATUS.md](./PROJECT_STATUS.md#post-release-checklist) | Code deployed to production | After production deployment |
+| **Sales Implementation Checklist** | Execute DevOps consulting outreach | [docs/planning/DEVOPS_SALES_IMPLEMENTATION_CHECKLIST.md](./docs/planning/DEVOPS_SALES_IMPLEMENTATION_CHECKLIST.md) | Website live + pricing defined | Business development sprint start |
+
+---
+
+### ✅ Prerequisite Dependency Chain
+
+**CRITICAL: Follow this order — DO NOT skip steps.**
+
+```
+Local Development
+    ↓
+    └─→ [PRE-BUILD CHECKLIST] ←─ Required before pnpm build
+        ├─ Run pnpm build
+        ├─ Run pnpm lint
+        ├─ Run pnpm test
+        └─ Verify no console errors
+    ↓
+Feature/Fix Branch
+    ↓
+    └─→ [PULL REQUEST CHECKLIST] ←─ Required before git push
+        ├─ All tests passing
+        ├─ Build passing
+        ├─ Lint passing
+        ├─ TypeScript valid
+        ├─ No accessibility issues
+        └─ PR description complete
+    ↓
+Code Review
+    ↓
+    └─→ Merge to integration/vln (base branch)
+    ↓
+    └─→ [DEPLOYMENT CHECKLIST] ←─ Required before Vercel deploy
+        ├─ Staging build verified
+        ├─ Performance baseline checked
+        ├─ Security headers verified
+        ├─ Analytics configured
+        ├─ Monitoring active
+        └─ Incident response ready
+    ↓
+Production Release
+    ↓
+    └─→ [POST-RELEASE CHECKLIST] ←─ Required after going live
+        ├─ Error logs monitored
+        ├─ Analytics reviewed
+        ├─ Performance tracked
+        ├─ User feedback collected
+        ├─ CHANGELOG updated
+        └─ PROJECT_STATUS refreshed
+```
+
+---
+
+### 🎯 Checklist Enforcement Rules
+
+**RULE 1: DO NOT SKIP CHECKLISTS**
+- Every checklist exists for a reason
+- Skipping a checklist = accepting the risk of bugs, security issues, or deployment failures
+- If you believe a checklist item doesn't apply, document why (add comment with timestamp)
+
+**RULE 2: PREREQUISITES MUST PASS BEFORE PROCEEDING**
+- Pre-Build Checklist must pass before `pnpm build`
+- Build must pass before PR submission
+- PR must pass review before merge
+- Deployment Checklist must pass before production release
+- Post-Release Checklist must run after going live
+
+**RULE 3: AUTOMATE WHERE POSSIBLE**
+- GitHub Actions validates pre-build and PR requirements
+- Vercel blocks deploy if requirements unmet
+- Discord notifications alert team of checklist failures
+
+**RULE 4: DOCUMENT ALL EXCEPTIONS**
+- If you skip or modify a checklist item, document:
+  - **What**: Which item(s) were skipped
+  - **Why**: Business reason or technical justification
+  - **Who**: Your name/GitHub handle
+  - **When**: Timestamp of decision
+  - **Risk**: What could go wrong if you're wrong
+- Add documentation to PR description or commit message
+
+---
+
+### 📌 Event → Checklist Mapping
+
+#### Event: Code Ready for Build
+**Checklist:** [Pre-Build Checklist](./PROJECT_STATUS.md#daily-checklist)
+```bash
+# BEFORE you run: pnpm build
+- [ ] Run `pnpm build` and verify no errors
+- [ ] Run `pnpm lint` and verify no errors
+- [ ] Run `pnpm test` if applicable
+- [ ] Check TypeScript compilation
+- [ ] Test on mobile viewport
+- [ ] Test on desktop viewport
+- [ ] Test keyboard navigation
+- [ ] Verify no console errors
+- [ ] Test forms and integrations
+- [ ] Check Lighthouse scores
+```
+
+#### Event: Feature/Fix Branch Ready for PR
+**Checklist:** [Pull Request Checklist](./PROJECT_STATUS.md#pull-request-checklist)
+```bash
+# BEFORE you run: git push -u origin <branch-name>
+- [ ] Base branch is `integration/vln`
+- [ ] Commit message follows Conventional Commits
+- [ ] PR description complete with screenshots
+- [ ] All tests passing
+- [ ] Build passes (`pnpm build`)
+- [ ] Lint passes (`pnpm lint`)
+- [ ] No TypeScript errors
+- [ ] Accessibility tested (WCAG AA)
+- [ ] Performance impact assessed
+- [ ] No sensitive data in commit
+```
+
+#### Event: PR Approved & Ready to Merge
+**Checklist:** [Merge Verification]
+```bash
+# BEFORE you merge to integration/vln:
+- [ ] All GitHub status checks passing (✅)
+- [ ] At least 1 approval from code review
+- [ ] No merge conflicts
+- [ ] Branch is up-to-date with integration/vln
+- [ ] CI/CD pipeline passing
+- [ ] Security scanning complete
+- [ ] No breaking changes without CHANGELOG entry
+```
+
+#### Event: Ready for Production Deployment
+**Checklist:** [Deployment Checklist](./PROJECT_STATUS.md#deployment-checklist)
+```bash
+# BEFORE you trigger Vercel deployment:
+- [ ] All PRs merged to `integration/vln`
+- [ ] Staging build verified
+- [ ] Performance baseline checked
+- [ ] Security headers verified
+- [ ] Environment variables set correctly
+- [ ] Database migrations complete (if applicable)
+- [ ] Monitoring and alerts configured
+- [ ] Incident response plan reviewed
+- [ ] Stakeholders notified
+- [ ] Rollback plan prepared
+```
+
+#### Event: Code Deployed to Production
+**Checklist:** [Post-Release Checklist](./PROJECT_STATUS.md#post-release-checklist)
+```bash
+# AFTER deployment is complete:
+- [ ] Monitor error logs (Sentry)
+- [ ] Check analytics (Cloudflare)
+- [ ] Review performance metrics
+- [ ] Check user feedback channels
+- [ ] Update CHANGELOG.md (add release)
+- [ ] Tag release in Git (v0.x.x)
+- [ ] Update PROJECT_STATUS.md
+- [ ] Document any hotfixes
+- [ ] Schedule post-mortem (if issues)
+- [ ] Celebrate! 🎉
+```
+
+---
+
+### 🚨 Red Flags — Stop and Re-Check
+
+If ANY of these occur, **STOP and re-run the relevant checklist**:
+
+1. **Build Fails** → Re-run Pre-Build Checklist
+2. **Tests Fail** → Re-run Pre-Build Checklist
+3. **Lint Errors Appear** → Re-run Pre-Build Checklist
+4. **TypeScript Errors** → Re-run Pre-Build Checklist
+5. **Accessibility Issues** → Re-run Pull Request Checklist
+6. **Performance Regression** → Re-run Pull Request Checklist
+7. **Security Warning** → Re-run Deployment Checklist
+8. **Deployment Fails** → Re-run Deployment Checklist
+9. **Production Error** → Re-run Post-Release Checklist
+
+---
+
+### 📊 Checklist Compliance Metrics
+
+Track and report weekly:
+
+| Metric | Target | Status |
+|--------|--------|--------|
+| Pre-Build Checklist Pass Rate | 100% | To track |
+| PR Checklist Compliance | 100% | To track |
+| Deployment Checklist Compliance | 100% | To track |
+| Production Incidents per Release | 0 | To track |
+| Checklist Skip Rate | < 5% | To track |
+| Average Merge Time (PR to Deploy) | < 2 hours | To track |
+
+**Action:** If any metric drops below target, review the checklist and update it.
+
+---
+
 ## Roadmap Changelog
 
 | Date | Change |
 |------|--------|
+| 2026-02-24 | Added comprehensive Running Checklists & Prerequisites section with enforcement rules |
 | 2026-02-21 | Full roadmap rewrite — phase structure, vision, dependency map, business blockers, quarterly targets |
 | 2026-02-13 | Added v0.11.0 OG Image System milestone |
 | 2025-01-24 | Initial roadmap created |
 
 ---
 
-**Last Updated:** 2026-02-21
-**Version:** 2.0
+**Last Updated:** 2026-02-24
+**Version:** 2.1
 **Maintainer:** VLN Product Team

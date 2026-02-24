@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+const config = {
   content: [
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
     './node_modules/@astrojs/starlight/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}',
@@ -27,3 +27,5 @@ export default {
     },
   },
 };
+
+export default config;
