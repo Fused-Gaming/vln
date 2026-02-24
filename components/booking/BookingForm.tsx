@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Calendar, Clock, MapPin, Video, Mail, User, AlertCircle, CheckCircle } from "lucide-react";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
+import { DatePicker, TimePicker } from "./date-time-picker";
 import { cn } from "@/lib/utils";
 
 // Federal holidays in 2024-2025
@@ -64,16 +65,6 @@ function formatDateForComparison(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-}
-
-function getAvailableTimeSlots(): string[] {
-  // Business hours: 11:00 AM - 6:00 PM
-  const slots: string[] = [];
-  for (let hour = 11; hour < 18; hour++) {
-    slots.push(`${String(hour).padStart(2, "0")}:00`);
-    slots.push(`${String(hour).padStart(2, "0")}:30`);
-  }
-  return slots;
 }
 
 function isValidDate(dateStr: string): boolean {
@@ -185,7 +176,7 @@ export default function BookingForm() {
     return errors.find((e) => e.field === field)?.message;
   };
 
-  const timeSlots = getAvailableTimeSlots();
+  // Calculate min/max date strings for the date picker
   const today = new Date();
   today.setDate(today.getDate() + 1); // Start from tomorrow
   const minDate = today.toISOString().split("T")[0];
@@ -354,57 +345,32 @@ export default function BookingForm() {
         {/* Date and Time Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="date" className="block text-sm font-semibold text-vln-white mb-2">
+            <label className="block text-sm font-semibold text-vln-white mb-2">
               Preferred Date *
             </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-vln-sage pointer-events-none" />
-              <input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                min={minDate}
-                max={maxDateStr}
-                className={cn(
-                  "w-full pl-10 pr-4 py-3 bg-vln-bg-light border-2 rounded-vln text-vln-white placeholder-vln-gray-dark transition-all",
-                  getErrorMessage("date")
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-vln-sage/20 focus:border-vln-sage"
-                )}
-              />
-            </div>
+            <DatePicker
+              value={formData.date}
+              onChange={(date) => setFormData({ ...formData, date })}
+              minDate={minDate}
+              maxDate={maxDateStr}
+              excludeDates={FEDERAL_HOLIDAYS}
+              excludeWeekends={true}
+            />
             {getErrorMessage("date") && <p className="text-xs text-red-500 mt-1">{getErrorMessage("date")}</p>}
-            <p className="text-xs text-vln-gray mt-2">Monday–Friday, excluding federal holidays</p>
           </div>
 
           <div>
-            <label htmlFor="time" className="block text-sm font-semibold text-vln-white mb-2">
+            <label className="block text-sm font-semibold text-vln-white mb-2">
               Preferred Time *
             </label>
-            <div className="relative">
-              <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-vln-sage pointer-events-none" />
-              <select
-                id="time"
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                className={cn(
-                  "w-full pl-10 pr-4 py-3 bg-vln-bg-light border-2 rounded-vln text-vln-white transition-all appearance-none",
-                  getErrorMessage("time")
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-vln-sage/20 focus:border-vln-sage"
-                )}
-              >
-                <option value="">Select a time</option>
-                {timeSlots.map((slot) => (
-                  <option key={slot} value={slot}>
-                    {slot}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <TimePicker
+              value={formData.time}
+              onChange={(time) => setFormData({ ...formData, time })}
+              startHour={11}
+              endHour={18}
+              step={30}
+            />
             {getErrorMessage("time") && <p className="text-xs text-red-500 mt-1">{getErrorMessage("time")}</p>}
-            <p className="text-xs text-vln-gray mt-2">11:00 AM – 6:00 PM PT</p>
           </div>
         </div>
 
