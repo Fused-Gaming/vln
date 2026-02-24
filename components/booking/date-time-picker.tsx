@@ -112,7 +112,6 @@ export function DatePicker({
     const selectedDate = value ? new Date(value) : null;
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-      const dateStr = formatDateForComparison(date);
       const isSelected = selectedDate && isSameDay(selectedDate, date);
       const isDisabled = isDateDisabled(date);
       const isToday = isSameDay(date, new Date());

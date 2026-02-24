@@ -7,14 +7,33 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+interface MockWindow {
+  ZammadChat?: (config: Record<string, unknown>) => void;
+  zammadChatOpen?: () => void;
+}
+
+interface MockDocument {
+  createElement: (tag: string) => {
+    src: string;
+    async: boolean;
+    onload: (() => void) | null;
+  };
+  querySelector: (selector: string) => null | unknown;
+  body: {
+    appendChild: (node: unknown) => void;
+    removeChild: (node: unknown) => void;
+    contains: (node: unknown) => boolean;
+  };
+}
+
 // Mock DOM environment
-const mockWindow = {
+const mockWindow: MockWindow = {
   ZammadChat: vi.fn(),
   zammadChatOpen: vi.fn(),
 };
 
 // Mock document methods
-const mockDocument = {
+const mockDocument: MockDocument = {
   createElement: vi.fn(() => ({
     src: '',
     async: false,
@@ -32,8 +51,8 @@ describe('Zammad Widget Integration Tests', () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks();
-    global.window = mockWindow as any;
-    global.document = mockDocument as any;
+    global.window = mockWindow as unknown as typeof window;
+    global.document = mockDocument as unknown as typeof document;
   });
 
   afterEach(() => {
@@ -74,13 +93,13 @@ describe('Zammad Widget Integration Tests', () => {
   describe('2. DOM Presence Validation', () => {
     it('should inject .zammad-chat container into DOM', () => {
       // Widget should create .zammad-chat element
-      const widgetExists = mockDocument.querySelector('.zammad-chat');
+      mockDocument.querySelector('.zammad-chat');
       expect(mockDocument.querySelector).toHaveBeenCalled();
     });
 
     it('should inject .zammad-chat-button into DOM', () => {
       // Chat button should exist
-      const buttonExists = mockDocument.querySelector('.zammad-chat-button');
+      mockDocument.querySelector('.zammad-chat-button');
       expect(mockDocument.querySelector).toHaveBeenCalled();
     });
 
@@ -159,7 +178,7 @@ describe('Zammad Widget Integration Tests', () => {
 
   describe('5. ChatButton Component', () => {
     it('should wait for Zammad to load before rendering', () => {
-      (mockWindow as any).zammadChatOpen = undefined;
+      mockWindow.zammadChatOpen = undefined;
       const isReady = !!mockWindow.zammadChatOpen;
       expect(isReady).toBe(false);
     });
@@ -217,7 +236,7 @@ describe('Zammad Widget Integration Tests', () => {
     });
 
     it('should handle missing ZammadChat constructor', () => {
-      (mockWindow as any).ZammadChat = undefined;
+      mockWindow.ZammadChat = undefined;
       const chatAvailable = !!mockWindow.ZammadChat;
       expect(chatAvailable).toBe(false);
     });

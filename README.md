@@ -5,7 +5,7 @@
 **by Fused Gaming**
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Fused-Gaming/vln/ci.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/Fused-Gaming/vln/actions)
-[![Version](https://img.shields.io/badge/version-0.10.0-blue?style=for-the-badge&logo=semantic-release)](https://github.com/Fused-Gaming/vln/releases)
+[![Version](https://img.shields.io/badge/version-0.11.0-blue?style=for-the-badge&logo=semantic-release)](https://github.com/Fused-Gaming/vln/releases)
 [![License](https://img.shields.io/badge/license-proprietary-red?style=for-the-badge)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
