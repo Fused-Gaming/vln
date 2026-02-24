@@ -1,6 +1,7 @@
 packages:
   - '.'
   - 'docs-site'
+  - 'design-site'
 
 ignoredBuiltDependencies:
   - esbuild
