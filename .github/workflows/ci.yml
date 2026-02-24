@@ -213,10 +213,49 @@ jobs:
           path: .next/
           retention-days: 7
 
+  build-docs:
+    name: 📚 Build Docs Site
+    runs-on: ubuntu-latest
+    needs: security-audit
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: 📥 Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build docs site
+        working-directory: docs-site
+        run: |
+          set -e
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "→ Building VLN docs site (Astro Starlight)..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          pnpm build
+
+          if [ ! -d "dist" ]; then
+            echo "❌ ERROR: Build did not produce dist/ directory"
+            exit 1
+          fi
+
+          echo "✓ Docs build completed successfully"
+          echo "✓ Output folder verified (dist/ exists)"
+
   summary:
     name: 📋 Pipeline Summary & Diagnostics
     runs-on: ubuntu-latest
-    needs: [security-audit, lint, build-and-test]
+    needs: [security-audit, lint, build-and-test, build-docs]
     if: always()
     permissions:
       contents: read
@@ -235,12 +274,14 @@ jobs:
           echo "  Security Audit:  ${{ needs.security-audit.result }}"
           echo "  Lint:            ${{ needs.lint.result }}"
           echo "  Build & Test:    ${{ needs.build-and-test.result }}"
+          echo "  Build Docs:      ${{ needs.build-docs.result }}"
 
       - name: 🔍 Run Diagnostics on Failure
         if: |
           needs.security-audit.result != 'success' ||
           needs.lint.result != 'success' ||
-          needs.build-and-test.result != 'success'
+          needs.build-and-test.result != 'success' ||
+          needs.build-docs.result != 'success'
         id: diagnostics
         continue-on-error: true
         run: |
@@ -252,7 +293,8 @@ jobs:
           github.event_name == 'pull_request' &&
           (needs.security-audit.result != 'success' ||
            needs.lint.result != 'success' ||
-           needs.build-and-test.result != 'success')
+           needs.build-and-test.result != 'success' ||
+           needs.build-docs.result != 'success')
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -270,6 +312,7 @@ jobs:
             - 🔒 Security Audit: \`${{ needs.security-audit.result }}\`
             - 🎨 Lint & Type Check: \`${{ needs.lint.result }}\`
             - 🔨 Build & Test: \`${{ needs.build-and-test.result }}\`
+            - 📚 Build Docs: \`${{ needs.build-docs.result }}\`
 
             **Commit:** ${{ github.sha }}
             **Triggered by:** @${{ github.actor }}
@@ -312,7 +355,8 @@ jobs:
           github.event_name == 'push' &&
           (needs.security-audit.result != 'success' ||
            needs.lint.result != 'success' ||
-           needs.build-and-test.result != 'success')
+           needs.build-and-test.result != 'success' ||
+           needs.build-docs.result != 'success')
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -343,7 +387,8 @@ jobs:
         if: |
           needs.security-audit.result == 'success' &&
           needs.lint.result == 'success' &&
-          needs.build-and-test.result == 'success'
+          needs.build-and-test.result == 'success' &&
+          needs.build-docs.result == 'success'
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ All pipeline steps completed successfully!"
@@ -354,7 +399,8 @@ jobs:
         run: |
           if [ "${{ needs.security-audit.result }}" != "success" ] || \
              [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.build-and-test.result }}" != "success" ]; then
+             [ "${{ needs.build-and-test.result }}" != "success" ] || \
+             [ "${{ needs.build-docs.result }}" != "success" ]; then
             echo "❌ Pipeline failed - diagnostics posted above"
             exit 1
           fi
@@ -365,7 +411,8 @@ jobs:
           # Determine overall status
           if [ "${{ needs.security-audit.result }}" == "success" ] && \
              [ "${{ needs.lint.result }}" == "success" ] && \
-             [ "${{ needs.build-and-test.result }}" == "success" ]; then
+             [ "${{ needs.build-and-test.result }}" == "success" ] && \
+             [ "${{ needs.build-docs.result }}" == "success" ]; then
             STATUS="✅ Success"
             COLOR=5814783
             TITLE="✅ CI/CD Pipeline Passed"
@@ -379,6 +426,7 @@ jobs:
           SECURITY_STATUS="${{ needs.security-audit.result == 'success' && '✅' || '❌' }} Security Audit: \`${{ needs.security-audit.result }}\`"
           LINT_STATUS="${{ needs.lint.result == 'success' && '✅' || '❌' }} Lint & Type Check: \`${{ needs.lint.result }}\`"
           BUILD_STATUS="${{ needs.build-and-test.result == 'success' && '✅' || '❌' }} Build & Test: \`${{ needs.build-and-test.result }}\`"
+          DOCS_STATUS="${{ needs.build-docs.result == 'success' && '✅' || '❌' }} Build Docs: \`${{ needs.build-docs.result }}\`"
 
           curl -H "Content-Type: application/json" \
             -d '{
@@ -404,7 +452,7 @@ jobs:
                   },
                   {
                     "name": "Job Results",
-                    "value": "'"$SECURITY_STATUS"'\n'"$LINT_STATUS"'\n'"$BUILD_STATUS"'",
+                    "value": "'"$SECURITY_STATUS"'\n'"$LINT_STATUS"'\n'"$BUILD_STATUS"'\n'"$DOCS_STATUS"'",
                     "inline": false
                   },
                   {
