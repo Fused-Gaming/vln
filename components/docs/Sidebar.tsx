@@ -15,10 +15,6 @@ export function Sidebar() {
   const pathSegments = pathname.split('/').filter(Boolean);
   const currentSection = pathSegments[1];
 
-  const toggleSection = (e: React.MouseEvent) => {
-    e.preventDefault();
-  };
-
   return (
     <>
       {/* Mobile Menu Button */}
