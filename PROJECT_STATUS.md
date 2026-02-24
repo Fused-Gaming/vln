@@ -251,59 +251,33 @@
 
 ---
 
-## 📋 Running Daily Checklist
+## 📋 Running Checklists (Mandatory)
 
-### Before Pushing Code
+**⚠️ CRITICAL:** All checklists are **MANDATORY**. Do not skip steps.
+
+👉 **Complete Details & Prerequisites:** [RUNNING_CHECKLISTS.md](./RUNNING_CHECKLISTS.md)
+
+Each checklist has specific prerequisites and trigger events:
+
+| Phase | Checklist | Prerequisite | Trigger |
+|-------|-----------|--------------|---------|
+| 1 | Pre-Build | Code committed locally | Before `pnpm build` |
+| 2 | PR Submission | Pre-Build passing | Before `git push` |
+| 3 | Merge Gate | PR approved | Before merge button |
+| 4 | Deployment | Merged to integration/vln | Before Vercel deploy |
+| 5 | Post-Release | Deployed to production | After going live |
+
+**Key Rule:** Each checklist must PASS before proceeding to the next phase. See [RUNNING_CHECKLISTS.md](./RUNNING_CHECKLISTS.md) for complete details on all 5 checklists with full item lists, execution steps, and emergency procedures.
+
+### Quick Abbreviated Checklist (Full Version in RUNNING_CHECKLISTS.md)
 
 - [ ] Run `pnpm build` and verify no errors
 - [ ] Run `pnpm lint` and verify no errors
 - [ ] Run `pnpm test` if applicable
-- [ ] Check TypeScript compilation: `pnpm type-check`
-- [ ] Test on mobile viewport
-- [ ] Test on desktop viewport
-- [ ] Test keyboard navigation
+- [ ] Check TypeScript compilation
+- [ ] Test on mobile, tablet, and desktop viewports
 - [ ] Verify no console errors
-- [ ] Test forms and integrations
-- [ ] Check Lighthouse scores
-
-### Pull Request Checklist
-
-- [ ] Base branch is `integration/vln`
-- [ ] Commit message follows Conventional Commits
-- [ ] PR description includes what changed and why
-- [ ] All tests passing
-- [ ] Build passes (`pnpm build`)
-- [ ] Lint passes (`pnpm lint`)
-- [ ] No TypeScript errors
-- [ ] Screenshots included for UI changes
-- [ ] Accessibility tested (WCAG AA)
-- [ ] Performance impact assessed
-
-### Deployment Checklist
-
-- [ ] All PRs merged to `integration/vln`
-- [ ] Staging build verified
-- [ ] Performance baseline checked
-- [ ] Security headers verified
-- [ ] Analytics properly configured
-- [ ] Environment variables set
-- [ ] Database migrations ready (if applicable)
-- [ ] Monitoring and alerts configured
-- [ ] Incident response plan reviewed
-- [ ] Stakeholders notified
-
-### Post-Release Checklist
-
-- [ ] Monitor error logs (Sentry)
-- [ ] Check analytics (Cloudflare)
-- [ ] Review performance metrics
-- [ ] Check user feedback channels
-- [ ] Update CHANGELOG.md
-- [ ] Tag release in Git
-- [ ] Update PROJECT_STATUS.md
-- [ ] Document any hotfixes
-- [ ] Schedule post-mortem if issues occurred
-- [ ] Celebrate the release! 🎉
+- [ ] Check Lighthouse scores (≥ 85)
 
 ---
 
