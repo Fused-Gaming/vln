@@ -52,6 +52,9 @@ states/
 # Astro documentation site build outputs
 docs-site/dist/
 docs-site/.astro/
+design-site/dist/
+design-site/.astro/
+design-site/node_modules/
 
 # Monorepo build artifacts
 dist/

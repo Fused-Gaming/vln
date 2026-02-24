@@ -252,10 +252,49 @@ jobs:
           echo "✓ Docs build completed successfully"
           echo "✓ Output folder verified (dist/ exists)"
 
+  build-design:
+    name: 🎨 Build Design Site
+    runs-on: ubuntu-latest
+    needs: security-audit
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: 📥 Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build design site
+        working-directory: design-site
+        run: |
+          set -e
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "→ Building VLN design site (Astro Starlight)..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          pnpm build
+
+          if [ ! -d "dist" ]; then
+            echo "❌ ERROR: Build did not produce dist/ directory"
+            exit 1
+          fi
+
+          echo "✓ Design site build completed successfully"
+          echo "✓ Output folder verified (dist/ exists)"
+
   summary:
     name: 📋 Pipeline Summary & Diagnostics
     runs-on: ubuntu-latest
-    needs: [security-audit, lint, build-and-test, build-docs]
+    needs: [security-audit, lint, build-and-test, build-docs, build-design]
     if: always()
     permissions:
       contents: read
@@ -275,13 +314,15 @@ jobs:
           echo "  Lint:            ${{ needs.lint.result }}"
           echo "  Build & Test:    ${{ needs.build-and-test.result }}"
           echo "  Build Docs:      ${{ needs.build-docs.result }}"
+          echo "  Build Design:    ${{ needs.build-design.result }}"
 
       - name: 🔍 Run Diagnostics on Failure
         if: |
           needs.security-audit.result != 'success' ||
           needs.lint.result != 'success' ||
           needs.build-and-test.result != 'success' ||
-          needs.build-docs.result != 'success'
+          needs.build-docs.result != 'success' ||
+          needs.build-design.result != 'success'
         id: diagnostics
         continue-on-error: true
         run: |
@@ -294,7 +335,8 @@ jobs:
           (needs.security-audit.result != 'success' ||
            needs.lint.result != 'success' ||
            needs.build-and-test.result != 'success' ||
-           needs.build-docs.result != 'success')
+           needs.build-docs.result != 'success' ||
+           needs.build-design.result != 'success')
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -313,6 +355,7 @@ jobs:
             - 🎨 Lint & Type Check: \`${{ needs.lint.result }}\`
             - 🔨 Build & Test: \`${{ needs.build-and-test.result }}\`
             - 📚 Build Docs: \`${{ needs.build-docs.result }}\`
+            - 🎨 Build Design: \`${{ needs.build-design.result }}\`
 
             **Commit:** ${{ github.sha }}
             **Triggered by:** @${{ github.actor }}
@@ -356,7 +399,8 @@ jobs:
           (needs.security-audit.result != 'success' ||
            needs.lint.result != 'success' ||
            needs.build-and-test.result != 'success' ||
-           needs.build-docs.result != 'success')
+           needs.build-docs.result != 'success' ||
+           needs.build-design.result != 'success')
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -388,7 +432,8 @@ jobs:
           needs.security-audit.result == 'success' &&
           needs.lint.result == 'success' &&
           needs.build-and-test.result == 'success' &&
-          needs.build-docs.result == 'success'
+          needs.build-docs.result == 'success' &&
+          needs.build-design.result == 'success'
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ All pipeline steps completed successfully!"
@@ -400,7 +445,8 @@ jobs:
           if [ "${{ needs.security-audit.result }}" != "success" ] || \
              [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.build-and-test.result }}" != "success" ] || \
-             [ "${{ needs.build-docs.result }}" != "success" ]; then
+             [ "${{ needs.build-docs.result }}" != "success" ] || \
+             [ "${{ needs.build-design.result }}" != "success" ]; then
             echo "❌ Pipeline failed - diagnostics posted above"
             exit 1
           fi
@@ -412,7 +458,8 @@ jobs:
           if [ "${{ needs.security-audit.result }}" == "success" ] && \
              [ "${{ needs.lint.result }}" == "success" ] && \
              [ "${{ needs.build-and-test.result }}" == "success" ] && \
-             [ "${{ needs.build-docs.result }}" == "success" ]; then
+             [ "${{ needs.build-docs.result }}" == "success" ] && \
+             [ "${{ needs.build-design.result }}" == "success" ]; then
             STATUS="✅ Success"
             COLOR=5814783
             TITLE="✅ CI/CD Pipeline Passed"
@@ -427,6 +474,7 @@ jobs:
           LINT_STATUS="${{ needs.lint.result == 'success' && '✅' || '❌' }} Lint & Type Check: \`${{ needs.lint.result }}\`"
           BUILD_STATUS="${{ needs.build-and-test.result == 'success' && '✅' || '❌' }} Build & Test: \`${{ needs.build-and-test.result }}\`"
           DOCS_STATUS="${{ needs.build-docs.result == 'success' && '✅' || '❌' }} Build Docs: \`${{ needs.build-docs.result }}\`"
+          DESIGN_STATUS="${{ needs.build-design.result == 'success' && '✅' || '❌' }} Build Design: \`${{ needs.build-design.result }}\`"
 
           curl -H "Content-Type: application/json" \
             -d '{
@@ -452,7 +500,7 @@ jobs:
                   },
                   {
                     "name": "Job Results",
-                    "value": "'"$SECURITY_STATUS"'\n'"$LINT_STATUS"'\n'"$BUILD_STATUS"'\n'"$DOCS_STATUS"'",
+                    "value": "'"$SECURITY_STATUS"'\n'"$LINT_STATUS"'\n'"$BUILD_STATUS"'\n'"$DOCS_STATUS"'\n'"$DESIGN_STATUS"'",
                     "inline": false
                   },
                   {
