@@ -10,5 +10,15 @@
       "main": true,
       "integration/vln": true
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)/index.html",
+      "destination": "/$1"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/"
+    }
+  ]
 }
