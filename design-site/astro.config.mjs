@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
+  site: 'https://design.vln.gg',
   integrations: [
     starlight({
       title: 'VLN Design System',
