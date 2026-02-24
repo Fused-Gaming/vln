@@ -95,7 +95,7 @@ export default function DocsHomePage() {
 
       {/* CTA Section */}
       <div className="mt-16 p-8 border border-sage-500/30 rounded-lg bg-sage-500/5">
-        <h2 className="text-2xl font-bold text-white mb-4">Can't find what you're looking for?</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">Can&apos;t find what you&apos;re looking for?</h2>
         <p className="text-gray-400 mb-6">
           Use the search bar at the top to quickly find any topic, or check our
           troubleshooting guide for common issues.

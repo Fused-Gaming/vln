@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, MapPin, Video, Mail, User, AlertCircle, CheckCircle } from "lucide-react";
+import { MapPin, Video, Mail, User, AlertCircle, CheckCircle } from "lucide-react";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
 import { DatePicker, TimePicker } from "./date-time-picker";
