@@ -43,6 +43,14 @@ export default defineConfig({
           autogenerate: { directory: 'assets' },
         },
         {
+          label: 'Branding',
+          autogenerate: { directory: 'branding' },
+        },
+        {
+          label: 'Responsive Design',
+          autogenerate: { directory: 'responsive' },
+        },
+        {
           label: 'Performance',
           autogenerate: { directory: 'performance' },
         },
