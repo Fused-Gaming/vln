@@ -1,0 +1,6 @@
+# Astro docs site — uses its own ESLint config, incompatible with next/core-web-vitals
+docs-site/
+
+# Build artifacts
+.next/
+node_modules/
