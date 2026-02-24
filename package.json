@@ -16,6 +16,10 @@
     "docs:build": "cd docs-site && pnpm build",
     "docs:preview": "cd docs-site && pnpm preview",
     "docs:lint": "cd docs-site && pnpm lint",
+    "design:dev": "cd design-site && pnpm dev",
+    "design:build": "cd design-site && pnpm build",
+    "design:preview": "cd design-site && pnpm preview",
+    "design:lint": "cd design-site && pnpm lint",
     "monorepo:build": "pnpm -r build",
     "monorepo:lint": "pnpm -r lint",
     "monorepo:test": "pnpm --filter=vln-website test && pnpm --filter=vln-docs-site test || true"
