@@ -1,10 +1,26 @@
 #!/bin/bash
 # Post planning context comments to GitHub phase issues
 # Usage: ./scripts/post-phase-comments.sh
+#
+# Authentication:
+#   Run: gh auth login
+#   See: docs/guides/GITHUB_CLI_AUTH.md for secure setup instructions
 
 set -e
 
 REPO="Fused-Gaming/vln"
+
+# Check if authenticated
+if ! gh auth status > /dev/null 2>&1; then
+  echo "❌ Error: Not authenticated with GitHub CLI"
+  echo ""
+  echo "Please authenticate first:"
+  echo "  gh auth login"
+  echo ""
+  echo "For secure setup instructions, see:"
+  echo "  docs/guides/GITHUB_CLI_AUTH.md"
+  exit 1
+fi
 
 echo "🚀 Posting phase tracking comments to GitHub issues..."
 
@@ -124,6 +140,11 @@ Status: 📋 Design phase → 🚀 Ready for Track C execution"
 echo "✅ All comments posted successfully!"
 echo ""
 echo "Summary:"
-echo "  ✓ Issue #64 (Phase 1) — Context posted"
-echo "  ✓ Issue #114 (Phase 2) — Context posted"
-echo "  ✓ Issue #149 (Phase 3) — Context posted"
+echo "  ✓ Issue #64 (Phase 1: Brand & Distribution) — Context posted"
+echo "  ✓ Issue #114 (Phase 2: Operationalize Audits) — Context posted"
+echo "  ✓ Issue #149 (Phase 3: Productize Security) — Context posted"
+echo ""
+echo "View issues at:"
+echo "  https://github.com/Fused-Gaming/vln/issues/64"
+echo "  https://github.com/Fused-Gaming/vln/issues/114"
+echo "  https://github.com/Fused-Gaming/vln/issues/149"
