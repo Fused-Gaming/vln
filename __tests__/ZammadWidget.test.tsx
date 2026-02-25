@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import type { Mock } from 'vitest';
 
 interface MockWindow {
   ZammadChat?: (config: Record<string, unknown>) => void;
@@ -13,16 +14,12 @@ interface MockWindow {
 }
 
 interface MockDocument {
-  createElement: (tag: string) => {
-    src: string;
-    async: boolean;
-    onload: (() => void) | null;
-  };
-  querySelector: (selector: string) => null | unknown;
+  createElement: Mock;
+  querySelector: Mock;
   body: {
-    appendChild: (node: unknown) => void;
-    removeChild: (node: unknown) => void;
-    contains: (node: unknown) => boolean;
+    appendChild: Mock;
+    removeChild: Mock;
+    contains: Mock;
   };
 }
 
@@ -61,7 +58,7 @@ describe('Zammad Widget Integration Tests', () => {
 
   describe('1. Widget Initialization', () => {
     it('should load Zammad script on component mount', () => {
-      const script = mockDocument.createElement();
+      const script = mockDocument.createElement('script');
       expect(script).toBeDefined();
       expect(script.src).toBeDefined();
     });
