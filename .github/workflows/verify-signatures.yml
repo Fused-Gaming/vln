@@ -88,6 +88,8 @@ jobs:
       - name: Verify Commit Signatures
         id: verify_commits
         run: |
+          set +e  # Disable exit-on-error to allow script to complete
+
           echo "Verifying commit signatures..."
 
           # Get list of commits in this push/PR
