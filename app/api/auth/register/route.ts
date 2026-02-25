@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendWelcomeEmail, sendVerificationEmail } from '@/lib/email';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
@@ -76,8 +77,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Send welcome email with verification link
-    // This will be handled by the transactional email service
+    // Send welcome email
+    try {
+      const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify?token=${verificationToken.token}`;
+      await sendWelcomeEmail(email, name);
+      await sendVerificationEmail(email, verificationUrl);
+    } catch (emailError) {
+      console.error('[Email Send Error]', emailError);
+      // Don't fail registration if email fails, but log it
+    }
 
     return NextResponse.json(
       {

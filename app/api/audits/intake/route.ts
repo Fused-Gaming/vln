@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuth } from '@/lib/auth';
+import { sendAuditConfirmationEmail } from '@/lib/email';
 import { z } from 'zod';
 
 const auditIntakeSchema = z.object({
@@ -86,8 +87,23 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Create notification for internal team
-    // TODO: Send confirmation email to user
+    // Send confirmation email to user
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: (session.user as any).id },
+      });
+      if (user?.email) {
+        await sendAuditConfirmationEmail(
+          user.email,
+          projectName,
+          audit.id,
+          audit.estimatedCost.toNumber()
+        );
+      }
+    } catch (emailError) {
+      console.error('[Audit Confirmation Email Error]', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json(
       {

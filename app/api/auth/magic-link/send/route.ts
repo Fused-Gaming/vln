@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendMagicLinkEmail } from '@/lib/email';
 import { z } from 'zod';
 
 const magicLinkSchema = z.object({
@@ -56,8 +57,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Send magic link email
-    // Email: ${process.env.NEXTAUTH_URL}/auth/magic-link/verify?token=${token.token}
+    // Send magic link email
+    try {
+      const magicLinkUrl = `${process.env.NEXTAUTH_URL}/auth/magic-link/verify?token=${token.token}`;
+      await sendMagicLinkEmail(email, magicLinkUrl);
+    } catch (emailError) {
+      console.error('[Magic Link Email Error]', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json(
       {
