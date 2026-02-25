@@ -1,0 +1,117 @@
+{
+  "name": "VLN Design System",
+  "description": "Design-focused documentation for designers and product teams",
+  "targetSite": "design-site",
+  "targetPath": "design-site/src/content/docs",
+  "contentRoots": [
+    "docs/_source/design",
+    "docs/_source/components"
+  ],
+  "routes": {
+    "design/tokens/**/*.md": {
+      "path": "tokens/{basename}",
+      "sidebar": "design",
+      "section": "Design Tokens",
+      "layout": "token-reference",
+      "frontmatter": {
+        "audience": ["designers", "product"],
+        "tags": ["tokens", "design-system"],
+        "nav": {
+          "order": 10
+        }
+      }
+    },
+    "design/components/**/*.md": {
+      "path": "components/{basename}",
+      "sidebar": "design",
+      "section": "Components",
+      "layout": "component-showcase",
+      "frontmatter": {
+        "audience": ["designers", "developers"],
+        "tags": ["component", "ui"],
+        "nav": {
+          "order": 20
+        }
+      }
+    },
+    "design/pages/**/*.md": {
+      "path": "pages/{basename}",
+      "sidebar": "design",
+      "section": "Page Designs",
+      "layout": "page-layout",
+      "frontmatter": {
+        "audience": ["designers"],
+        "tags": ["page", "layout"],
+        "nav": {
+          "order": 30
+        }
+      }
+    },
+    "design/ux-flows/**/*.md": {
+      "path": "ux-flows/{basename}",
+      "sidebar": "design",
+      "section": "User Flows",
+      "layout": "flow-diagram",
+      "frontmatter": {
+        "audience": ["designers", "product"],
+        "tags": ["ux", "flow", "interaction"],
+        "nav": {
+          "order": 40
+        }
+      }
+    },
+    "design/overview.md": {
+      "path": "overview.md",
+      "sidebar": "design",
+      "section": "Design System",
+      "layout": "splash",
+      "frontmatter": {
+        "title": "VLN Design System",
+        "description": "Visual language, components, and design patterns for VLN",
+        "audience": ["designers", "product"],
+        "nav": {
+          "order": 1
+        }
+      }
+    }
+  },
+  "sidebar": {
+    "label": "Design System",
+    "collapsed": false,
+    "items": [
+      {
+        "label": "Overview",
+        "link": "overview"
+      },
+      {
+        "label": "Design Tokens",
+        "autogenerate": {
+          "directory": "tokens"
+        }
+      },
+      {
+        "label": "Components",
+        "autogenerate": {
+          "directory": "components"
+        }
+      },
+      {
+        "label": "Page Designs",
+        "autogenerate": {
+          "directory": "pages"
+        }
+      },
+      {
+        "label": "User Flows",
+        "autogenerate": {
+          "directory": "ux-flows"
+        }
+      }
+    ]
+  },
+  "validation": {
+    "requiredFrontmatter": ["title", "description"],
+    "forbiddenContent": ["API", "endpoint", "database"],
+    "enforceLayout": true
+  }
+}
