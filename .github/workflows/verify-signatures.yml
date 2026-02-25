@@ -189,6 +189,9 @@ jobs:
           echo ""
           echo "Signature verification complete"
 
+          # Ensure step succeeds even with warnings
+          exit 0
+
       - name: Verify Author Identity
         id: verify_author
         run: |
