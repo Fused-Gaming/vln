@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
@@ -56,7 +55,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
 
     steps:
@@ -80,8 +78,7 @@ jobs:
         run: npm install -g vercel@latest
 
       - name: 📡 Pull Vercel environment
-        working-directory: docs-site
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --cwd=docs-site --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: 🏗️ Build via Vercel
         working-directory: docs-site
@@ -100,7 +97,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DESIGN_PROJECT_ID }}
 
     steps:
@@ -124,8 +120,7 @@ jobs:
         run: npm install -g vercel@latest
 
       - name: 📡 Pull Vercel environment
-        working-directory: design-site
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --cwd=design-site --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: 🏗️ Build via Vercel
         working-directory: design-site
