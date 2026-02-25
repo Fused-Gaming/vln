@@ -393,7 +393,7 @@ export type WebhookEventType =
   | 'team.member_invited'
   | 'team.member_added';
 
-export interface WebhookEvent<T = any> {
+export interface WebhookEvent<T extends Record<string, unknown> = Record<string, unknown>> {
   id: string;
   type: WebhookEventType;
   timestamp: Date;
@@ -452,7 +452,7 @@ export interface ErrorResponse {
   error: {
     code: ErrorCode;
     message: string;
-    details?: Record<string, any>;
+    details?: Record<string, string | number | boolean>;
   };
 }
 
@@ -480,7 +480,7 @@ export interface Quote {
 // API Response Wrappers
 // ============================================================================
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T extends Record<string, unknown>> {
   data: T;
   meta?: {
     timestamp: Date;
@@ -514,15 +514,32 @@ export type Optional<T> = T | undefined;
 /**
  * Type guard for checking if response is an error
  */
-export function isErrorResponse(response: any): response is ErrorResponse {
-  return response?.error?.code !== undefined;
+export function isErrorResponse(response: unknown): response is ErrorResponse {
+  if (typeof response !== 'object' || response === null) {
+    return false;
+  }
+  if (!('error' in response)) {
+    return false;
+  }
+  const error = (response as { error?: unknown }).error;
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  return 'code' in error;
 }
 
 /**
  * Type guard for checking if response has pagination
  */
-export function isPaginatedResponse<T>(response: any): response is ApiListResponse<T> {
-  return Array.isArray(response?.data) && response?.pagination !== undefined;
+export function isPaginatedResponse<T>(response: unknown): response is ApiListResponse<T> {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'data' in response &&
+    Array.isArray((response as { data?: unknown }).data) &&
+    'pagination' in response &&
+    (response as { pagination?: unknown }).pagination !== undefined
+  );
 }
 
 // ============================================================================
