@@ -1,0 +1,392 @@
+{
+  "name": "VLN Documentation",
+  "description": "Developer and technical documentation for VLN platform",
+  "targetSite": "docs-site",
+  "targetPath": "docs-site/src/content/docs",
+  "contentRoots": [
+    "docs/_source/technical",
+    "docs/_source/api",
+    "docs/_source/infrastructure",
+    "docs/_source/security",
+    "docs/_source/research"
+  ],
+  "routes": {
+    "technical/getting-started/**/*.md": {
+      "path": "getting-started/{basename}",
+      "sidebar": "docs",
+      "section": "Getting Started",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["developers"],
+        "tags": ["getting-started", "setup"],
+        "nav": {
+          "order": 5
+        }
+      }
+    },
+    "technical/architecture/**/*.md": {
+      "path": "architecture/{basename}",
+      "sidebar": "docs",
+      "section": "Architecture",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["developers", "architects"],
+        "tags": ["architecture", "design"],
+        "nav": {
+          "order": 10
+        }
+      }
+    },
+    "technical/guides/**/*.md": {
+      "path": "guides/{basename}",
+      "sidebar": "docs",
+      "section": "Developer Guides",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["developers"],
+        "tags": ["guide", "tutorial"],
+        "nav": {
+          "order": 15
+        }
+      }
+    },
+    "technical/devops/**/*.md": {
+      "path": "devops/{basename}",
+      "sidebar": "docs",
+      "section": "DevOps & Deployment",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["devops", "developers"],
+        "tags": ["devops", "deployment", "cicd"],
+        "nav": {
+          "order": 20
+        }
+      }
+    },
+    "api/endpoints/**/*.md": {
+      "path": "api/endpoints/{basename}",
+      "sidebar": "docs",
+      "section": "API Reference",
+      "layout": "api-reference",
+      "frontmatter": {
+        "audience": ["developers"],
+        "tags": ["api", "reference", "endpoints"],
+        "nav": {
+          "order": 30
+        }
+      }
+    },
+    "api/authentication/**/*.md": {
+      "path": "api/authentication/{basename}",
+      "sidebar": "docs",
+      "section": "API Reference",
+      "layout": "api-reference",
+      "frontmatter": {
+        "audience": ["developers"],
+        "tags": ["api", "auth", "security"],
+        "nav": {
+          "order": 31
+        }
+      }
+    },
+    "api/webhooks/**/*.md": {
+      "path": "api/webhooks/{basename}",
+      "sidebar": "docs",
+      "section": "API Reference",
+      "layout": "api-reference",
+      "frontmatter": {
+        "audience": ["developers"],
+        "tags": ["api", "webhooks", "events"],
+        "nav": {
+          "order": 32
+        }
+      }
+    },
+    "api/errors/**/*.md": {
+      "path": "api/errors/{basename}",
+      "sidebar": "docs",
+      "section": "API Reference",
+      "layout": "api-reference",
+      "frontmatter": {
+        "audience": ["developers"],
+        "tags": ["api", "errors", "reference"],
+        "nav": {
+          "order": 33
+        }
+      }
+    },
+    "infrastructure/database/**/*.md": {
+      "path": "infrastructure/database/{basename}",
+      "sidebar": "docs",
+      "section": "Infrastructure",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["developers", "devops"],
+        "tags": ["database", "schema", "storage"],
+        "nav": {
+          "order": 40
+        }
+      }
+    },
+    "infrastructure/caching/**/*.md": {
+      "path": "infrastructure/caching/{basename}",
+      "sidebar": "docs",
+      "section": "Infrastructure",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["developers", "devops"],
+        "tags": ["caching", "performance"],
+        "nav": {
+          "order": 41
+        }
+      }
+    },
+    "infrastructure/storage/**/*.md": {
+      "path": "infrastructure/storage/{basename}",
+      "sidebar": "docs",
+      "section": "Infrastructure",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["developers", "devops"],
+        "tags": ["storage", "s3", "blob"],
+        "nav": {
+          "order": 42
+        }
+      }
+    },
+    "infrastructure/networking/**/*.md": {
+      "path": "infrastructure/networking/{basename}",
+      "sidebar": "docs",
+      "section": "Infrastructure",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["devops", "architects"],
+        "tags": ["networking", "cdn", "dns"],
+        "nav": {
+          "order": 43
+        }
+      }
+    },
+    "security/threat-modeling/**/*.md": {
+      "path": "security/threat-modeling/{basename}",
+      "sidebar": "docs",
+      "section": "Security",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["security", "architects"],
+        "tags": ["security", "threat-model"],
+        "nav": {
+          "order": 50
+        }
+      }
+    },
+    "security/audit-methodology/**/*.md": {
+      "path": "security/audit-methodology/{basename}",
+      "sidebar": "docs",
+      "section": "Security",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["security", "developers"],
+        "tags": ["security", "audit", "methodology"],
+        "nav": {
+          "order": 51
+        }
+      }
+    },
+    "security/vulnerability-scoring/**/*.md": {
+      "path": "security/vulnerability-scoring/{basename}",
+      "sidebar": "docs",
+      "section": "Security",
+      "layout": "guide",
+      "frontmatter": {
+        "audience": ["security", "architects"],
+        "tags": ["security", "vulnerability", "scoring"],
+        "nav": {
+          "order": 52
+        }
+      }
+    },
+    "research/rng-analysis/**/*.md": {
+      "path": "research/rng-analysis/{basename}",
+      "sidebar": "docs",
+      "section": "Research",
+      "layout": "research-paper",
+      "frontmatter": {
+        "audience": ["developers", "security"],
+        "tags": ["research", "rng", "gaming"],
+        "nav": {
+          "order": 60
+        }
+      }
+    },
+    "research/smart-contracts/**/*.md": {
+      "path": "research/smart-contracts/{basename}",
+      "sidebar": "docs",
+      "section": "Research",
+      "layout": "research-paper",
+      "frontmatter": {
+        "audience": ["developers", "security"],
+        "tags": ["research", "smart-contracts", "evm"],
+        "nav": {
+          "order": 61
+        }
+      }
+    },
+    "research/wallet-flows/**/*.md": {
+      "path": "research/wallet-flows/{basename}",
+      "sidebar": "docs",
+      "section": "Research",
+      "layout": "research-paper",
+      "frontmatter": {
+        "audience": ["security", "architects"],
+        "tags": ["research", "wallet", "flow"],
+        "nav": {
+          "order": 62
+        }
+      }
+    }
+  },
+  "sidebar": {
+    "label": "Documentation",
+    "collapsed": false,
+    "items": [
+      {
+        "label": "Getting Started",
+        "autogenerate": {
+          "directory": "getting-started"
+        }
+      },
+      {
+        "label": "Architecture",
+        "autogenerate": {
+          "directory": "architecture"
+        }
+      },
+      {
+        "label": "Developer Guides",
+        "autogenerate": {
+          "directory": "guides"
+        }
+      },
+      {
+        "label": "DevOps & Deployment",
+        "autogenerate": {
+          "directory": "devops"
+        }
+      },
+      {
+        "label": "API Reference",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Endpoints",
+            "autogenerate": {
+              "directory": "api/endpoints"
+            }
+          },
+          {
+            "label": "Authentication",
+            "autogenerate": {
+              "directory": "api/authentication"
+            }
+          },
+          {
+            "label": "Webhooks",
+            "autogenerate": {
+              "directory": "api/webhooks"
+            }
+          },
+          {
+            "label": "Error Reference",
+            "autogenerate": {
+              "directory": "api/errors"
+            }
+          }
+        ]
+      },
+      {
+        "label": "Infrastructure",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Database & Schema",
+            "autogenerate": {
+              "directory": "infrastructure/database"
+            }
+          },
+          {
+            "label": "Caching",
+            "autogenerate": {
+              "directory": "infrastructure/caching"
+            }
+          },
+          {
+            "label": "Storage",
+            "autogenerate": {
+              "directory": "infrastructure/storage"
+            }
+          },
+          {
+            "label": "Networking",
+            "autogenerate": {
+              "directory": "infrastructure/networking"
+            }
+          }
+        ]
+      },
+      {
+        "label": "Security",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Threat Modeling",
+            "autogenerate": {
+              "directory": "security/threat-modeling"
+            }
+          },
+          {
+            "label": "Audit Methodology",
+            "autogenerate": {
+              "directory": "security/audit-methodology"
+            }
+          },
+          {
+            "label": "Vulnerability Scoring",
+            "autogenerate": {
+              "directory": "security/vulnerability-scoring"
+            }
+          }
+        ]
+      },
+      {
+        "label": "Research",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "RNG Analysis",
+            "autogenerate": {
+              "directory": "research/rng-analysis"
+            }
+          },
+          {
+            "label": "Smart Contracts",
+            "autogenerate": {
+              "directory": "research/smart-contracts"
+            }
+          },
+          {
+            "label": "Wallet Flows",
+            "autogenerate": {
+              "directory": "research/wallet-flows"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "requiredFrontmatter": ["title", "description"],
+    "forbiddenContent": [],
+    "enforceLayout": true
+  }
+}
