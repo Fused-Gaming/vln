@@ -1,0 +1,104 @@
+{
+  "name": "VLN Blog & Articles",
+  "description": "Blog and article content for publishing insights, research, and updates",
+  "targetSite": "blog",
+  "targetPath": "docs/_sync/blog",
+  "contentRoots": [
+    "docs/_source/blog",
+    "docs/_generated/blog"
+  ],
+  "routes": {
+    "blog/articles/**/*.md": {
+      "path": "articles/{basename}",
+      "sidebar": "blog",
+      "section": "Articles",
+      "layout": "blog-post",
+      "frontmatter": {
+        "audience": ["developers", "security", "product"],
+        "category": "insights",
+        "featured": false
+      }
+    },
+    "blog/research/**/*.md": {
+      "path": "research/{basename}",
+      "sidebar": "blog",
+      "section": "Research",
+      "layout": "research-article",
+      "frontmatter": {
+        "audience": ["developers", "security"],
+        "category": "research",
+        "featured": false
+      }
+    },
+    "blog/releases/**/*.md": {
+      "path": "releases/{basename}",
+      "sidebar": "blog",
+      "section": "Release Notes",
+      "layout": "release-notes",
+      "frontmatter": {
+        "audience": ["everyone"],
+        "category": "releases",
+        "featured": true
+      }
+    },
+    "blog/announcements/**/*.md": {
+      "path": "announcements/{basename}",
+      "sidebar": "blog",
+      "section": "Announcements",
+      "layout": "announcement",
+      "frontmatter": {
+        "audience": ["everyone"],
+        "category": "announcements",
+        "featured": true
+      }
+    }
+  },
+  "sidebar": {
+    "label": "Blog & Articles",
+    "collapsed": false,
+    "items": [
+      {
+        "label": "Latest Articles",
+        "autogenerate": {
+          "directory": "articles"
+        }
+      },
+      {
+        "label": "Research",
+        "autogenerate": {
+          "directory": "research"
+        }
+      },
+      {
+        "label": "Release Notes",
+        "autogenerate": {
+          "directory": "releases"
+        }
+      },
+      {
+        "label": "Announcements",
+        "autogenerate": {
+          "directory": "announcements"
+        }
+      }
+    ]
+  },
+  "validation": {
+    "requiredFrontmatter": ["title", "description", "date", "author"],
+    "forbiddenContent": [],
+    "enforceLayout": true,
+    "enforceDate": true,
+    "enforceAuthor": true
+  },
+  "autoGeneration": {
+    "enabled": true,
+    "sourceCategories": {
+      "research": ["docs/_source/research/**/*.md"],
+      "security": ["docs/_source/security/**/*.md"],
+      "infrastructure": ["docs/_source/infrastructure/**/*.md"]
+    },
+    "template": "research-to-blog",
+    "schedule": "weekly",
+    "requiresApproval": false
+  }
+}
