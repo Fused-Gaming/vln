@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware for CORS and security headers
- * Enforces strict origin policies for API routes and assets
+ * Middleware for CORS, security headers, authentication, and request logging
+ * Enforces strict origin policies for API routes and handles session validation
+ * Date: 2026-02-25
  */
+
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
+
+  // Add request ID for tracing
+  response.headers.set('x-request-id', crypto.randomUUID());
 
   // Strict CORS configuration
   const allowedOrigins = [
