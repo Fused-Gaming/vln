@@ -8,7 +8,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
-import type { AuditServiceType, AuditStatus, AuditPriority } from '@prisma/client';
 
 interface AuditIntakeRequest {
   projectName: string;
@@ -30,7 +29,7 @@ const VALID_SERVICE_TYPES = [
   'WALLET_FLOW_RISK_ASSESSMENT',
   'API_SECURITY_REVIEW',
   'CUSTOM_ASSESSMENT',
-];
+] as const;
 
 // Pricing model (can be enhanced with dynamic pricing)
 function estimateAuditCost(serviceType: string, scope: Record<string, unknown>): number {
@@ -86,7 +85,7 @@ export async function POST(request: NextRequest) {
       errors.push('Description must be at least 10 characters');
     }
 
-    if (!VALID_SERVICE_TYPES.includes(serviceType)) {
+    if (!VALID_SERVICE_TYPES.includes(serviceType as typeof VALID_SERVICE_TYPES[number])) {
       errors.push(`Invalid service type. Must be one of: ${VALID_SERVICE_TYPES.join(', ')}`);
     }
 
@@ -102,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Type-safe cast for validated serviceType
-    const validatedServiceType = serviceType as unknown as string;
+    const validatedServiceType = serviceType as (typeof VALID_SERVICE_TYPES)[number];
 
     // Verify user exists and is CLIENT or MANAGER
     const user = await prisma.user.findUnique({
@@ -149,11 +148,11 @@ export async function POST(request: NextRequest) {
         teamId: teamId || null,
         projectName: projectName.trim(),
         description: description.trim(),
-        serviceType: validatedServiceType as AuditServiceType,
+        serviceType: validatedServiceType,
         scope: JSON.stringify(scope),
         scopeSize: scopeSize || 0,
-        status: 'INTAKE' as AuditStatus,
-        priority: 'MEDIUM' as AuditPriority,
+        status: 'INTAKE',
+        priority: 'MEDIUM',
         estimatedCost: estimatedCost,
       },
     });
