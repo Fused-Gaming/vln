@@ -6,7 +6,6 @@
  */
 
 import { type NextAuthOptions } from 'next-auth';
-import { type JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
