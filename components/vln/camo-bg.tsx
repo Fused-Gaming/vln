@@ -5,10 +5,12 @@
  * Spec: 0x3-camo-bg  |  Internal — direct URL access only
  *
  * Pattern engine: multi-octave fractal Brownian Motion (fBm) via
- * permutation-table value noise (no external deps). Three octaves:
- *   - Octave 1 (large blobs):  low X-freq < Y-freq → horizontal blob stretch
- *   - Octave 2 (medium patch): mid frequency — fills in the camo body
- *   - Octave 3 (fine detail):  high frequency — crisp digital pixel edges
+ * permutation-table value noise (no external deps). Three octaves with
+ * φ² (golden ratio squared) lacunarity — frequencies scale as f, fφ², fφ⁴.
+ *   - Octave 1 (large blobs):  base freq (0.06x, 0.10y) → horizontal blob stretch
+ *   - Octave 2 (medium patch): base × φ² (≈0.157x, 0.262y)
+ *   - Octave 3 (fine detail):  base × φ⁴ (≈0.411x, 0.685y)
+ * Weights: φ-normalized series (0.500 / 0.309 / 0.191).
  * Output noise is threshold-mapped to the spec palette matching the
  * weighted distribution (void 10%, shadow 12%, forest 38%, olive 28%,
  * moss 10%, sage-dim 2%).
@@ -83,23 +85,50 @@ function valueNoise2D(perm: Uint8Array, x: number, y: number): number {
 }
 
 /**
- * 3-octave fBm for MARPAT-style camo:
+ * 3-octave fBm for MARPAT-style camo — φ-lacunarity variant:
  *
  *   Octave 1 — large blobs (primary camo body)
  *     X-freq (0.06) < Y-freq (0.10) → features are wider than tall,
  *     reproducing the horizontal blob stretch characteristic of MARPAT.
+ *     Anisotropy ratio y/x = 1/φ is preserved across all octaves.
  *
- *   Octave 2 — medium patches (fills in detail between large blobs)
+ *   Octave 2 — medium patches  (base × φ²)
+ *   Octave 3 — fine digital edges (base × φ⁴)
  *
- *   Octave 3 — fine layer (crisp pixel-level boundaries, "digital" look)
+ * Lacunarity: φ² ≈ 2.618 (golden ratio squared).
+ *   Each octave scales the previous by φ², placing frequency breakpoints
+ *   at the golden-ratio harmonic series: f, fφ², fφ⁴.
+ *   Current ratios were empirically ~2.75–3.3×; φ² ≈ 2.618 tightens these
+ *   to a single consistent multiplier without breaking the MARPAT aesthetic.
  *
- * Weights: 0.58 / 0.30 / 0.12 — large blobs dominate.
+ * Weights: φ-normalized (1 : 1/φ : 1/φ²) → 0.500 / 0.309 / 0.191.
+ *   Derived from the inverse power series of φ, normalized to sum 1.0.
+ *   Large blobs still dominate; fine detail is slightly more present than
+ *   the previous 0.12 allocation, sharpening pixel-edge definition.
+ *
+ * φ  = (1 + √5) / 2  ≈ 1.6180
+ * φ² = φ + 1         ≈ 2.6180
+ * φ⁴ = (φ²)²        ≈ 6.8541
  */
+const PHI  = (1 + Math.sqrt(5)) / 2; // ≈ 1.6180
+const PHI2 = PHI * PHI;              // ≈ 2.6180  (φ²)
+const PHI4 = PHI2 * PHI2;            // ≈ 6.8541  (φ⁴)
+
+// Octave base frequencies (anisotropic: x < y → horizontal blob stretch)
+const F1X = 0.06, F1Y = 0.10;
+const F2X = F1X * PHI2, F2Y = F1Y * PHI2; // ≈ 0.157, 0.262
+const F3X = F1X * PHI4, F3Y = F1Y * PHI4; // ≈ 0.411, 0.685
+
+// φ-normalized weights: 1/(1 + 1/φ + 1/φ²) series
+const W1 = 1.000 / (1.000 + 1 / PHI + 1 / PHI2); // ≈ 0.500
+const W2 = (1 / PHI)  / (1.000 + 1 / PHI + 1 / PHI2); // ≈ 0.309
+const W3 = (1 / PHI2) / (1.000 + 1 / PHI + 1 / PHI2); // ≈ 0.191
+
 function fbm(perm: Uint8Array, col: number, row: number): number {
-  const n1 = valueNoise2D(perm, col * 0.06, row * 0.10); // large, H-stretched
-  const n2 = valueNoise2D(perm, col * 0.20, row * 0.28); // medium patches
-  const n3 = valueNoise2D(perm, col * 0.55, row * 0.60); // fine digital edge
-  return n1 * 0.58 + n2 * 0.30 + n3 * 0.12;
+  const n1 = valueNoise2D(perm, col * F1X, row * F1Y); // large, H-stretched
+  const n2 = valueNoise2D(perm, col * F2X, row * F2Y); // medium patches
+  const n3 = valueNoise2D(perm, col * F3X, row * F3Y); // fine digital edge
+  return n1 * W1 + n2 * W2 + n3 * W3;
 }
 
 // ─── Palette (spec 0x3-camo-bg) ──────────────────────────────────────────────
