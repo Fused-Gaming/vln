@@ -1,0 +1,169 @@
+name: 🏷️  PR Label Manager
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+  workflow_dispatch:
+
+jobs:
+  manage-labels:
+    name: 🏷️  Manage PR Labels
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📋 Analyze PR and apply labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const prTitle = pr.title;
+
+            console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+            console.log(`📋 Analyzing PR #${prNumber}`);
+            console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+
+            const labelsToAdd = [];
+            const labelsToRemove = [];
+
+            // Get current labels
+            const currentLabels = pr.labels.map(l => l.name);
+
+            // Check for merge conflicts
+            if (pr.mergeable === false) {
+              console.log(`⚠️  Merge conflicts detected`);
+              labelsToAdd.push('conflict');
+              labelsToRemove.push('ready-to-merge');
+            } else if (pr.mergeable === true) {
+              console.log(`✅ Mergeable`);
+              labelsToRemove.push('conflict');
+            }
+
+            // Check CI status
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+
+            const failedChecks = checks.check_runs.filter(c => c.conclusion === 'failure');
+            const pendingChecks = checks.check_runs.filter(c => c.status === 'in_progress');
+
+            if (failedChecks.length > 0) {
+              console.log(`❌ ${failedChecks.length} check(s) failing`);
+              labelsToAdd.push('ci-failed');
+              labelsToRemove.push('ready-to-merge');
+            } else {
+              labelsToRemove.push('ci-failed');
+            }
+
+            if (pendingChecks.length > 0) {
+              console.log(`🔄 ${pendingChecks.length} check(s) in progress`);
+              labelsToAdd.push('ci-pending');
+            } else {
+              labelsToRemove.push('ci-pending');
+            }
+
+            if (failedChecks.length === 0 && pendingChecks.length === 0) {
+              console.log(`✅ All checks passing`);
+              labelsToRemove.push('ci-pending', 'ci-failed');
+            }
+
+            // Check commit message format
+            const { data: commits } = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            const conventionalCommitRegex = /^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\(.+\))?!?: .+/;
+            const allConventional = commits.every(c =>
+              conventionalCommitRegex.test(c.commit.message)
+            );
+
+            if (!allConventional) {
+              console.log(`⚠️  Some commits don't follow conventional commit format`);
+              labelsToAdd.push('conventional-commit-needed');
+            } else {
+              console.log(`✅ All commits follow conventional commit format`);
+              labelsToRemove.push('conventional-commit-needed');
+            }
+
+            // Get PR creator's PR count (first-time contributor?)
+            const { data: userPRs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              creator: pr.user.login,
+              state: 'all'
+            });
+
+            if (userPRs.length === 1) {
+              console.log(`👤 First-time contributor: ${pr.user.login}`);
+              labelsToAdd.push('first-time-contributor');
+            } else {
+              labelsToRemove.push('first-time-contributor');
+            }
+
+            // Determine type based on branch
+            const branch = pr.head.ref;
+            if (branch.startsWith('feature/')) {
+              labelsToAdd.push('type:feature');
+              labelsToRemove.push('type:fix', 'type:docs');
+            } else if (branch.startsWith('fix/')) {
+              labelsToAdd.push('type:fix');
+              labelsToRemove.push('type:feature', 'type:docs');
+            } else if (branch.startsWith('docs/')) {
+              labelsToAdd.push('type:docs');
+              labelsToRemove.push('type:feature', 'type:fix');
+            }
+
+            // Remove duplicates and filter
+            const toAdd = [...new Set(labelsToAdd)].filter(l => !currentLabels.includes(l));
+            const toRemove = [...new Set(labelsToRemove)].filter(l => currentLabels.includes(l));
+
+            console.log(`\n📝 Label Changes:`);
+            if (toAdd.length > 0) {
+              console.log(`   Adding: ${toAdd.join(', ')}`);
+              for (const label of toAdd) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    labels: [label]
+                  });
+                } catch (e) {
+                  console.log(`   ⚠️  Could not add label "${label}": ${e.message}`);
+                }
+              }
+            }
+
+            if (toRemove.length > 0) {
+              console.log(`   Removing: ${toRemove.join(', ')}`);
+              for (const label of toRemove) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    name: label
+                  });
+                } catch (e) {
+                  console.log(`   ⚠️  Could not remove label "${label}": ${e.message}`);
+                }
+              }
+            }
+
+            if (toAdd.length === 0 && toRemove.length === 0) {
+              console.log(`   (No changes needed)`);
+            }
+
+            console.log(`\n✅ Label management complete`);

@@ -1,0 +1,257 @@
+name: 📊 PR Status Report
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  pr-status-report:
+    name: 📋 Generate PR Status Report
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📋 Analyze all open PRs
+        id: analyze
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get all open PRs
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            console.log(`📊 Found ${prs.length} open PRs`);
+
+            const stats = {
+              total: prs.length,
+              ready_to_merge: 0,
+              blocked_ci: 0,
+              blocked_dependency: 0,
+              merge_conflicts: 0,
+              stale: 0,
+              needs_rebase: 0,
+              by_branch: {},
+              details: []
+            };
+
+            const now = new Date();
+            const staleDays = 7;
+
+            for (const pr of prs) {
+              const prNum = pr.number;
+              const prTitle = pr.title;
+              const prBranch = pr.base.ref;
+              const updatedAt = new Date(pr.updated_at);
+              const daysStale = Math.floor((now - updatedAt) / (1000 * 60 * 60 * 24));
+
+              let status = '✅ Ready';
+              const issues = [];
+
+              // Initialize branch counter
+              if (!stats.by_branch[prBranch]) {
+                stats.by_branch[prBranch] = 0;
+              }
+              stats.by_branch[prBranch]++;
+
+              // Check for merge conflicts
+              if (pr.mergeable === false) {
+                status = '⚠️  Conflicts';
+                issues.push('Merge conflicts');
+                stats.merge_conflicts++;
+              }
+
+              // Check CI status
+              try {
+                const { data: checks } = await github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: pr.head.sha
+                });
+
+                const failedChecks = checks.check_runs.filter(c => c.conclusion === 'failure');
+                if (failedChecks.length > 0) {
+                  status = '❌ CI Failed';
+                  issues.push(`${failedChecks.length} check(s) failing`);
+                  stats.blocked_ci++;
+                }
+              } catch (e) {
+                // Silently continue if we can't get checks
+              }
+
+              // Check labels for blocker status
+              const labels = pr.labels.map(l => l.name);
+              if (labels.includes('blocked:dependency')) {
+                status = '🔗 Blocked (dependency)';
+                issues.push('Blocked on dependency');
+                stats.blocked_dependency++;
+              }
+
+              if (labels.includes('needs-rebase')) {
+                status = '🔄 Needs rebase';
+                issues.push('Requires rebase');
+                stats.needs_rebase++;
+              }
+
+              // Check staleness
+              if (daysStale > staleDays) {
+                status = '📭 Stale';
+                issues.push(`No updates for ${daysStale} days`);
+                stats.stale++;
+              }
+
+              // If no issues and has ready-to-merge label
+              if (issues.length === 0 && labels.includes('ready-to-merge')) {
+                stats.ready_to_merge++;
+              }
+
+              stats.details.push({
+                number: prNum,
+                title: prTitle,
+                branch: prBranch,
+                status,
+                issues,
+                daysStale,
+                labels,
+                author: pr.user.login
+              });
+            }
+
+            core.setOutput('stats_json', JSON.stringify(stats));
+
+      - name: 📝 Post status report to GitHub
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const stats = JSON.parse('${{ steps.analyze.outputs.stats_json }}');
+
+            if (stats.total === 0) {
+              console.log('✅ No open PRs - nothing to report');
+              return;
+            }
+
+            // Build the report
+            let report = `# 📊 VLN Pull Request Status Report\n\n`;
+            report += `**Generated:** ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC\n\n`;
+
+            // Summary stats
+            report += `## 📈 Summary\n\n`;
+            report += `| Status | Count |\n`;
+            report += `|--------|-------|\n`;
+            report += `| **Total PRs** | ${stats.total} |\n`;
+            report += `| ✅ Ready to Merge | ${stats.ready_to_merge} |\n`;
+            report += `| ❌ CI Failures | ${stats.blocked_ci} |\n`;
+            report += `| 🔗 Dependency Blocked | ${stats.blocked_dependency} |\n`;
+            report += `| ⚠️  Merge Conflicts | ${stats.merge_conflicts} |\n`;
+            report += `| 🔄 Needs Rebase | ${stats.needs_rebase} |\n`;
+            report += `| 📭 Stale (7+ days) | ${stats.stale} |\n\n`;
+
+            // PRs by target branch
+            report += `## 🎯 PRs by Target Branch\n\n`;
+            for (const [branch, count] of Object.entries(stats.by_branch)) {
+              report += `- \`${branch}\`: ${count} PR(s)\n`;
+            }
+            report += `\n`;
+
+            // Ready to merge
+            if (stats.ready_to_merge > 0) {
+              report += `## ✅ Ready to Merge\n\n`;
+              const readyPRs = stats.details.filter(pr =>
+                pr.status === '✅ Ready' && pr.labels.includes('ready-to-merge')
+              );
+              for (const pr of readyPRs) {
+                report += `- [#${pr.number}](/${{ github.repository }}/pull/${pr.number}) – ${pr.title} (@${pr.author})\n`;
+              }
+              report += `\n`;
+            }
+
+            // Stale PRs
+            if (stats.stale > 0) {
+              report += `## 📭 Stale PRs (No updates in 7+ days)\n\n`;
+              const stalePRs = stats.details.filter(pr => pr.daysStale > 7);
+              for (const pr of stalePRs) {
+                report += `- [#${pr.number}](/${{ github.repository }}/pull/${pr.number}) – ${pr.title} (@${pr.author}) – ${pr.daysStale} days\n`;
+              }
+              report += `\n`;
+            }
+
+            // Blocked PRs
+            if (stats.blocked_ci > 0 || stats.blocked_dependency > 0 || stats.merge_conflicts > 0) {
+              report += `## 🚫 Blocked PRs\n\n`;
+              const blockedPRs = stats.details.filter(pr =>
+                pr.issues.length > 0 && pr.status !== '✅ Ready'
+              );
+              for (const pr of blockedPRs.slice(0, 20)) {
+                report += `- [#${pr.number}](/${{ github.repository }}/pull/${pr.number}) – ${pr.title}\n`;
+                report += `  - **Status:** ${pr.status}\n`;
+                report += `  - **Issues:** ${pr.issues.join(', ')}\n`;
+              }
+              if (blockedPRs.length > 20) {
+                report += `- ... and ${blockedPRs.length - 20} more\n`;
+              }
+              report += `\n`;
+            }
+
+            // Action items
+            report += `## 📌 Action Items\n\n`;
+            if (stats.merge_conflicts > 0) {
+              report += `- 🔧 **${stats.merge_conflicts} PR(s)** have merge conflicts – needs manual rebase\n`;
+            }
+            if (stats.blocked_ci > 0) {
+              report += `- ❌ **${stats.blocked_ci} PR(s)** have failing CI – check workflow logs\n`;
+            }
+            if (stats.stale > 0) {
+              report += `- 📭 **${stats.stale} PR(s)** are stale – consider closing or updating\n`;
+            }
+            if (stats.needs_rebase > 0) {
+              report += `- 🔄 **${stats.needs_rebase} PR(s)** need rebase against target branch\n`;
+            }
+            if (stats.ready_to_merge > 0) {
+              report += `- ✅ **${stats.ready_to_merge} PR(s)** ready for merge – consider running auto-merge workflow\n`;
+            }
+
+            report += `\n---\n`;
+            report += `<sub>🤖 Automated Report | Next report: Daily at 6 AM UTC | [Workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})</sub>\n`;
+
+            // Create/update discussion post
+            try {
+              const { data: discussions } = await github.rest.discussions.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                category_id: 'announcements',
+                per_page: 10
+              });
+
+              let reportDiscussion = discussions.find(d =>
+                d.title.includes('VLN PR Status Report') && !d.state_reason === 'closed'
+              );
+
+              if (reportDiscussion) {
+                // Update existing
+                console.log(`📝 Updating discussion #${reportDiscussion.number}`);
+              } else {
+                // Create new
+                console.log('📝 Creating new discussion for PR Status Report');
+              }
+            } catch (e) {
+              console.log('ℹ️  Using GitHub summary instead of discussions');
+            }
+
+            // Always use GitHub summary
+            core.summary
+              .addHeading('📊 VLN PR Status Report', 1)
+              .addRaw(report);
+
+            console.log(`\n${report}`);

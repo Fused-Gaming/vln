@@ -36,6 +36,21 @@
   --vln-accent: var(--vln-sage);
   --vln-radius: 12px;
   --vln-card-lift: 4px;
+
+  /* ── Camo Background System (spec: 0x3-camo-bg) ─────────────────────── */
+  --camo-void:      #000000;
+  --camo-deep:      #0a0e0f;
+  --camo-shadow:    #0d1a0f;
+  --camo-forest:    #004d00;
+  --camo-olive:     #3b5323;
+  --camo-moss:      #2d4a1e;
+  --camo-sage-dim:  #4a7c59;
+  --camo-sage:      #86d993;   /* VLN primary — glitch only */
+
+  --camo-cell-size: clamp(16px, 2.5vw, 32px);
+  --camo-gap:       2px;
+  --camo-opacity:   0.72;
+  --camo-glow:      0 0 8px rgba(0, 77, 0, 0.4);
 }
 
 @layer base {
@@ -96,5 +111,17 @@
       rgba(134, 217, 147, 0.1) 50%,
       var(--vln-bg) 100%
     );
+  }
+
+  /* Camo background container */
+  .camo-bg {
+    will-change: opacity, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .camo-bg {
+      animation: none !important;
+      opacity: 0.55 !important;
+    }
   }
 }

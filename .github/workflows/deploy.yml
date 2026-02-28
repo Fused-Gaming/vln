@@ -9,6 +9,36 @@ env:
   NODE_VERSION: "20.x"
 
 jobs:
+  # Detect if docs-site or design-site have changes
+  detect-changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      docs-changed: ${{ steps.check-docs.outputs.changed }}
+      design-changed: ${{ steps.check-design.outputs.changed }}
+    steps:
+      - name: 📥 Checkout with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Check docs-site changes
+        id: check-docs
+        run: |
+          if git diff HEAD~1 HEAD --name-only | grep -q "^docs-site/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔍 Check design-site changes
+        id: check-design
+        run: |
+          if git diff HEAD~1 HEAD --name-only | grep -q "^design-site/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
   deploy-main-site:
     name: 🚀 Deploy Main Site → Vercel
     runs-on: ubuntu-latest
@@ -55,6 +85,8 @@ jobs:
     name: 📚 Deploy Docs Site → Vercel
     runs-on: ubuntu-latest
     environment: production
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs-changed == 'true'
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
@@ -80,8 +112,7 @@ jobs:
         run: npm install -g vercel@latest
 
       - name: 📡 Pull Vercel environment
-        working-directory: docs-site
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --cwd=docs-site --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: 🏗️ Build via Vercel
         working-directory: docs-site
@@ -99,6 +130,8 @@ jobs:
     name: 🎨 Deploy Design Site → Vercel
     runs-on: ubuntu-latest
     environment: production
+    needs: detect-changes
+    if: needs.detect-changes.outputs.design-changed == 'true'
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DESIGN_PROJECT_ID }}
@@ -124,8 +157,7 @@ jobs:
         run: npm install -g vercel@latest
 
       - name: 📡 Pull Vercel environment
-        working-directory: design-site
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --cwd=design-site --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: 🏗️ Build via Vercel
         working-directory: design-site
