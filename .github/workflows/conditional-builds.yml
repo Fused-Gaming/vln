@@ -1,0 +1,128 @@
+name: Conditional Builds - Skip if No Changes
+
+on:
+  push:
+    branches: ["main", "development", "integration/vln"]
+  pull_request:
+    branches: ["main", "development", "integration/vln"]
+
+jobs:
+  # Detect changes to docs-site
+  detect-docs-changes:
+    name: 📝 Detect Docs Changes
+    runs-on: ubuntu-latest
+    outputs:
+      docs-changed: ${{ steps.check-docs.outputs.changed }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Check for docs-site changes
+        id: check-docs
+        run: |
+          if git diff origin/${{ github.base_ref || 'development' }}...HEAD --name-only | grep -q "^docs-site/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes detected in docs-site/"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "⏭️  No changes in docs-site/ - skipping build"
+          fi
+
+  # Detect changes to design-site
+  detect-design-changes:
+    name: 🎨 Detect Design Site Changes
+    runs-on: ubuntu-latest
+    outputs:
+      design-changed: ${{ steps.check-design.outputs.changed }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Check for design-site changes
+        id: check-design
+        run: |
+          if git diff origin/${{ github.base_ref || 'development' }}...HEAD --name-only | grep -q "^design-site/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes detected in design-site/"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "⏭️  No changes in design-site/ - skipping build"
+          fi
+
+  # Build docs-site only if changed
+  build-docs:
+    name: 📚 Build Docs Site
+    runs-on: ubuntu-latest
+    needs: detect-docs-changes
+    if: needs.detect-docs-changes.outputs.docs-changed == 'true'
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "pnpm"
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build docs-site
+        run: pnpm docs:build
+
+      - name: ✅ Docs build successful
+        run: echo "Docs site built successfully"
+
+  # Build design-site only if changed
+  build-design:
+    name: 🎨 Build Design Site
+    runs-on: ubuntu-latest
+    needs: detect-design-changes
+    if: needs.detect-design-changes.outputs.design-changed == 'true'
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "pnpm"
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build design-site
+        run: pnpm design:build
+
+      - name: ✅ Design build successful
+        run: echo "Design site built successfully"
+
+  # Always run for main app (no skipping)
+  check-main-app:
+    name: ✅ Check Conditional Builds Summary
+    runs-on: ubuntu-latest
+    needs: [detect-docs-changes, detect-design-changes]
+    if: always()
+    steps:
+      - name: 📊 Build Summary
+        run: |
+          echo "### Conditional Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Docs Site**: ${{ needs.detect-docs-changes.outputs.docs-changed == 'true' && '✅ Built' || '⏭️ Skipped (no changes)' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Design Site**: ${{ needs.detect-design-changes.outputs.design-changed == 'true' && '✅ Built' || '⏭️ Skipped (no changes)' }}" >> $GITHUB_STEP_SUMMARY

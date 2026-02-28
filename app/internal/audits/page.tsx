@@ -42,7 +42,7 @@ export default async function InternalAuditDashboardPage() {
   });
 
   // Transform data for component
-  const auditData = audits.map((audit) => ({
+  const auditData = audits.map((audit: typeof audits[number]) => ({
     id: audit.id,
     projectName: audit.projectName,
     clientEmail: audit.user.email,
