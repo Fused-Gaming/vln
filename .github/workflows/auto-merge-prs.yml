@@ -1,0 +1,250 @@
+name: 🤖 Auto-Merge Integration PRs
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "Target branch to merge into"
+        required: false
+        default: "development"
+        type: choice
+        options:
+          - development
+          - integration/vln
+      labels:
+        description: "Merge only PRs with this label (comma-separated)"
+        required: false
+        default: "ready-to-merge"
+
+env:
+  NODE_VERSION: "20.x"
+
+jobs:
+  merge-prs:
+    name: 🔄 Merge Ready PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📋 Fetch all PR information
+        id: get_prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const targetBranch = "${{ github.event.inputs.target_branch || 'development' }}";
+            const labels = "${{ github.event.inputs.labels || 'ready-to-merge' }}".split(',').map(l => l.trim());
+
+            console.log(`🎯 Target branch: ${targetBranch}`);
+            console.log(`🏷️  Labels to filter: ${labels.join(', ')}`);
+
+            // Get all open PRs
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: targetBranch,
+              sort: 'created',
+              direction: 'asc'
+            });
+
+            // Filter by label if specified
+            let filtered = prs;
+            if (labels.length > 0 && labels[0] !== '') {
+              filtered = prs.filter(pr => {
+                const prLabels = pr.labels.map(l => l.name);
+                return labels.some(label => prLabels.includes(label));
+              });
+            }
+
+            console.log(`\n📊 Found ${filtered.length} PR(s) ready to merge:`);
+            filtered.forEach((pr, i) => {
+              console.log(`  ${i + 1}. #${pr.number} - ${pr.title} (${pr.user.login})`);
+            });
+
+            core.setOutput('prs_count', filtered.length);
+            core.setOutput('prs_json', JSON.stringify(filtered));
+            core.setOutput('target_branch', targetBranch);
+
+      - name: 🔧 Setup git user
+        run: |
+          git config --global user.name "vln-bot"
+          git config --global user.email "bot@vln.gg"
+
+      - name: 🔄 Perform merges
+        id: merge_results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prs = JSON.parse('${{ steps.get_prs.outputs.prs_json }}');
+            const targetBranch = '${{ steps.get_prs.outputs.target_branch }}';
+
+            if (prs.length === 0) {
+              console.log('❌ No PRs found with the specified criteria');
+              return;
+            }
+
+            const results = {
+              success: [],
+              failed: [],
+              skipped: []
+            };
+
+            for (const pr of prs) {
+              const prNumber = pr.number;
+              const prTitle = pr.title;
+              const prBranch = pr.head.ref;
+
+              console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+              console.log(`🔄 Processing PR #${prNumber}: ${prTitle}`);
+              console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+
+              try {
+                // Check if PR can be merged
+                const { data: prData } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber
+                });
+
+                if (!prData.mergeable) {
+                  console.log(`⚠️  PR #${prNumber} has merge conflicts - skipping`);
+                  results.skipped.push({
+                    number: prNumber,
+                    reason: 'Merge conflicts detected'
+                  });
+                  continue;
+                }
+
+                if (prData.state !== 'open') {
+                  console.log(`⚠️  PR #${prNumber} is not open - skipping`);
+                  results.skipped.push({
+                    number: prNumber,
+                    reason: `PR is ${prData.state}`
+                  });
+                  continue;
+                }
+
+                // Check CI status
+                const { data: checks } = await github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: prData.head.sha
+                });
+
+                const failedChecks = checks.check_runs.filter(c => c.conclusion === 'failure');
+                if (failedChecks.length > 0) {
+                  console.log(`❌ PR #${prNumber} has failing checks:`);
+                  failedChecks.forEach(check => {
+                    console.log(`   - ${check.name}`);
+                  });
+                  results.failed.push({
+                    number: prNumber,
+                    reason: `${failedChecks.length} failing check(s)`
+                  });
+                  continue;
+                }
+
+                // Perform merge
+                console.log(`✅ Merging PR #${prNumber}...`);
+
+                const mergeResult = await github.rest.pulls.merge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  merge_method: 'squash',
+                  commit_title: `Merge PR #${prNumber}: ${prTitle}`,
+                  commit_message: `Auto-merged by VLN PR merge workflow\n\nURL: ${{ github.server_url }}/${{ github.repository }}/pull/${prNumber}`
+                });
+
+                console.log(`✓ Successfully merged PR #${prNumber}`);
+                console.log(`✓ Merge commit: ${mergeResult.data.sha}`);
+
+                results.success.push({
+                  number: prNumber,
+                  commit: mergeResult.data.sha
+                });
+
+                // Add comment to PR
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: `✅ **Auto-Merged**\n\nThis PR was automatically merged by the VLN auto-merge workflow.\n\n**Merge Commit:** \`${mergeResult.data.sha}\``
+                });
+
+              } catch (error) {
+                console.log(`❌ Error merging PR #${prNumber}:`);
+                console.log(`   ${error.message}`);
+                results.failed.push({
+                  number: prNumber,
+                  reason: error.message
+                });
+              }
+            }
+
+            // Output results
+            core.setOutput('merge_results', JSON.stringify(results));
+
+            console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+            console.log(`📊 Merge Summary`);
+            console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+            console.log(`✅ Successful:  ${results.success.length}`);
+            console.log(`❌ Failed:      ${results.failed.length}`);
+            console.log(`⏭️  Skipped:     ${results.skipped.length}`);
+            console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+
+            if (results.failed.length > 0) {
+              console.log(`\n❌ Failed PRs:`);
+              results.failed.forEach(pr => {
+                console.log(`   - #${pr.number}: ${pr.reason}`);
+              });
+            }
+
+            if (results.skipped.length > 0) {
+              console.log(`\n⏭️  Skipped PRs:`);
+              results.skipped.forEach(pr => {
+                console.log(`   - #${pr.number}: ${pr.reason}`);
+              });
+            }
+
+      - name: 📝 Post workflow summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = JSON.parse('${{ steps.merge_results.outputs.merge_results || "{}" }}');
+            const prsCount = parseInt('${{ steps.get_prs.outputs.prs_count }}') || 0;
+
+            if (prsCount === 0) {
+              console.log('✅ No PRs to merge - workflow completed');
+              return;
+            }
+
+            const summary = `
+            ## 🤖 Auto-Merge Workflow Summary
+
+            **Target Branch:** \`${{ steps.get_prs.outputs.target_branch }}\`
+            **Total PRs Found:** ${prsCount}
+
+            ### Results:
+            - ✅ **Merged:** ${results.success?.length || 0}
+            - ❌ **Failed:** ${results.failed?.length || 0}
+            - ⏭️  **Skipped:** ${results.skipped?.length || 0}
+
+            ${results.success?.length > 0 ? '### ✅ Successfully Merged\n' + results.success.map(pr => `- PR #${pr.number} → \`${pr.commit.substring(0, 7)}\``).join('\n') : ''}
+
+            ${results.failed?.length > 0 ? '### ❌ Failed to Merge\n' + results.failed.map(pr => `- PR #${pr.number}: ${pr.reason}`).join('\n') : ''}
+
+            ${results.skipped?.length > 0 ? '### ⏭️  Skipped\n' + results.skipped.map(pr => `- PR #${pr.number}: ${pr.reason}`).join('\n') : ''}
+
+            <sub>🤖 Automated by VLN Auto-Merge Workflow</sub>
+            `;
+
+            core.summary.write(summary);
