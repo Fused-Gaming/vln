@@ -1,19 +1,19 @@
 /**
- * Login Page
- * /app/auth/login
- * Email/password and OAuth authentication
+ * Register Page
+ * /app/auth/register
+ * User registration with email and password
  */
 
 import { redirect } from 'next/navigation';
 import { getAuth } from '@/lib/auth';
-import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
 
 export const metadata = {
-  title: 'Login — VLN.gg',
-  description: 'Sign in to your VLN account',
+  title: 'Create Account — VLN.gg',
+  description: 'Create your VLN account',
 };
 
-export default async function LoginPage() {
+export default async function RegisterPage() {
   const session = await getAuth();
 
   // Redirect if already authenticated
@@ -26,21 +26,21 @@ export default async function LoginPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-slate-400">Sign in to your VLN account</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
+          <p className="text-slate-400">Join VLN for advanced security auditing</p>
         </div>
 
-        {/* Login Form */}
-        <LoginForm />
+        {/* Register Form */}
+        <RegisterForm />
 
         {/* Footer */}
         <p className="text-center text-slate-400 text-sm mt-8">
-          Don&apos;t have an account?{' '}
+          Already have an account?{' '}
           <a
-            href="/auth/register"
+            href="/auth/login"
             className="text-cyan-400 hover:text-cyan-300 transition-colors"
           >
-            Create one
+            Sign in
           </a>
         </p>
       </div>

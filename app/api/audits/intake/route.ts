@@ -1,275 +1,153 @@
 /**
  * Audit Intake Endpoint
- * Allows authenticated users to submit new audit requests
- * Validates scope and service type
- * Date: 2026-02-25
+ * POST /api/audits/intake
+ * Accepts new audit requests from users
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
+import { getAuth } from '@/lib/auth';
+import { sendAuditConfirmationEmail } from '@/lib/email';
+import { z } from 'zod';
 
-interface AuditIntakeRequest {
-  projectName: string;
-  description: string;
-  serviceType: string;
-  scope: {
-    contracts?: string[];
-    files?: string[];
-    lineOfCode?: number;
-    customScope?: string;
-  };
-  teamId?: string;
-}
-
-const VALID_SERVICE_TYPES = [
-  'SMART_CONTRACT_AUDIT',
-  'PLATFORM_SECURITY_AUDIT',
-  'RNG_ANALYSIS',
-  'WALLET_FLOW_RISK_ASSESSMENT',
-  'API_SECURITY_REVIEW',
-  'CUSTOM_ASSESSMENT',
-];
-
-// Pricing model (can be enhanced with dynamic pricing)
-function estimateAuditCost(serviceType: string, scope: Record<string, unknown>): number {
-  const basePricing: Record<string, number> = {
-    SMART_CONTRACT_AUDIT: 25000,
-    PLATFORM_SECURITY_AUDIT: 35000,
-    RNG_ANALYSIS: 15000,
-    WALLET_FLOW_RISK_ASSESSMENT: 12000,
-    API_SECURITY_REVIEW: 20000,
-    CUSTOM_ASSESSMENT: 30000,
-  };
-
-  let cost = basePricing[serviceType] || 30000;
-
-  // Adjust for scope size
-  const lineOfCode = scope.lineOfCode as number | undefined;
-  if (lineOfCode && lineOfCode > 10000) {
-    cost += Math.ceil((lineOfCode - 10000) / 1000) * 500;
-  }
-
-  return cost;
-}
+const auditIntakeSchema = z.object({
+  projectName: z
+    .string()
+    .min(3, 'Project name must be at least 3 characters'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  serviceType: z.enum([
+    'SMART_CONTRACT_AUDIT',
+    'PLATFORM_SECURITY_AUDIT',
+    'RNG_ANALYSIS',
+    'WALLET_FLOW_RISK_ASSESSMENT',
+    'API_SECURITY_REVIEW',
+    'CUSTOM_ASSESSMENT',
+  ]),
+  scope: z.object({
+    contracts: z.array(z.string()).optional(),
+    lines_of_code: z.number().optional(),
+    description: z.string().optional(),
+  }),
+  priority: z
+    .enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])
+    .default('MEDIUM')
+    .optional(),
+  attachmentUrls: z.array(z.string().url()).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await getAuth();
 
-    if (!token || !token.sub) {
+    if (!session?.user) {
       return NextResponse.json(
-        { error: 'UNAUTHORIZED', message: 'User not authenticated' },
+        {
+          error: 'UNAUTHORIZED',
+          message: 'Must be authenticated to submit audit request',
+        },
         { status: 401 }
       );
     }
 
-    const userId = token.sub;
+    const body = await request.json();
 
-    // Parse request body
-    const body: AuditIntakeRequest = await request.json();
-    const { projectName, description, serviceType, scope, teamId } = body;
-
-    // Validation
-    const errors: string[] = [];
-
-    if (!projectName || projectName.trim().length < 3) {
-      errors.push('Project name must be at least 3 characters');
-    }
-
-    if (!description || description.trim().length < 10) {
-      errors.push('Description must be at least 10 characters');
-    }
-
-    if (!VALID_SERVICE_TYPES.includes(serviceType)) {
-      errors.push(`Invalid service type. Must be one of: ${VALID_SERVICE_TYPES.join(', ')}`);
-    }
-
-    if (!scope || (typeof scope !== 'object')) {
-      errors.push('Scope is required and must be an object');
-    }
-
-    if (errors.length > 0) {
+    // Validate input
+    const validationResult = auditIntakeSchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'VALIDATION_ERROR', details: errors },
+        {
+          error: 'VALIDATION_ERROR',
+          details: validationResult.error.issues,
+        },
         { status: 422 }
       );
     }
 
-    // Type-safe cast for validated serviceType
-    const validatedServiceType = serviceType as unknown as string;
+    const { projectName, description, serviceType, scope, priority } =
+      validationResult.data;
 
-    // Verify user exists and is CLIENT or MANAGER
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'NOT_FOUND', message: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Verify team access if teamId provided
-    if (teamId) {
-      const teamMember = await prisma.teamMember.findFirst({
-        where: {
-          teamId,
-          userId,
-        },
-      });
-
-      if (!teamMember) {
-        return NextResponse.json(
-          { error: 'FORBIDDEN', message: 'User is not a member of this team' },
-          { status: 403 }
-        );
-      }
-    }
-
-    // Estimate cost
-    const estimatedCost = estimateAuditCost(validatedServiceType, scope);
-
-    // Calculate scope size
-    const lineOfCode = scope.lineOfCode as number | undefined;
-    const contracts = scope.contracts as string[] | undefined;
-    const files = scope.files as string[] | undefined;
-    const scopeSize = lineOfCode || (contracts?.length || 0) + (files?.length || 0);
+    // Estimate cost based on scope (simplified)
+    const estimatedCost = calculateEstimatedCost(
+      serviceType,
+      scope.lines_of_code || 0
+    );
 
     // Create audit request
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const auditRequest = await prisma.auditRequest.create({
+    const audit = await prisma.auditRequest.create({
       data: {
-        userId,
-        teamId: teamId || null,
-        projectName: projectName.trim(),
-        description: description.trim(),
-        serviceType: validatedServiceType as any,
+        userId: (session.user as any).id,
+        projectName,
+        description,
+        serviceType,
         scope: JSON.stringify(scope),
-        scopeSize: scopeSize || 0,
-        status: 'INTAKE' as any,
-        priority: 'MEDIUM' as any,
-        estimatedCost: estimatedCost,
+        scopeSize: scope.lines_of_code || 0,
+        status: 'PENDING',
+        priority: priority || 'MEDIUM',
+        estimatedCost,
       },
     });
 
-    // Create notification
-    await prisma.notification.create({
-      data: {
-        userId,
-        auditId: auditRequest.id,
-        type: 'AUDIT_CREATED',
-        title: 'Audit Request Submitted',
-        message: `Your audit request for "${projectName}" has been submitted successfully.`,
-      },
-    });
-
-    // Log activity
-    await prisma.activityLog.create({
-      data: {
-        userId,
-        auditId: auditRequest.id,
-        action: 'created',
-        entity: 'AuditRequest',
-        entityId: auditRequest.id,
-        newValues: {
+    // Send confirmation email to user
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: (session.user as any).id },
+      });
+      if (user?.email) {
+        await sendAuditConfirmationEmail(
+          user.email,
           projectName,
-          serviceType,
-          status: 'INTAKE',
-        },
-        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
-      },
-    });
+          audit.id,
+          audit.estimatedCost.toNumber()
+        );
+      }
+    } catch (emailError) {
+      console.error('[Audit Confirmation Email Error]', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json(
       {
-        id: auditRequest.id,
-        projectName: auditRequest.projectName,
-        status: auditRequest.status,
-        priority: auditRequest.priority,
-        estimatedCost: estimatedCost,
-        createdAt: auditRequest.createdAt,
+        id: audit.id,
+        projectName: audit.projectName,
+        status: audit.status,
+        priority: audit.priority,
+        estimatedCost: audit.estimatedCost.toNumber(),
+        createdAt: audit.createdAt,
         message: 'Audit request submitted successfully',
       },
       { status: 201 }
     );
   } catch (error) {
     console.error('[Audit Intake Error]', error);
-
     return NextResponse.json(
       {
         error: 'SERVER_ERROR',
         message: 'Failed to submit audit request',
-        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
   }
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    // Verify authentication
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+/**
+ * Calculate estimated cost for audit
+ * Based on service type and scope size
+ */
+function calculateEstimatedCost(
+  serviceType: string,
+  linesOfCode: number
+): number {
+  const baseRates: Record<string, number> = {
+    SMART_CONTRACT_AUDIT: 5000,
+    PLATFORM_SECURITY_AUDIT: 7500,
+    RNG_ANALYSIS: 3000,
+    WALLET_FLOW_RISK_ASSESSMENT: 2500,
+    API_SECURITY_REVIEW: 4000,
+    CUSTOM_ASSESSMENT: 5000,
+  };
 
-    if (!token || !token.sub) {
-      return NextResponse.json(
-        { error: 'UNAUTHORIZED', message: 'User not authenticated' },
-        { status: 401 }
-      );
-    }
+  const baseRate = baseRates[serviceType] || 5000;
+  const scopeMultiplier = Math.max(1, Math.ceil(linesOfCode / 1000));
 
-    const userId = token.sub;
-
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const priority = searchParams.get('priority');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
-    const offset = parseInt(searchParams.get('offset') || '0');
-
-    // Build query
-    const where: Record<string, unknown> = { userId };
-    if (status) where.status = status;
-    if (priority) where.priority = priority;
-
-    // Fetch audit requests
-    const auditRequests = await prisma.auditRequest.findMany({
-      where,
-      take: limit,
-      skip: offset,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    // Count total
-    const total = await prisma.auditRequest.count({ where });
-
-    return NextResponse.json({
-      data: auditRequests,
-      pagination: {
-        limit,
-        offset,
-        total,
-        hasMore: offset + limit < total,
-      },
-    });
-  } catch (error) {
-    console.error('[Get Audits Error]', error);
-
-    return NextResponse.json(
-      {
-        error: 'SERVER_ERROR',
-        message: 'Failed to fetch audit requests',
-      },
-      { status: 500 }
-    );
-  }
+  return baseRate * scopeMultiplier;
 }

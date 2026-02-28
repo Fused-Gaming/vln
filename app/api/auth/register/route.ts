@@ -1,65 +1,43 @@
 /**
  * User Registration Endpoint
- * Creates new user account with email/password
- * Sends verification email
- * Date: 2026-02-25
+ * POST /api/auth/register
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendWelcomeEmail, sendVerificationEmail } from '@/lib/email';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
+import { z } from 'zod';
 
-interface RegisterRequest {
-  email: string;
-  password: string;
-  name?: string;
-}
-
-// Password validation requirements
-function validatePassword(password: string): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (password.length < 12) errors.push('Password must be at least 12 characters');
-  if (!/[A-Z]/.test(password)) errors.push('Password must contain uppercase letter');
-  if (!/[a-z]/.test(password)) errors.push('Password must contain lowercase letter');
-  if (!/[0-9]/.test(password)) errors.push('Password must contain number');
-  if (!/[!@#$%^&*]/.test(password)) errors.push('Password must contain special character (!@#$%^&*)');
-
-  return {
-    valid: errors.length === 0,
-    errors,
-  };
-}
+const registerSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z
+    .string()
+    .min(12, 'Password must be at least 12 characters')
+    .regex(/[A-Z]/, 'Password must contain uppercase letter')
+    .regex(/[a-z]/, 'Password must contain lowercase letter')
+    .regex(/[0-9]/, 'Password must contain number')
+    .regex(/[!@#$%^&*]/, 'Password must contain special character'),
+  name: z.string().min(1, 'Name is required').optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body: RegisterRequest = await request.json();
-    const { email, password, name } = body;
+    const body = await request.json();
 
-    // Validation
-    if (!email || !password) {
+    // Validate input
+    const validationResult = registerSchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
+        {
+          error: 'VALIDATION_ERROR',
+          details: validationResult.error.issues,
+        },
+        { status: 422 }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.valid) {
-      return NextResponse.json(
-        { error: 'Password does not meet requirements', details: passwordValidation.errors },
-        { status: 400 }
-      );
-    }
+    const { email, password, name } = validationResult.data;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -68,66 +46,64 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email already registered' },
+        {
+          error: 'CONFLICT',
+          message: 'Email already registered',
+        },
         { status: 409 }
       );
     }
 
-    // Hash password
+    // Hash password (minimum 12 rounds as per ADR-001)
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Create user
     const user = await prisma.user.create({
       data: {
         email,
+        name: name || undefined,
         passwordHash,
-        name: name || null,
         role: 'CLIENT',
       },
     });
 
-    // Create verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-    await prisma.verificationToken.create({
+    // Create verification token for email verification
+    const verificationToken = await prisma.verificationToken.create({
       data: {
         userId: user.id,
-        token: verificationToken,
+        token: crypto.getRandomValues(new Uint8Array(32)).toString(),
         type: 'EMAIL_VERIFICATION',
-        expiresAt: tokenExpiresAt,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       },
     });
 
-    // Log registration
-    await prisma.activityLog.create({
-      data: {
-        userId: user.id,
-        action: 'REGISTER',
-        entity: 'User',
-        entityId: user.id,
-        newValues: { email, name },
-      },
-    });
-
-    // TODO: Send verification email with link: /auth/verify-email?token={verificationToken}
+    // Send welcome email
+    try {
+      const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify?token=${verificationToken.token}`;
+      await sendWelcomeEmail(email, name);
+      await sendVerificationEmail(email, verificationUrl);
+    } catch (emailError) {
+      console.error('[Email Send Error]', emailError);
+      // Don't fail registration if email fails, but log it
+    }
 
     return NextResponse.json(
       {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
         message: 'Registration successful. Please verify your email.',
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        },
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('[Registration Error]', error);
-
+    console.error('[Register Error]', error);
     return NextResponse.json(
-      { error: 'Registration failed', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'SERVER_ERROR',
+        message: 'Failed to register user',
+      },
       { status: 500 }
     );
   }
