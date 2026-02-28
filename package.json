@@ -23,6 +23,7 @@
     "monorepo:build": "pnpm -r build",
     "monorepo:lint": "pnpm -r lint",
     "monorepo:test": "pnpm --filter=vln-website test && pnpm --filter=vln-docs-site test || true",
+    "postinstall": "prisma generate",
     "prepare": "husky"
   },
   "dependencies": {
