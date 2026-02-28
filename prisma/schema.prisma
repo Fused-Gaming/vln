@@ -3,8 +3,7 @@
 // Last Updated: 2026-02-25
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
 }
 
 generator client {
