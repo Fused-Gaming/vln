@@ -18,7 +18,11 @@
       "Bash(gh pr create:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run view:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__Vercel__list_teams",
+      "mcp__Vercel__list_projects",
+      "mcp__Vercel__list_deployments",
+      "mcp__Vercel__get_deployment_build_logs"
     ],
     "deny": [],
     "ask": []

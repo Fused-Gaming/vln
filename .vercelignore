@@ -1,5 +1,0 @@
-# Exclude docs-site from Vercel deployment
-# The Zod validation error in Astro/Starlight 404 handling is blocking builds
-# docs-site will be deployed separately or fixed in a follow-up PR (#207)
-docs-site/**
-docs-site/

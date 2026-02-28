@@ -137,6 +137,34 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  docs-site:
+    dependencies:
+      '@astrojs/starlight':
+        specifier: ^0.32.0
+        version: 0.32.6(astro@5.17.3(@types/node@22.19.1)(jiti@2.6.1)(rollup@4.53.3)(typescript@5.9.3))
+      astro:
+        specifier: ^5.0.0
+        version: 5.17.3(@types/node@22.19.1)(jiti@2.6.1)(rollup@4.53.3)(typescript@5.9.3)
+      autoprefixer:
+        specifier: ^10.4.22
+        version: 10.4.22(postcss@8.5.6)
+      postcss:
+        specifier: ^8.5.6
+        version: 8.5.6
+      tailwindcss:
+        specifier: ^3.4.18
+        version: 3.4.18
+      zod:
+        specifier: ^3.25.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.19.1
+        version: 22.19.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
