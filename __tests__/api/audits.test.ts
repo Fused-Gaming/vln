@@ -223,14 +223,14 @@ describe('Audit Priority Levels', () => {
 
   it('should accept all priority levels', () => {
     priorities.forEach((priority) => {
-      const schema = z.enum(priorities as any);
+      const schema = z.enum(priorities as [string, ...string[]]);
       const result = schema.safeParse(priority);
       expect(result.success).toBe(true);
     });
   });
 
   it('should reject invalid priority', () => {
-    const schema = z.enum(priorities as any);
+    const schema = z.enum(priorities as [string, ...string[]]);
     const result = schema.safeParse('URGENT');
     expect(result.success).toBe(false);
   });
