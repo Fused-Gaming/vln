@@ -58,8 +58,8 @@ export async function GET(request: NextRequest) {
       validationResult.data;
 
     // Build filter
-    const where: any = {
-      userId: (session.user as any).id,
+    const where: Record<string, unknown> = {
+      userId: (session.user as { id: string }).id,
       deletedAt: null,
     };
 
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        data: audits.map((audit: any) => ({
+        data: audits.map((audit) => ({
           id: audit.id,
           projectName: audit.projectName,
           status: audit.status,

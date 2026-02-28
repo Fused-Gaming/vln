@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role,
             requiresTwoFactor: true,
-          } as any;
+          } as unknown as { id: string; email: string; name: string | null };
         }
 
         return {
@@ -123,7 +123,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role;
+        token.role = (user as { role?: string }).role;
       }
       if (account) {
         token.accessToken = account.access_token;
@@ -133,8 +133,8 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = token.role;
+        (session.user as { id?: string; role?: string }).id = token.id as string;
+        (session.user as { id?: string; role?: string }).role = token.role as string;
       }
       return session;
     },

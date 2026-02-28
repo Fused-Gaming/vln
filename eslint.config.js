@@ -10,6 +10,7 @@ module.exports = [
   {
     ignores: [
       'docs-site/**',
+      'design-site/**',
       '.next/**',
       'node_modules/**',
       'out/**',

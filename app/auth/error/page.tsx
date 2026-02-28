@@ -4,6 +4,7 @@
  * Handles NextAuth.js authentication errors
  */
 
+import Link from 'next/link';
 import { AlertCircle } from 'lucide-react';
 
 export const metadata = {
@@ -48,18 +49,18 @@ export default function AuthErrorPage({
         <p className="text-slate-400 mb-8">{message}</p>
 
         <div className="flex gap-3">
-          <a
+          <Link
             href="/auth/login"
             className="flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium"
           >
             Try Again
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium"
           >
             Go Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
