@@ -163,7 +163,7 @@ describe('Password Strength Requirements', () => {
       return passedChecks;
     };
 
-    expect(checkStrength('Pass1!')).toBe(3); // Missing length
+    expect(checkStrength('Pass1!')).toBe(4); // Missing length
     expect(checkStrength('SecurePass123!')).toBe(5); // All requirements
     expect(checkStrength('Sec1!')).toBe(4); // Missing length
   });
