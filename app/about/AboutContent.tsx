@@ -7,7 +7,7 @@ import CSSFade from "@/components/animations/css-fade";
 import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
 import EmployeeCard from "@/components/vln/employee-card";
-import { Shield, Target, Users, Award, Mic, ExternalLink } from "lucide-react";
+import { Shield, Target, Users, Award, Mic } from "lucide-react";
 import Image from "next/image";
 
 export default function AboutPage() {
@@ -289,15 +289,6 @@ export default function AboutPage() {
                         Book Brett for Your Event
                         <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                       </Button>
-                      <a
-                        href="https://www.brettjohnson.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-vln border border-vln-amber/30 hover:border-vln-amber/60 text-vln-amber text-sm font-medium transition-all duration-200"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        brettjohnson.com
-                      </a>
                     </div>
                   </div>
                 </div>
