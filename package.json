@@ -12,6 +12,14 @@
     "test:widget:ui": "vitest __tests__/ZammadWidget.test.tsx --ui",
     "generate:favicons": "node scripts/generate-favicons.js && node scripts/generate-favicon-ico.js",
     "generate:icons": "pnpm generate:favicons",
+    "db:init": "tsx scripts/db-init.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset",
+    "db:studio": "prisma studio",
     "docs:dev": "cd docs-site && pnpm dev",
     "docs:build": "cd docs-site && pnpm build",
     "docs:preview": "cd docs-site && pnpm preview",
@@ -23,6 +31,9 @@
     "monorepo:build": "pnpm -r build",
     "monorepo:lint": "pnpm -r lint",
     "monorepo:test": "pnpm --filter=vln-website test && pnpm --filter=vln-docs-site test || true"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -58,6 +69,7 @@
     "prisma": "^7.4.1",
     "sharp": "^0.34.5",
     "to-ico": "^1.1.5",
+    "tsx": "^4.19.3",
     "typescript": "^5.9.3",
     "vitest": "^2.1.9"
   }
