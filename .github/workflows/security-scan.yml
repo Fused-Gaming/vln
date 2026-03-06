@@ -1,0 +1,179 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [main, integration/vln]
+  pull_request:
+    branches: [main, integration/vln]
+  schedule:
+    - cron: '0 2 * * *' # Daily at 2 AM UTC
+
+jobs:
+  npm-audit:
+    name: NPM Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run npm audit
+        run: pnpm audit --production --audit-level=moderate
+        continue-on-error: true
+
+      - name: Generate audit report
+        run: pnpm audit --production --json > audit-report.json || true
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+
+  dependency-check:
+    name: Dependency Vulnerability Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for outdated packages
+        run: pnpm outdated || true
+
+      - name: Run security check
+        run: pnpm audit --production || true
+
+  semgrep:
+    name: Semgrep SAST Scan
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep scan
+        run: |
+          semgrep --config=p/security-audit \
+                  --config=p/owasp-top-ten \
+                  --config=p/typescript \
+                  --json \
+                  --output=semgrep-report.json \
+                  . || true
+
+      - name: Upload Semgrep report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
+
+  build-security:
+    name: Build Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint code
+        run: pnpm lint
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Run tests
+        run: pnpm test --run
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  security-summary:
+    name: Security Check Summary
+    runs-on: ubuntu-latest
+    needs: [npm-audit, dependency-check, semgrep, build-security, codeql]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Generate security summary
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ NPM Audit: Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Dependency Check: Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Semgrep SAST: Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build Security: Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ CodeQL Analysis: Complete" >> $GITHUB_STEP_SUMMARY

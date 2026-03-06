@@ -18,7 +18,8 @@
       "Bash(gh pr create:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run view:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git -C /home/user/vln branch --show-current)"
     ],
     "deny": [],
     "ask": []

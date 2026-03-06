@@ -12,6 +12,7 @@ import {
   Tag,
   Users,
   Mail,
+  Gamepad2,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAnimations } from "@/lib/animation-context";
@@ -25,6 +26,7 @@ declare global {
 
 const navLinks = [
   { href: "/services", label: "Services", icon: Shield },
+  { href: "/services/igaming", label: "iGaming", icon: Gamepad2 },
   { href: "/pricing", label: "Pricing", icon: Tag },
   { href: "/referrals", label: "Referrals", icon: Users },
   { href: "/contact", label: "Contact", icon: Mail },
