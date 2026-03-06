@@ -231,6 +231,37 @@ export default function ServicesPage() {
           </StaggerFade>
         </section>
 
+        {/* iGaming Capability Sample */}
+        <section className="container mx-auto px-4 sm:px-6 pb-10 sm:pb-14">
+          <CSSFade direction="up">
+            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-5 sm:gap-8 px-6 sm:px-10 py-6 rounded-vln border border-vln-sage/20 bg-vln-bg-light">
+              <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-vln bg-vln-sage/10 border border-vln-sage/25">
+                <span className="text-vln-sage text-xl" aria-hidden>♠</span>
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <p className="font-mono text-[9px] uppercase tracking-[3px] text-vln-sage mb-1">
+                  Live Capability Sample
+                </p>
+                <p className="text-sm text-vln-gray leading-relaxed">
+                  Our iGaming security practice covers provably-fair RNG auditing, wallet-flow risk modeling, and platform integrity.{" "}
+                  <span className="text-vln-gray-dark">
+                    View an interactive Blackjack engine we built to demonstrate 6-deck CSPRNG shuffle integrity and multi-hand settlement logic.
+                  </span>
+                </p>
+              </div>
+              <a
+                href="/internal/bj9k4-blackjack-premium"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 px-5 py-2.5 rounded-[6px] border border-vln-sage/40 text-vln-sage bg-vln-sage/[0.07] font-mono text-[11px] uppercase tracking-[2px] hover:bg-vln-sage hover:text-vln-bg transition-all duration-150 hover:-translate-y-0.5 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-vln-sage whitespace-nowrap"
+                aria-label="Open Blackjack Premium capability sample in new tab"
+              >
+                Open Demo →
+              </a>
+            </div>
+          </CSSFade>
+        </section>
+
         {/* CTA Section */}
         <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
           <CSSFade>

@@ -1,8 +1,10 @@
 /**
  * Blog Post Metadata
  *
- * Centralized blog metadata for dynamic OG generation and indexing.
- * Used by /app/blog/[slug]/opengraph-image.tsx for dynamic OG titles.
+ * Centralized blog metadata for dynamic OG generation, RSS feed, sitemap, and indexing.
+ * Used by /app/blog/[slug]/opengraph-image.tsx and /app/api/blog/rss/route.ts.
+ *
+ * Canonical URLs use blog.vln.gg — the blog subdomain routes to /blog/* via middleware.
  */
 
 export interface BlogPost {
@@ -12,6 +14,7 @@ export interface BlogPost {
   description: string;
   category: string;
   publishedDate: string;
+  readTime?: string;
   accent?: "sage" | "blue" | "amber" | "purple"; // OG accent color
 }
 
@@ -24,6 +27,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "An analysis of the most common and critical smart contract vulnerabilities discovered in Bay Area DeFi projects.",
     category: "Security Research",
     publishedDate: "2025-01-15",
+    readTime: "12 min read",
     accent: "sage",
   },
   {
@@ -33,8 +37,31 @@ export const BLOG_POSTS: BlogPost[] = [
     description:
       "A comprehensive security checklist for Web3 projects launching in the Bay Area, covering smart contract audits, operational security, and incident response planning.",
     category: "Best Practices",
-    publishedDate: "2025-02-10",
+    publishedDate: "2025-02-01",
+    readTime: "8 min read",
     accent: "blue",
+  },
+  {
+    slug: "igaming-platform-security-audit-guide",
+    title: "iGaming Platform Security: A Complete Audit Guide",
+    shortTitle: "iGaming Security Audit Guide",
+    description:
+      "A comprehensive security audit guide for iGaming platforms — covering RNG integrity, wallet-flow risk, smart contract integration, API attack surface, and regulatory compliance for high-throughput gaming systems.",
+    category: "Platform Security",
+    publishedDate: "2025-03-10",
+    readTime: "14 min read",
+    accent: "amber",
+  },
+  {
+    slug: "rng-manipulation-attacks-casino-platforms",
+    title: "RNG Manipulation Attacks: How Casino Platforms Get Exploited",
+    shortTitle: "RNG Manipulation Attacks",
+    description:
+      "A technical deep-dive into RNG manipulation attacks on casino and iGaming platforms — from block hash prediction on EVM chains to timing attacks on off-chain entropy sources.",
+    category: "RNG Analysis",
+    publishedDate: "2025-04-22",
+    readTime: "16 min read",
+    accent: "purple",
   },
 ];
 
