@@ -2,7 +2,7 @@
 
 > Complete inventory of all pages, components, and design elements
 
-**Last Updated:** November 2024
+**Last Updated:** March 2026
 
 ---
 
@@ -13,12 +13,27 @@
 | Route | Title | Description | Status |
 |-------|-------|-------------|--------|
 | `/` | Homepage | Main conversion-focused sales page | ✓ Live |
-| `/services` | Services | Detailed service offerings | ✓ Live |
+| `/services` | Services | All security service offerings | ✓ Live |
+| `/services/igaming` | iGaming Security | iGaming-specific services + Blackjack demo card | ✓ Live |
+| `/services/san-francisco` | SF Services | Bay Area geo-targeted services page | ✓ Live |
 | `/pricing` | Pricing | Pricing tiers and retainers | ✓ Live |
 | `/contact` | Contact | Contact form and booking | ✓ Live |
-| `/demo` | Demo | Product demo (if applicable) | ✓ Live |
-| `/home-enhanced` | Enhanced Home | Alternative homepage design | ✓ Live |
-| `/sitemap.xml` | Sitemap | XML sitemap for SEO | ✓ Live |
+| `/about` | About | Team & company info | ✓ Live |
+| `/faq` | FAQ | Full FAQ page | ✓ Live |
+| `/referrals` | Referrals | Referral program | ✓ Live |
+| `/privacy` | Privacy Policy | Privacy policy | ✓ Live |
+| `/terms` | Terms of Service | Terms of service | ✓ Live |
+| `/refunds` | Refund Policy | Refund policy | ✓ Live |
+| `/get-help` | Get Help | Support landing | ✓ Live |
+| `/status` | Project Dashboard | Design token + route status dashboard | ✓ Live |
+| `/sitemap.xml` | Sitemap | Dynamic XML sitemap for SEO | ✓ Live |
+
+### Internal / Hidden Routes (no-index)
+
+| Route | Title | Description | Status |
+|-------|-------|-------------|--------|
+| `/internal/bj9k4-blackjack-premium` | Blackjack Premium | iGaming capability sample — 6-deck CSPRNG Blackjack engine | ✓ Live (hidden) |
+| `/internal/qx7b2-camo-preview` | Camo BG Preview | Background pattern capability sample | ✓ Live (hidden) |
 
 ### Future Routes (Planned)
 
@@ -29,11 +44,17 @@
 | `/case-studies/[slug]` | Case Study Detail | Individual case study | ○ Planned |
 | `/blog` | Blog | Security articles & research | ○ Planned |
 | `/blog/[slug]` | Blog Post | Individual blog post | ○ Planned |
-| `/faq` | FAQ | Full FAQ page | ○ Planned |
 | `/vise` | VISE Platform | Education platform | ○ Planned |
-| `/about` | About | Team & company info | ○ Planned |
-| `/legal/privacy` | Privacy Policy | Privacy policy | ○ Planned |
-| `/legal/terms` | Terms of Service | Terms of service | ○ Planned |
+
+### API Routes
+
+| Route | Method | Description | Status |
+|-------|--------|-------------|--------|
+| `/api/status` | GET | Design token + route manifest (JSON) | ✓ Live |
+| `/api/bookings` | GET / POST | Appointment booking validation | ✓ Live |
+| `/api/og` | GET | Dynamic Open Graph image generation | ✓ Live |
+| `/api/og/design` | GET | design.vln.gg OG endpoint | ✓ Live |
+| `/api/og/docs` | GET | docs.vln.gg OG endpoint | ✓ Live |
 
 ---
 
@@ -301,24 +322,84 @@
 
 ---
 
+## iGaming Services Page — `/services/igaming`
+
+**File:** `app/services/igaming/iGamingServicesContent.tsx`
+**Route:** `/services/igaming`
+**Nav entry:** "iGaming" (Gamepad2 icon) — between Services and Pricing
+
+### Service Panels (4)
+
+| Panel | Icon | Color | Pricing |
+|-------|------|-------|---------|
+| RNG & Provably-Fair Auditing | Shield | Sage | Starting at $3K |
+| Wallet-Flow Risk Modeling | BarChart3 | Blue | Custom |
+| Platform Integrity Testing | Search | Amber | Starting at $5K |
+| Smart Contract Game Audits | Code | Purple | Starting at $2K |
+
+### Blackjack Premium Capability Card
+
+Located below the service panels (`id="capability-sample"`). Linked from "View Live Demo ↓" in the hero.
+
+**Left panel (felt-green):** suit icon, CSPRNG / 6-Deck / Multi stat pills
+**Right panel:** tag cloud, feature checklist, two CTAs:
+- `Play Live Demo → /internal/bj9k4-blackjack-premium` (new tab, sage filled button)
+- `Discuss Your Platform → /contact?service=igaming` (secondary)
+
+**Feature checklist items:**
+1. 6-deck shoe with CSPRNG Fisher-Yates shuffle
+2. Hit · Stand · Double Down · Split · Insurance
+3. Multi-hand play with per-hand settlement
+4. Dealer soft-17 stand rule enforced
+5. Chip denominations $1 – $100
+6. Confetti win celebration & card-deal animation
+
+---
+
+## Navigation
+
+### Header Nav Links (order)
+
+| Label | Route | Icon | Active color |
+|-------|-------|------|-------------|
+| Services | `/services` | Shield | Sage |
+| iGaming | `/services/igaming` | Gamepad2 | Sage |
+| Pricing | `/pricing` | Tag | Sage |
+| Referrals | `/referrals` | Users | Sage |
+| Contact | `/contact` | Mail | Sage |
+
+Icon-only controls (header right):
+- Chat (MessageCircle, conditional on Zammad readiness)
+- Animation toggle (Zap / ZapOff)
+- Mobile: hamburger (Menu / X)
+
+---
+
 ## Icon Usage
 
 All icons from **Lucide React** (tree-shakeable, lightweight):
 
 | Icon | Usage | Color |
 |------|-------|-------|
-| Search | Vuln discovery, forensics | Sage |
+| Search | Vuln discovery, forensics, platform integrity | Sage / Amber |
 | DollarSign | Funds recovered | Blue |
 | ShieldCheck | Zero hacks, guarantee | Purple/Sage |
 | Siren | Emergency forensics | Amber |
 | Check | List items, features | Sage |
 | ChevronDown | FAQ accordion | Sage |
 | AlertCircle | Urgency banner | Amber |
-| Shield | Prevention service | Sage |
+| Shield | Prevention service, RNG audit panel | Sage |
 | GraduationCap | Training service | Blue |
 | BookOpen | Education service | Purple |
 | Star | Testimonial ratings | Amber |
 | ArrowRight | CTAs, links | Varies |
+| Gamepad2 | iGaming nav link | Sage |
+| BarChart3 | Wallet-flow risk modeling panel | Blue |
+| Code | Smart contract game audits panel | Purple |
+| ExternalLink | "Open in new tab" CTAs | Sage |
+| Tag | Pricing nav link | Sage |
+| Users | Referrals nav link | Sage |
+| Mail | Contact nav link | Sage |
 
 ---
 

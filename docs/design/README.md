@@ -2,8 +2,8 @@
 
 > Security & Smart Contract Vulnerability Lab Brand Guidelines
 
-**Last Updated:** February 2026
-**Version:** 2.2
+**Last Updated:** March 2026
+**Version:** 2.3
 **Status:** Active
 
 ---
@@ -27,16 +27,18 @@ The VLN design system provides a comprehensive framework for building conversion
 ```
 docs/design/
 ├── README.md (this file)
-├── ROUTES_AND_ELEMENTS.md - Complete inventory of pages & components
+├── ROUTES_AND_ELEMENTS.md - Complete inventory of pages, nav, components
 ├── DESIGN_ASSETS.md - Reusable patterns, icons, gradients
 ├── og-images.md - Open Graph image system, wireframes & architecture
 ├── tokens/
-│   └── colors.md - Color palette and usage (WCAG AAA)
+│   ├── colors.md - Color palette and usage (WCAG AAA)
+│   └── form-tokens.md - Form input and validation design tokens
 ├── components/
 │   ├── animations.md - Animation system & best practices
 │   └── employee-cards.md - Team member card component
 ├── pages/
-│   └── homepage.md - Homepage design spec & wireframes
+│   ├── homepage.md - Homepage design spec & wireframes
+│   └── igaming.md - iGaming services page spec
 ├── ux-flows/
 │   ├── homepage.md - Homepage UX flows & mockups
 │   ├── contact-flow.md - Contact form UX flow
@@ -44,6 +46,17 @@ docs/design/
 └── performance/
     └── guidelines.md - Performance optimization (17 rules)
 ```
+
+### Token Update Pipeline
+
+Design tokens are sourced from `tailwind.config.ts` and mirrored in `docs/design/tokens/colors.md`.
+
+To stage a sitewide token update:
+1. Review current token values at **`/api/status`** (JSON manifest)
+2. Inspect the visual dashboard at **`/status`**
+3. Edit `tailwind.config.ts` — all Tailwind utilities regenerate on build
+4. Verify contrast ratios in `docs/design/tokens/colors.md`
+5. Run `pnpm build` — TypeScript and Tailwind will surface any token mismatches
 
 ---
 
@@ -110,6 +123,13 @@ docs/design/
 ---
 
 ## Changelog
+
+### v2.3 - March 2026
+- **iGaming Services page** (`/services/igaming`): four service panels (RNG Auditing, Wallet-Flow, Platform Integrity, Game Contract Audits) + Blackjack Premium capability card
+- **Blackjack Premium** (`/internal/bj9k4-blackjack-premium`): casino-grade 6-deck CSPRNG engine, full Split/Double/Insurance, multi-hand, confetti animation
+- **Header nav** updated: "iGaming" link (Gamepad2 icon) between Services and Pricing
+- **Project dashboard** at `/status` + `/api/status` JSON manifest: design token inventory, route registry, nav structure — foundation for sitewide token updates
+- `ROUTES_AND_ELEMENTS.md` updated: live routes, internal routes, API routes, iGaming page spec, nav table, expanded icon registry
 
 ### v2.2 - February 2026
 - Dynamic Open Graph image system for all routes and subdomains
