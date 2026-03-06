@@ -4,10 +4,52 @@ import type { NextRequest } from 'next/server';
 /**
  * Middleware for CORS, security headers, authentication, and request logging
  * Enforces strict origin policies for API routes and handles session validation
+ * Handles blog.vln.gg subdomain routing to /blog/* paths
  * Date: 2026-02-25
  */
 
 export function middleware(request: NextRequest) {
+  const hostname = request.headers.get('host') || '';
+  const isBlogSubdomain =
+    hostname === 'blog.vln.gg' ||
+    (process.env.NODE_ENV === 'development' && hostname === 'blog.localhost:3000');
+
+  // Blog subdomain routing: rewrite blog.vln.gg/* → /blog/*
+  if (isBlogSubdomain) {
+    const pathname = request.nextUrl.pathname;
+
+    // RSS feed
+    if (pathname === '/rss.xml' || pathname === '/rss' || pathname === '/feed.xml') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/api/blog/rss';
+      const rewrite = NextResponse.rewrite(url);
+      rewrite.headers.set('x-request-id', crypto.randomUUID());
+      return rewrite;
+    }
+
+    // Root → /blog
+    if (pathname === '/') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/blog';
+      const rewrite = NextResponse.rewrite(url);
+      rewrite.headers.set('x-request-id', crypto.randomUUID());
+      return rewrite;
+    }
+
+    // /[slug] → /blog/[slug] (skip already-prefixed, api, and _next paths)
+    if (
+      !pathname.startsWith('/blog') &&
+      !pathname.startsWith('/api/') &&
+      !pathname.startsWith('/_next/')
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/blog${pathname}`;
+      const rewrite = NextResponse.rewrite(url);
+      rewrite.headers.set('x-request-id', crypto.randomUUID());
+      return rewrite;
+    }
+  }
+
   const response = NextResponse.next();
 
   // Add request ID for tracing
@@ -17,6 +59,7 @@ export function middleware(request: NextRequest) {
   const allowedOrigins = [
     'https://vln.gg',
     'https://www.vln.gg',
+    'https://blog.vln.gg',
     // Add development origins only in development
     ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : []),
   ];
