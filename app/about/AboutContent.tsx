@@ -205,7 +205,7 @@ export default function AboutPage() {
                   <div className="flex-shrink-0 mx-auto sm:mx-0">
                     <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-vln overflow-hidden border-2 border-vln-amber/30">
                       <Image
-                        src="/brett-johnson.jpg"
+                        src="/brett-johnson.JPG"
                         alt="Brett Johnson — Keynote Speaker"
                         fill
                         className="object-cover object-top"
