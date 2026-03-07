@@ -21,15 +21,16 @@ VLN provides advanced platform security, RNG analysis, wallet-flow risk modeling
 
 # **Tech Stack**
 
-**Framework**: Next.js 15 with App Router
+**Framework**: Next.js 16 with App Router
 **Language**: TypeScript (5.x)
 **Styling**: Tailwind CSS
 **UI Components**: Shadcn/UI + custom VLN components
-**Database**: PostgreSQL via Prisma (planned)
-**Authentication**: NextAuth.js (planned)
+**Database**: PostgreSQL via Prisma 7 (active — schema + seed + migrations)
+**Authentication**: NextAuth.js (active — credentials + Google + GitHub)
 **Payments**: Stripe for booking & retainers (planned)
 **Package Manager**: pnpm
 **Deployment**: Vercel (Primary), GitHub Actions (CI/CD)
+**Blog**: blog.vln.gg subdomain via Next.js middleware routing
 
 ---
 
@@ -41,6 +42,39 @@ pnpm build    # Production build – REQUIRED before merging any PR
 pnpm start    # Run local production build
 pnpm lint     # ESLint checks
 pnpm test     # Unit/integration tests
+```
+
+### **Database Commands**
+
+```bash
+pnpm db:init          # Validate env vars + test PostgreSQL connection (run first)
+pnpm db:generate      # Regenerate Prisma client after schema changes
+pnpm db:migrate:dev   # Development: create + apply migration files
+pnpm db:migrate       # Production: apply existing migration files only
+pnpm db:seed          # Seed initial admin user + VLN Research team
+pnpm db:reset         # Drop + recreate DB, re-apply all migrations, re-seed
+pnpm db:push          # Push schema directly without migration files (prototyping)
+pnpm db:studio        # Open Prisma Studio at localhost:5555
+```
+
+**Required env vars** (copy `.env.example` → `.env.local`):
+
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | **Yes** | `postgresql://user:pass@host:5432/dbname` |
+| `DATABASE_URL_DIRECT` | No | Non-pooled URL for Prisma CLI when using PgBouncer/Supabase |
+| `NEXTAUTH_SECRET` | **Yes** | `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | **Yes** | `http://localhost:3000` (dev) / `https://vln.gg` (prod) |
+| `SEED_ADMIN_EMAIL` | No | Initial admin email (default: `admin@vln.gg`) |
+| `SEED_ADMIN_PASSWORD` | Yes (prod) | Initial admin password — warns with dev default if unset |
+
+**First-time DB initialization sequence:**
+
+```bash
+pnpm db:init           # 1. Validate env + confirm connection
+pnpm db:generate       # 2. Generate Prisma client
+pnpm db:migrate:dev    # 3. Create and apply migrations (dev)
+pnpm db:seed           # 4. Seed admin user + team
 ```
 
 ---
@@ -88,23 +122,43 @@ pnpm build   # MUST pass before PR
 
 ```
 app/
-│   ├── (site)/                 # Marketing, landing pages
+│   ├── blog/                   # Blog – also served at blog.vln.gg via middleware
+│   │   ├── page.tsx            # Blog listing
+│   │   ├── sitemap.ts          # blog.vln.gg sitemap
+│   │   └── [slug]/             # Individual posts
+│   ├── about/                  # About page (team + Brett Johnson keynote card)
 │   ├── services/               # iGaming security + audit service pages
 │   ├── contact/                # Contact + booking
-│   ├── api/                    # Serverless API endpoints
+│   ├── api/
+│   │   ├── health/             # GET /api/health — live DB probe + commit log
+│   │   ├── blog/rss/           # GET /api/blog/rss — RSS 2.0 feed
+│   │   ├── audits/intake/      # POST /api/audits/intake
+│   │   ├── bookings/           # POST /api/bookings
+│   │   └── auth/               # NextAuth handlers
 │   └── layout.tsx
 │
 components/
 │   ├── ui/                     # Shadcn-based components
-│   ├── vln/                    # Custom brand components
-│   └── icons/
+│   ├── vln/                    # Custom brand components (employee-card, etc.)
+│   └── animations/
 │
 lib/
-│   ├── utils/
-│   ├── validation/
-│   └── email/
+│   ├── blog/metadata.ts        # BLOG_POSTS[] — single source of truth for RSS, sitemap, homepage
+│   ├── prisma.ts               # Prisma client singleton (adapter-pg)
+│   ├── auth.ts                 # NextAuth configuration
+│   └── api-types.ts            # Shared TypeScript types
 │
+prisma/
+│   ├── schema.prisma           # 25+ models (User, AuditRequest, Report, Finding, …)
+│   └── seed.ts                 # Idempotent seed (admin user + VLN Research team)
+│
+scripts/
+│   └── db-init.ts              # Pre-flight env + connection validation
+│
+prisma.config.ts                # Prisma 7 CLI datasource config (DATABASE_URL)
+middleware.ts                   # CORS + security headers + blog.vln.gg subdomain routing
 public/
+│   └── brett-johnson.jpg       # ← drop headshot here (About keynote card)
 docs/
 │   ├── design/
 │   ├── devops/
@@ -112,6 +166,18 @@ docs/
 │   ├── technical/
 │   └── guides/
 ```
+
+### **blog.vln.gg Subdomain Routing**
+
+The blog runs on the same Vercel deployment as `vln.gg`. Middleware detects the hostname and rewrites:
+
+| Incoming | Rewrites to |
+|---|---|
+| `blog.vln.gg/` | `/blog` |
+| `blog.vln.gg/[slug]` | `/blog/[slug]` |
+| `blog.vln.gg/rss.xml` | `/api/blog/rss` |
+
+Add `blog.vln.gg` as a domain alias in the Vercel dashboard (same project). DNS: `CNAME blog → cname.vercel-dns.com`.
 
 ---
 
@@ -343,31 +409,41 @@ pnpm build
 
 # **VLN MVP Tracks**
 
-### **Track 1 — Brand & Web Foundation (You Are Here)**
+### **Track 1 — Brand & Web Foundation ✅ Complete**
 
-* Homepage
-* Services pages
-* Contact
-* Header + Footer
-* Brand kit application
+* ✅ Homepage (hero, stats, services, testimonials, FAQ, blog section)
+* ✅ Services pages + San Francisco local page
+* ✅ Contact + booking
+* ✅ Header + Footer
+* ✅ Brand kit application (sage/bluegray/amber/purple tokens)
+* ✅ About page (team cards + Brett Johnson keynote speaker card)
+* ✅ Blog at `vln.gg/blog` + `blog.vln.gg` subdomain (4 articles, RSS, sitemap)
 
-### **Track 2 — Security Pipeline Buildout**
+### **Track 2 — Security Pipeline Buildout ✅ Active**
 
-* Audit intake API
-* Booking/retainer workflow
-* Advisory index + reports
+* ✅ Audit intake API (`/api/audits/intake`)
+* ✅ Booking/retainer workflow (`/api/bookings`)
+* ✅ Health/status endpoint with live DB probe + commit log (`/api/health`)
+* ✅ RSS feed (`/api/blog/rss`)
+* 🔄 Advisory index + reports (in progress)
 
-### **Track 3 — CI/CD Automation**
+### **Track 3 — CI/CD Automation 🔄 In Progress**
 
-* Auto-versioning
-* Security scanning
-* Preview deployments
+* ✅ GitHub Actions: lint, typecheck, build (`ci.yml`)
+* ✅ Security scanning (`security-scan.yml`)
+* 🔄 Auto-versioning
+* 🔄 Preview deployments
 
-### **Track 4 — Database + Auth (Future)**
+### **Track 4 — Database + Auth ✅ Foundation Complete**
 
-* Client portal
-* Report storage
-* Secure client document delivery
+* ✅ Prisma 7 schema (25+ models: User, AuditRequest, Report, Finding, Payment…)
+* ✅ `prisma.config.ts` — Prisma 7 CLI datasource config
+* ✅ `prisma/seed.ts` — idempotent seed (admin user + VLN Research team)
+* ✅ `scripts/db-init.ts` — pre-flight env validation + connection test
+* ✅ `package.json` db:* scripts (init, migrate, seed, push, reset, studio)
+* ✅ NextAuth (credentials + Google + GitHub)
+* 🔄 Client portal UI
+* 🔄 Report storage + secure document delivery
 
 ---
 
