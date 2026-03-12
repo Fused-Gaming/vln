@@ -1,8 +1,10 @@
 import { ImageResponse } from "next/og";
+import { OG_COLORS } from "@/lib/og/utils";
 
 /**
  * Dynamic Open Graph Image for Founder Meetup
  * Generates a social media preview image with the next Wednesday date
+ * Includes SVG circuit trace decorations for VLN brand consistency
  */
 export async function GET(request: Request) {
   try {
@@ -20,6 +22,8 @@ export async function GET(request: Request) {
       "July", "August", "September", "October", "November", "December"];
     const formattedDate = `${monthNames[nextWednesday.getMonth()]} ${nextWednesday.getDate()}`;
 
+    const c = OG_COLORS;
+
     return new ImageResponse(
       (
         <div
@@ -28,16 +32,63 @@ export async function GET(request: Request) {
             flexDirection: "column",
             width: "100%",
             height: "100%",
-            backgroundColor: "#0f0f0f",
+            backgroundColor: c.bg,
             backgroundImage:
-              "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)",
+              `linear-gradient(135deg, ${c.bg} 0%, ${c.bgLight} 100%)`,
             padding: "60px",
             fontFamily: "Inter, sans-serif",
-            color: "#ffffff",
+            color: c.white,
             position: "relative",
             overflow: "hidden",
           }}
         >
+          {/* Circuit trace decoration - top left */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "320px",
+              height: "180px",
+              display: "flex",
+              opacity: 0.07,
+            }}
+          >
+            <svg width="320" height="180" viewBox="0 0 320 180">
+              <line x1="0" y1="40" x2="220" y2="40" stroke={c.sage} strokeWidth="2" />
+              <line x1="220" y1="40" x2="220" y2="120" stroke={c.sage} strokeWidth="2" />
+              <line x1="0" y1="80" x2="140" y2="80" stroke={c.blue} strokeWidth="1.5" />
+              <line x1="140" y1="80" x2="140" y2="160" stroke={c.blue} strokeWidth="1.5" />
+              <line x1="0" y1="120" x2="70" y2="120" stroke={c.purple} strokeWidth="1" />
+              <circle cx="220" cy="40" r="4" fill={c.sage} />
+              <circle cx="140" cy="80" r="3" fill={c.blue} />
+              <rect x="70" y="30" width="20" height="16" rx="3" fill="none" stroke={c.sage} strokeWidth="1.5" />
+            </svg>
+          </div>
+
+          {/* Circuit trace decoration - bottom right */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+              width: "320px",
+              height: "180px",
+              display: "flex",
+              opacity: 0.07,
+              transform: "rotate(180deg)",
+            }}
+          >
+            <svg width="320" height="180" viewBox="0 0 320 180">
+              <line x1="0" y1="40" x2="220" y2="40" stroke={c.sage} strokeWidth="2" />
+              <line x1="220" y1="40" x2="220" y2="120" stroke={c.sage} strokeWidth="2" />
+              <line x1="0" y1="80" x2="140" y2="80" stroke={c.amber} strokeWidth="1.5" />
+              <line x1="140" y1="80" x2="140" y2="160" stroke={c.amber} strokeWidth="1.5" />
+              <circle cx="220" cy="40" r="4" fill={c.sage} />
+              <circle cx="140" cy="80" r="3" fill={c.amber} />
+            </svg>
+          </div>
+
           {/* Background accent circle - Top right */}
           <div
             style={{
@@ -46,8 +97,8 @@ export async function GET(request: Request) {
               right: -100,
               width: "400px",
               height: "400px",
-              background: "radial-gradient(circle, #a6c3a7 0%, transparent 70%)",
-              opacity: 0.08,
+              background: `radial-gradient(circle, ${c.sage} 0%, transparent 70%)`,
+              opacity: 0.06,
               borderRadius: "50%",
             }}
           />
@@ -60,8 +111,8 @@ export async function GET(request: Request) {
               left: -80,
               width: "350px",
               height: "350px",
-              background: "radial-gradient(circle, #aab7c8 0%, transparent 70%)",
-              opacity: 0.06,
+              background: `radial-gradient(circle, ${c.blue} 0%, transparent 70%)`,
+              opacity: 0.05,
               borderRadius: "50%",
             }}
           />
@@ -82,10 +133,11 @@ export async function GET(request: Request) {
                 <span>🔗</span>
                 <span
                   style={{
-                    color: "#a6c3a7",
+                    color: c.sage,
                     fontSize: "16px",
                     fontWeight: "600",
                     letterSpacing: "1.5px",
+                    fontFamily: "Inter",
                   }}
                 >
                   VLN FOUNDERS NETWORK
@@ -101,11 +153,13 @@ export async function GET(request: Request) {
                   lineHeight: "1.2",
                   letterSpacing: "-1px",
                   maxWidth: "900px",
+                  color: c.white,
+                  fontFamily: "Inter",
                 }}
               >
                 Connect with Builders
                 <br />
-                <span style={{ color: "#a6c3a7" }}>Wednesday, {formattedDate}</span>
+                <span style={{ color: c.sage }}>Wednesday, {formattedDate}</span>
               </h1>
             </div>
 
@@ -123,20 +177,21 @@ export async function GET(request: Request) {
                 <div
                   style={{
                     fontSize: "16px",
-                    color: "#aab7c8",
+                    color: c.grayDark,
                     marginBottom: "12px",
                     fontWeight: "600",
+                    fontFamily: "Inter",
                   }}
                 >
                   📍 Location
                 </div>
-                <div style={{ fontSize: "28px", color: "#ffffff", fontWeight: "700" }}>
+                <div style={{ fontSize: "28px", color: c.white, fontWeight: "700", fontFamily: "Inter" }}>
                   The Crybaby
                 </div>
-                <div style={{ fontSize: "16px", color: "#888888", marginTop: "8px" }}>
+                <div style={{ fontSize: "16px", color: c.gray, marginTop: "8px", fontFamily: "Inter" }}>
                   1928 Telegraph Ave
                 </div>
-                <div style={{ fontSize: "16px", color: "#888888" }}>
+                <div style={{ fontSize: "16px", color: c.gray, fontFamily: "Inter" }}>
                   Oakland, CA 94612
                 </div>
               </div>
@@ -146,17 +201,18 @@ export async function GET(request: Request) {
                 <div
                   style={{
                     fontSize: "16px",
-                    color: "#aab7c8",
+                    color: c.grayDark,
                     marginBottom: "12px",
                     fontWeight: "600",
+                    fontFamily: "Inter",
                   }}
                 >
                   🕐 Time
                 </div>
-                <div style={{ fontSize: "28px", color: "#ffffff", fontWeight: "700" }}>
+                <div style={{ fontSize: "28px", color: c.white, fontWeight: "700", fontFamily: "Inter" }}>
                   5:00 PM – 7:00 PM
                 </div>
-                <div style={{ fontSize: "16px", color: "#888888", marginTop: "8px" }}>
+                <div style={{ fontSize: "16px", color: c.gray, marginTop: "8px", fontFamily: "Inter" }}>
                   Pacific Time (PT)
                 </div>
               </div>
@@ -166,10 +222,11 @@ export async function GET(request: Request) {
             <div
               style={{
                 fontSize: "24px",
-                color: "#a6c3a7",
+                color: c.sage,
                 fontWeight: "600",
-                borderTop: "2px solid rgba(166, 195, 167, 0.2)",
+                borderTop: `2px solid ${c.sage}20`,
                 paddingTop: "32px",
+                fontFamily: "Inter",
               }}
             >
               Drop by and connect →
@@ -183,8 +240,8 @@ export async function GET(request: Request) {
               bottom: "40px",
               right: "60px",
               fontSize: "14px",
-              color: "#888888",
-              fontFamily: "monospace",
+              color: c.grayDark,
+              fontFamily: "JetBrains Mono",
               fontWeight: "500",
             }}
           >
