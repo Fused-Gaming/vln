@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import ICBoardBackground from "@/components/vln/ic-board-background";
 import CSSFade from "@/components/animations/css-fade";
 import Button from "@/components/ui/button";
-import { MapPin, Clock, Users, Sparkles, Calendar, Coffee } from "lucide-react";
+import { MapPin, Users, Sparkles, Calendar, Coffee } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "VLN Founder Meetup: Connect with Oakland's Web3 Community | VLN",

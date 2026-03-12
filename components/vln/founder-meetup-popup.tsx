@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { X, MapPin, Clock, Linkedin, Link as LinkIcon } from "lucide-react";
-import Button from "@/components/ui/button";
 
 interface FounderMeetupPopupProps {
   lumaEventUrl?: string;
