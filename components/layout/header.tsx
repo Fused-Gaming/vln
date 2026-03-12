@@ -13,6 +13,7 @@ import {
   Users,
   Mail,
   Gamepad2,
+  Calendar,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAnimations } from "@/lib/animation-context";
@@ -28,6 +29,7 @@ const navLinks = [
   { href: "/services", label: "Services", icon: Shield },
   { href: "/services/igaming", label: "iGaming", icon: Gamepad2 },
   { href: "/pricing", label: "Pricing", icon: Tag },
+  { href: "/founder-meetup", label: "Events", icon: Calendar },
   { href: "/referrals", label: "Referrals", icon: Users },
   { href: "/contact", label: "Contact", icon: Mail },
 ];

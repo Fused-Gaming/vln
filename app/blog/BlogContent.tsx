@@ -8,28 +8,56 @@ import CSSFade from "@/components/animations/css-fade";
 import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
 
-const articles = [
+type ArticleColor = "sage" | "blue" | "amber" | "purple";
+
+interface BlogArticle {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  color: ArticleColor;
+  source: string;
+}
+
+const articles: BlogArticle[] = [
   {
-    slug: "top-smart-contract-vulnerabilities-defi",
-    title: "Top Smart Contract Vulnerabilities Found in Bay Area DeFi Projects",
+    slug: "drake-suing-eddie-kyc-fraud",
+    title: "Drake Suing Eddie: Fingered Aiden KYC Fraud",
     excerpt:
-      "An analysis of five critical vulnerability classes — reentrancy, integer overflow, access control flaws, oracle manipulation, and business logic errors — discovered across our audited DeFi protocols.",
-    category: "Security Research",
-    date: "January 15, 2025",
-    readTime: "12 min read",
-    tags: ["DeFi Security", "EVM", "Vulnerability Research", "Bay Area"],
-    color: "sage" as const,
+      "Analysis of the Drake and Eddie controversy involving KYC fraud and identity verification failures. Learn about verification vulnerabilities in high-profile cases.",
+    category: "Commentary",
+    date: "March 8, 2026",
+    readTime: "6 min read",
+    tags: ["KYC", "Identity Verification", "Fraud Detection", "Case Analysis"],
+    color: "purple" as const,
+    source: "LinkedIn",
   },
   {
-    slug: "web3-security-checklist-bay-area-startups",
-    title: "Web3 Security Checklist for Startups in the Bay Area",
+    slug: "2026-affiliate-marketing-blueprint",
+    title: "The 2026 Affiliate Marketing Blueprint",
     excerpt:
-      "A practical pre-launch security checklist for San Francisco and Bay Area blockchain startups covering smart contract development, key management, infrastructure hardening, and incident response planning.",
-    category: "Security Guide",
-    date: "February 1, 2025",
-    readTime: "8 min read",
-    tags: ["Startups", "Bay Area", "Pre-Launch", "Best Practices"],
+      "A comprehensive guide to affiliate marketing strategies for 2026. Learn effective tactics, structure, and implementation for successful affiliate programs.",
+    category: "Business Strategy",
+    date: "March 5, 2026",
+    readTime: "9 min read",
+    tags: ["Affiliate Marketing", "Business Strategy", "2026 Guide", "Revenue Growth"],
     color: "blue" as const,
+    source: "LinkedIn",
+  },
+  {
+    slug: "front-end-developer-20",
+    title: "The Only Front-End Developer You'll Ever Need ($20)",
+    excerpt:
+      "Revolutionary approach to front-end development at scale. Discover how to build and maintain modern web applications efficiently.",
+    category: "Development",
+    date: "March 2, 2026",
+    readTime: "7 min read",
+    tags: ["Front-End Development", "Efficiency", "Tools", "Economics"],
+    color: "sage" as const,
+    source: "LinkedIn",
   },
   {
     slug: "igaming-platform-security-audit-guide",
@@ -37,10 +65,23 @@ const articles = [
     excerpt:
       "A comprehensive security audit guide covering every domain VLN assesses on iGaming platforms — RNG integrity, wallet-flow risk, smart contract integration, API attack surface, anti-fraud, and regulatory compliance.",
     category: "Platform Security",
-    date: "March 10, 2025",
+    date: "March 10, 2026",
     readTime: "14 min read",
     tags: ["iGaming", "Platform Security", "RNG", "Wallet-Flow Risk"],
     color: "amber" as const,
+    source: "VLN Research",
+  },
+  {
+    slug: "treating-history-as-ongoing-defect",
+    title: "Treating History as an Ongoing Defect",
+    excerpt:
+      "A philosophical examination of how we approach historical patterns as ongoing problems. Understanding cycles, defects, and system improvement.",
+    category: "Philosophy",
+    date: "February 25, 2026",
+    readTime: "5 min read",
+    tags: ["Systems Thinking", "Philosophy", "History", "Improvement"],
+    color: "purple" as const,
+    source: "LinkedIn",
   },
   {
     slug: "rng-manipulation-attacks-casino-platforms",
@@ -48,10 +89,95 @@ const articles = [
     excerpt:
       "A technical deep-dive into five RNG attack classes on casino and iGaming platforms — from on-chain block hash prediction and commit-reveal front-running to off-chain PRNG reconstruction and Chainlink VRF misconfiguration.",
     category: "RNG Analysis",
-    date: "April 22, 2025",
+    date: "February 28, 2026",
     readTime: "16 min read",
     tags: ["RNG Security", "iGaming", "EVM", "Block Hash", "PRNG"],
     color: "purple" as const,
+    source: "VLN Research",
+  },
+  {
+    slug: "notorious-whales-seven-siblings",
+    title: "Notorious Whales Known as 7 Siblings",
+    excerpt:
+      "Analysis of major market players and their coordinated activities. Understanding whale behavior and market dynamics.",
+    category: "Market Analysis",
+    date: "February 20, 2026",
+    readTime: "8 min read",
+    tags: ["Market Analysis", "Trading", "Whale Behavior", "Coordination"],
+    color: "amber" as const,
+    source: "LinkedIn",
+  },
+  {
+    slug: "web3-security-checklist-bay-area-startups",
+    title: "Web3 Security Checklist for Startups in the Bay Area",
+    excerpt:
+      "A practical pre-launch security checklist for San Francisco and Bay Area blockchain startups covering smart contract development, key management, infrastructure hardening, and incident response planning.",
+    category: "Security Guide",
+    date: "February 15, 2026",
+    readTime: "8 min read",
+    tags: ["Startups", "Bay Area", "Pre-Launch", "Best Practices"],
+    color: "blue" as const,
+    source: "VLN Research",
+  },
+  {
+    slug: "joseph-tartakovsky-basic-math",
+    title: "Joseph Tartakovsky, US Attorney, Needs to Learn Basic Math",
+    excerpt:
+      "Critical analysis of mathematical errors in legal arguments. How calculation failures impact cases and policy.",
+    category: "Legal Analysis",
+    date: "February 15, 2026",
+    readTime: "7 min read",
+    tags: ["Legal Analysis", "Mathematics", "Error Analysis", "Policy"],
+    color: "sage" as const,
+    source: "LinkedIn",
+  },
+  {
+    slug: "saved-27400-legal-fees-subscription",
+    title: "How I Saved Someone $27,400 in Legal Fees With a $20 Subscription",
+    excerpt:
+      "A case study in cost-effective solutions and strategic resource allocation. How proper systems can save enormous sums.",
+    category: "Case Study",
+    date: "February 10, 2026",
+    readTime: "6 min read",
+    tags: ["Case Study", "Cost Savings", "Legal Strategy", "Efficiency"],
+    color: "blue" as const,
+    source: "LinkedIn",
+  },
+  {
+    slug: "porn-id-government-worker",
+    title: "Now You Need ID to Watch Porn? You're a Government Worker",
+    excerpt:
+      "Analysis of digital identity verification requirements and government policy implications.",
+    category: "Policy Analysis",
+    date: "February 5, 2026",
+    readTime: "6 min read",
+    tags: ["Digital Identity", "Policy", "Verification", "Government"],
+    color: "amber" as const,
+    source: "LinkedIn",
+  },
+  {
+    slug: "top-smart-contract-vulnerabilities-defi",
+    title: "Top Smart Contract Vulnerabilities Found in Bay Area DeFi Projects",
+    excerpt:
+      "An analysis of five critical vulnerability classes — reentrancy, integer overflow, access control flaws, oracle manipulation, and business logic errors — discovered across our audited DeFi protocols.",
+    category: "Security Research",
+    date: "February 1, 2026",
+    readTime: "12 min read",
+    tags: ["DeFi Security", "EVM", "Vulnerability Research", "Bay Area"],
+    color: "sage" as const,
+    source: "VLN Research",
+  },
+  {
+    slug: "sold-drugs-marketplace-interview",
+    title: "I Sold Drugs: Marketplace Built by a Man I'm Interviewing",
+    excerpt:
+      "An interview-based exploration of underground marketplace dynamics, system design, and the people behind illegal commerce infrastructure.",
+    category: "Interview",
+    date: "January 30, 2026",
+    readTime: "10 min read",
+    tags: ["Interview", "Marketplace", "Case Study", "Systems Analysis"],
+    color: "purple" as const,
+    source: "LinkedIn",
   },
 ];
 
@@ -130,7 +256,10 @@ export default function BlogContent() {
                       {article.category}
                     </span>
                     <span className="text-vln-gray-dark text-xs">{article.date}</span>
+                    <span className="text-vln-gray-dark text-xs">•</span>
                     <span className="text-vln-gray-dark text-xs">{article.readTime}</span>
+                    <span className="text-vln-gray-dark text-xs">•</span>
+                    <span className="text-vln-gray-dark text-xs">{article.source}</span>
                   </div>
 
                   <h2 className={`text-xl sm:text-2xl font-bold mb-3 ${colors.text}`}>

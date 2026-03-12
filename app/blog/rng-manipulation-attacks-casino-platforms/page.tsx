@@ -185,7 +185,7 @@ export default function RNGManipulationAttacksPage() {
                 <span className="text-vln-gray-dark">•</span>
                 <span className="text-vln-gray-dark text-sm">RNG Analysis</span>
                 <span className="text-vln-gray-dark">•</span>
-                <span className="text-vln-gray-dark text-sm">April 22, 2025</span>
+                <span className="text-vln-gray-dark text-sm">February 28, 2026</span>
                 <span className="text-vln-gray-dark">•</span>
                 <span className="text-vln-gray-dark text-sm">16 min read</span>
               </div>
