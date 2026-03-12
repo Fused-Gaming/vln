@@ -18,7 +18,8 @@ const MEETUP_CONFIG = {
   timeStart: "5:00 PM",
   timeEnd: "7:00 PM",
   timezone: "PT",
-  description: "Connect with web3 founders, builders, and security leaders. Perfect for founding teams and startup founders looking to network.",
+  description:
+    "Connect with web3 founders, builders, and security leaders. Perfect for founding teams and startup founders looking to network.",
   lumaEventUrl: "https://lu.ma/vlnfounders",
   linkedInUrl: "https://linkedin.com/company/vlngg",
 };
@@ -26,11 +27,13 @@ const MEETUP_CONFIG = {
 const STORAGE_KEY = "vln_founder_meetup_dismissed";
 
 /**
- * FounderMeetupPopup - Modal inviting founders to weekly VLN meetup
+ * FounderMeetupPopup - Enhanced modal inviting founders to weekly VLN meetup
  * Features:
  * - Auto-show after delay (3s mobile, 5s desktop)
  * - Dismissible with 24-hour persistence
+ * - Scroll-aware positioning (sticky, follows user)
  * - Social sharing (LinkedIn, Luma, copy link)
+ * - Polished animations and micro-interactions
  * - VLN design system compliance
  * - Full accessibility
  */
@@ -41,6 +44,7 @@ export default function FounderMeetupPopup({
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
     // Check if dismissed in last 24 hours
@@ -73,14 +77,25 @@ export default function FounderMeetupPopup({
             timestamp: new Date().toISOString(),
           }),
         }).catch(() => {
-          /* Silent fail - analytics not critical */
+          /* Silent fail */
         });
       } catch {
-        /* Silent fail - analytics not critical */
+        /* Silent fail */
       }
     }, delay);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Detect scroll for smoother UX
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 200;
+      setHasScrolled(scrolled);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleDismiss = () => {
@@ -131,11 +146,9 @@ export default function FounderMeetupPopup({
   };
 
   const handleLinkedInShare = () => {
-    const shareUrl = encodeURIComponent("https://vln.gg/?ref=founder-meetup");
-    const shareText = encodeURIComponent(
-      "Connecting with @vlngg at their weekly founder meetup in Oakland - join us Wednesdays 5-7pm at The Crybaby!"
-    );
-    const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
+    const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+      "https://vln.gg/?ref=founder-meetup"
+    )}`;
 
     try {
       fetch("/api/events/meetup/analytics", {
@@ -182,12 +195,15 @@ export default function FounderMeetupPopup({
 
   if (!isVisible) return null;
 
+  // Determine position based on scroll
+  const positionClass = hasScrolled ? "fixed bottom-6 right-6" : "fixed top-1/2 left-1/2";
+
   return (
     <>
       {/* Backdrop */}
       <div
         className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 ${
-          isAnimating ? "opacity-50" : "opacity-0"
+          isAnimating ? "opacity-50" : "opacity-0 pointer-events-none"
         }`}
         onClick={handleDismiss}
         aria-hidden="true"
@@ -195,26 +211,35 @@ export default function FounderMeetupPopup({
 
       {/* Modal */}
       <div
-        className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 transition-all duration-300 ${
-          isAnimating
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95"
+        className={`z-50 transition-all duration-300 ${
+          positionClass
+        } ${
+          !hasScrolled
+            ? "transform -translate-x-1/2 -translate-y-1/2"
+            : ""
         }`}
       >
-        <div className="w-[90vw] max-w-[500px] rounded-vln bg-vln-bg border border-vln-sage/30 shadow-lg p-6 sm:p-8">
+        <div
+          className={`w-[90vw] max-w-[420px] rounded-vln bg-vln-bg border border-vln-sage/30 shadow-2xl p-6 sm:p-8 backdrop-blur-sm transition-all duration-300 ${
+            isAnimating
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-95 pointer-events-none"
+          }`}
+        >
           {/* Header with close button */}
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <p className="text-xs font-mono uppercase tracking-widest text-vln-sage mb-1">
-                🔗 VLN Founders Network
+          <div className="flex items-start justify-between mb-5">
+            <div className="flex-1">
+              <p className="text-xs font-mono uppercase tracking-widest text-vln-sage mb-1 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-vln-sage animate-pulse"></span>
+                VLN Founders Network
               </p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-vln-white">
+              <h2 className="text-xl sm:text-2xl font-bold text-vln-white leading-tight">
                 Weekly Meetup
               </h2>
             </div>
             <button
               onClick={handleDismiss}
-              className="flex-shrink-0 p-2 rounded-vln text-vln-gray hover:text-vln-white hover:bg-vln-sage/10 transition-all duration-200 hover:shadow-[0_0_8px_#a6c3a7]"
+              className="flex-shrink-0 p-2 rounded-lg text-vln-gray hover:text-vln-white hover:bg-vln-sage/10 transition-all duration-200 hover:shadow-[0_0_8px_#a6c3a7_30%]"
               aria-label="Close popup"
             >
               <X className="w-5 h-5" />
@@ -222,25 +247,22 @@ export default function FounderMeetupPopup({
           </div>
 
           {/* Main content */}
-          <p className="text-vln-gray mb-6 text-sm sm:text-base leading-relaxed">
-            Connect with web3 founders, builders, and security leaders. Perfect for founding teams.
+          <p className="text-vln-gray mb-6 text-sm leading-relaxed">
+            Connect with web3 founders and security leaders. No pitch, just peers talking to peers.
           </p>
 
-          {/* Event details card */}
-          <div className="bg-vln-bg-light border border-vln-sage/20 rounded-vln p-5 sm:p-6 mb-6">
+          {/* Event details card - Compact and Polished */}
+          <div className="bg-gradient-to-br from-vln-sage/5 to-vln-bluegray/5 border border-vln-sage/15 rounded-lg p-4 mb-6">
             {/* Venue */}
-            <div className="mb-5">
+            <div className="mb-4 pb-4 border-b border-vln-sage/10">
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-vln-sage flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-vln-white mb-1">
+                <MapPin className="w-4 h-4 text-vln-sage flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-semibold text-vln-white">
                     {MEETUP_CONFIG.venue}
                   </p>
-                  <p className="text-vln-gray-dark text-sm font-mono">
+                  <p className="text-vln-gray-dark text-xs font-mono mt-0.5">
                     {MEETUP_CONFIG.address}
-                  </p>
-                  <p className="text-vln-gray-dark text-sm font-mono">
-                    {MEETUP_CONFIG.city}, {MEETUP_CONFIG.country}
                   </p>
                 </div>
               </div>
@@ -248,43 +270,43 @@ export default function FounderMeetupPopup({
 
             {/* Time */}
             <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-vln-bluegray flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-vln-white mb-1">
+              <Clock className="w-4 h-4 text-vln-bluegray flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-semibold text-vln-white">
                   {MEETUP_CONFIG.dayOfWeek}
                 </p>
-                <p className="text-vln-gray-dark text-sm">
+                <p className="text-vln-gray-dark text-xs mt-0.5">
                   {MEETUP_CONFIG.timeStart} – {MEETUP_CONFIG.timeEnd} {MEETUP_CONFIG.timezone}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Share buttons */}
+          {/* Share buttons - Refined layout */}
           <div className="mb-6">
-            <p className="text-xs font-mono uppercase tracking-widest text-vln-bluegray mb-3">
+            <p className="text-xs font-mono uppercase tracking-widest text-vln-gray-dark mb-3 opacity-75">
               Share with your network
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex gap-2">
               <button
                 onClick={handleLinkedInShare}
-                className="flex items-center justify-center gap-2 px-3 py-2 rounded-vln bg-vln-bg-light border border-vln-bluegray/30 text-vln-bluegray hover:border-vln-bluegray/60 hover:bg-vln-bluegray/5 transition-all duration-200 text-sm font-medium hover:shadow-[0_0_8px_#aab7c8]"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-vln-bg-light border border-vln-bluegray/20 text-vln-bluegray hover:border-vln-bluegray/50 hover:bg-vln-bluegray/5 transition-all duration-200 text-xs font-medium hover:shadow-[0_0_6px_#aab7c8_20%]"
                 aria-label="Share on LinkedIn"
                 title="Share on LinkedIn"
               >
-                <Linkedin className="w-4 h-4" />
+                <Linkedin className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">LinkedIn</span>
               </button>
 
               <button
                 onClick={handleCopyLink}
-                className="flex items-center justify-center gap-2 px-3 py-2 rounded-vln bg-vln-bg-light border border-vln-bluegray/30 text-vln-bluegray hover:border-vln-bluegray/60 hover:bg-vln-bluegray/5 transition-all duration-200 text-sm font-medium hover:shadow-[0_0_8px_#aab7c8]"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-vln-bg-light border border-vln-bluegray/20 text-vln-bluegray hover:border-vln-bluegray/50 hover:bg-vln-bluegray/5 transition-all duration-200 text-xs font-medium hover:shadow-[0_0_6px_#aab7c8_20%]"
                 aria-label="Copy link"
                 title={copied ? "Copied!" : "Copy link"}
               >
-                <LinkIcon className="w-4 h-4" />
+                <LinkIcon className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">
-                  {copied ? "Copied!" : "Link"}
+                  {copied ? "✓" : "Link"}
                 </span>
               </button>
 
@@ -292,7 +314,7 @@ export default function FounderMeetupPopup({
                 href={lumaEventUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-3 py-2 rounded-vln bg-vln-sage/10 border border-vln-sage/40 text-vln-sage hover:border-vln-sage/80 hover:bg-vln-sage/20 transition-all duration-200 text-sm font-medium hover:shadow-[0_0_8px_#a6c3a7]"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-vln-sage/10 border border-vln-sage/40 text-vln-sage hover:border-vln-sage/70 hover:bg-vln-sage/15 transition-all duration-200 text-xs font-medium hover:shadow-[0_0_6px_#a6c3a7_20%]"
                 onClick={() => {
                   try {
                     fetch("/api/events/meetup/analytics", {
@@ -311,33 +333,35 @@ export default function FounderMeetupPopup({
                   }
                 }}
               >
-                <span className="text-lg">📍</span>
+                <span>📍</span>
                 <span className="hidden sm:inline">Luma</span>
               </a>
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="space-y-3">
-            <Button
-              variant="primary"
-              size="lg"
+          {/* Action buttons - Premium CTA */}
+          <div className="space-y-2.5">
+            <button
               onClick={handleJoinClick}
-              className="w-full group shadow-[0_0_8px_#a6c3a7_1%] hover:shadow-[0_0_12px_#a6c3a7]"
+              className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-vln-sage to-vln-sage text-vln-bg font-semibold text-sm hover:shadow-[0_0_16px_#a6c3a7_40%] transition-all duration-200 active:scale-95"
             >
-              ✨ Join VLN Network
-              <span className="ml-2 transition-transform group-hover:translate-x-1">
-                →
-              </span>
-            </Button>
+              ✨ Join on Luma
+            </button>
 
             <button
               onClick={handleDismiss}
-              className="w-full px-4 py-2 text-vln-bluegray hover:text-vln-white transition-colors text-sm font-medium"
+              className="w-full px-4 py-2 text-vln-bluegray hover:text-vln-white transition-colors text-xs font-medium"
             >
-              or dismiss
+              I'll pass for now
             </button>
           </div>
+
+          {/* Subtle footer indicator - Scroll hint */}
+          {!hasScrolled && (
+            <div className="mt-4 text-center text-xs text-vln-gray-dark opacity-60">
+              This popup follows as you scroll
+            </div>
+          )}
         </div>
       </div>
     </>
