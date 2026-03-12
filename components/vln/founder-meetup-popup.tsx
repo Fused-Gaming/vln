@@ -20,7 +20,7 @@ const MEETUP_CONFIG = {
   timezone: "PT",
   description:
     "Connect with web3 founders, builders, and security leaders. Perfect for founding teams and startup founders looking to network.",
-  lumaEventUrl: "https://luma.com/calendar/manage/cal-YfSqBlVF8hIcxiv?new=true",
+  lumaEventUrl: "https://luma.com/ija0zqkf",
   linkedInUrl: "https://linkedin.com/company/vlngg",
 };
 
