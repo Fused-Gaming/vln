@@ -8,39 +8,32 @@ import CSSFade from "@/components/animations/css-fade";
 import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
 
-const articles = [
-  {
-    slug: "top-smart-contract-vulnerabilities-defi",
-    title: "Top Smart Contract Vulnerabilities Found in Bay Area DeFi Projects",
-    excerpt:
-      "An analysis of five critical vulnerability classes — reentrancy, integer overflow, access control flaws, oracle manipulation, and business logic errors — discovered across our audited DeFi protocols.",
-    category: "Security Research",
-    date: "January 15, 2025",
-    readTime: "12 min read",
-    tags: ["DeFi Security", "EVM", "Vulnerability Research", "Bay Area"],
-    color: "sage" as const,
-  },
-  {
-    slug: "web3-security-checklist-bay-area-startups",
-    title: "Web3 Security Checklist for Startups in the Bay Area",
-    excerpt:
-      "A practical pre-launch security checklist for San Francisco and Bay Area blockchain startups covering smart contract development, key management, infrastructure hardening, and incident response planning.",
-    category: "Security Guide",
-    date: "February 1, 2025",
-    readTime: "8 min read",
-    tags: ["Startups", "Bay Area", "Pre-Launch", "Best Practices"],
-    color: "blue" as const,
-  },
+type ArticleColor = "sage" | "blue" | "amber" | "purple";
+
+interface BlogArticle {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  color: ArticleColor;
+  source: string;
+}
+
+const articles: BlogArticle[] = [
   {
     slug: "igaming-platform-security-audit-guide",
     title: "iGaming Platform Security: A Complete Audit Guide",
     excerpt:
       "A comprehensive security audit guide covering every domain VLN assesses on iGaming platforms — RNG integrity, wallet-flow risk, smart contract integration, API attack surface, anti-fraud, and regulatory compliance.",
     category: "Platform Security",
-    date: "March 10, 2025",
+    date: "March 10, 2026",
     readTime: "14 min read",
     tags: ["iGaming", "Platform Security", "RNG", "Wallet-Flow Risk"],
     color: "amber" as const,
+    source: "VLN Research",
   },
   {
     slug: "rng-manipulation-attacks-casino-platforms",
@@ -48,10 +41,35 @@ const articles = [
     excerpt:
       "A technical deep-dive into five RNG attack classes on casino and iGaming platforms — from on-chain block hash prediction and commit-reveal front-running to off-chain PRNG reconstruction and Chainlink VRF misconfiguration.",
     category: "RNG Analysis",
-    date: "April 22, 2025",
+    date: "February 28, 2026",
     readTime: "16 min read",
     tags: ["RNG Security", "iGaming", "EVM", "Block Hash", "PRNG"],
     color: "purple" as const,
+    source: "VLN Research",
+  },
+  {
+    slug: "web3-security-checklist-bay-area-startups",
+    title: "Web3 Security Checklist for Startups in the Bay Area",
+    excerpt:
+      "A practical pre-launch security checklist for San Francisco and Bay Area blockchain startups covering smart contract development, key management, infrastructure hardening, and incident response planning.",
+    category: "Security Guide",
+    date: "February 15, 2026",
+    readTime: "8 min read",
+    tags: ["Startups", "Bay Area", "Pre-Launch", "Best Practices"],
+    color: "blue" as const,
+    source: "VLN Research",
+  },
+  {
+    slug: "top-smart-contract-vulnerabilities-defi",
+    title: "Top Smart Contract Vulnerabilities Found in Bay Area DeFi Projects",
+    excerpt:
+      "An analysis of five critical vulnerability classes — reentrancy, integer overflow, access control flaws, oracle manipulation, and business logic errors — discovered across our audited DeFi protocols.",
+    category: "Security Research",
+    date: "February 1, 2026",
+    readTime: "12 min read",
+    tags: ["DeFi Security", "EVM", "Vulnerability Research", "Bay Area"],
+    color: "sage" as const,
+    source: "VLN Research",
   },
 ];
 
@@ -130,7 +148,10 @@ export default function BlogContent() {
                       {article.category}
                     </span>
                     <span className="text-vln-gray-dark text-xs">{article.date}</span>
+                    <span className="text-vln-gray-dark text-xs">•</span>
                     <span className="text-vln-gray-dark text-xs">{article.readTime}</span>
+                    <span className="text-vln-gray-dark text-xs">•</span>
+                    <span className="text-vln-gray-dark text-xs">{article.source}</span>
                   </div>
 
                   <h2 className={`text-xl sm:text-2xl font-bold mb-3 ${colors.text}`}>
