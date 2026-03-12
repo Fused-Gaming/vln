@@ -3,7 +3,7 @@
  * Coverage: Security, rate limiting, validation, performance
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 
 describe("Meetup API Endpoints", () => {
   describe("GET /api/events/meetup", () => {
