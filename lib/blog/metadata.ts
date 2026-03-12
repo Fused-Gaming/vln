@@ -20,6 +20,17 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "vln-founder-meetup-oakland",
+    title: "Connect with Oakland's Web3 Founder Community — Weekly Meetup",
+    shortTitle: "VLN Founder Meetup in Oakland",
+    description:
+      "Join VLN's weekly founder meetup for web3 founders, CTOs, and security leaders. Drop-in networking and peer advisory every Wednesday 5-7 PM at The Crybaby in Oakland.",
+    category: "Community",
+    publishedDate: "2026-03-12",
+    readTime: "8 min read",
+    accent: "sage",
+  },
+  {
     slug: "top-smart-contract-vulnerabilities-defi",
     title: "Top Smart Contract Vulnerabilities Found in Bay Area DeFi Projects",
     shortTitle: "DeFi Vulnerabilities in Bay Area",
