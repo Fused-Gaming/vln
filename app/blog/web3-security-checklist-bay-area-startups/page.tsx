@@ -244,7 +244,7 @@ export default function Web3SecurityChecklistPage() {
                 <span className="text-vln-gray-dark">•</span>
                 <span className="text-vln-gray-dark text-sm">Security Guide</span>
                 <span className="text-vln-gray-dark">•</span>
-                <span className="text-vln-gray-dark text-sm">February 1, 2025</span>
+                <span className="text-vln-gray-dark text-sm">February 15, 2026</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
