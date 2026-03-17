@@ -1,16 +1,15 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
   const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
-
   return rss({
-    title: 'VLN Blog',
-    description:
-      'Security research, smart contract audit findings, and iGaming threat intelligence from the Vulnerability Lab Network.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     site: context.site!,
     items: posts.map((post) => ({
       title: post.data.title,

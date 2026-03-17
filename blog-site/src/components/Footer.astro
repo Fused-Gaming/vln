@@ -1,12 +1,35 @@
 ---
+import { SITE_TITLE } from '../consts';
 ---
-<footer class="border-t border-white/10 mt-20 py-8">
-  <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-    <p>
-      &copy; {new Date().getFullYear()} <a href="https://vln.gg" class="hover:text-vln-sage transition-colors">VLN — Vulnerability Lab Network</a>
-    </p>
-    <p class="font-mono text-xs text-gray-600">
-      iGaming Security &amp; Smart Contract Intelligence
-    </p>
-  </div>
+
+<footer>
+  <p>
+    &copy; {new Date().getFullYear()}
+    <a href="https://vln.gg">{SITE_TITLE} — Vulnerability Lab Network</a>
+  </p>
+  <p class="tagline">iGaming Security &amp; Smart Contract Intelligence</p>
 </footer>
+
+<style>
+  footer {
+    padding: 2rem 1em;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 4rem;
+  }
+  footer a {
+    color: var(--vln-sage);
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
+  .tagline {
+    margin-top: 0.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #374151;
+  }
+</style>
