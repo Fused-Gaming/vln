@@ -48,7 +48,7 @@ export default function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
             <Star key={i} className="w-4 h-4 fill-vln-sage text-vln-sage" />
           ))}
         </div>
-        <p className="text-vln-gray italic mb-3">"{caseStudy.quote}"</p>
+        <p className="text-vln-gray italic mb-3">&quot;{caseStudy.quote}&quot;</p>
         <p className="text-vln-sage/80 font-mono text-xs uppercase tracking-wide">— {caseStudy.client}</p>
       </div>
     </div>

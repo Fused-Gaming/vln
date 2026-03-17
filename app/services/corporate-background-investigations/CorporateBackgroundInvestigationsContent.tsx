@@ -6,7 +6,7 @@ import ICBoardBackground from "@/components/vln/ic-board-background";
 import CSSFade from "@/components/animations/css-fade";
 import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
-import { Search, Eye, MessageSquare, Database, Check, Star, Shield, FileText, Clock, Award } from "lucide-react";
+import { Search, Eye, MessageSquare, Database, Star, Shield, FileText, Clock, Award } from "lucide-react";
 import TrystpilotWidget from "./components/TrystpilotWidget";
 import PricingTierCard from "./components/PricingTierCard";
 import ProcessTimeline from "./components/ProcessTimeline";
@@ -452,7 +452,7 @@ export default function CorporateBackgroundInvestigationsContent() {
                 Investigation Journey
               </h2>
               <p className="text-vln-gray text-lg max-w-3xl">
-                From your initial consultation through final delivery, here's how we conduct investigations
+                From your initial consultation through final delivery, here&apos;s how we conduct investigations
                 with rigor, professionalism, and complete confidentiality.
               </p>
             </CSSFade>
@@ -512,7 +512,7 @@ export default function CorporateBackgroundInvestigationsContent() {
                 Case Studies
               </h2>
               <p className="text-vln-gray text-lg max-w-3xl">
-                Examples of investigations we've conducted across industries. Names and identifying details
+                Examples of investigations we&apos;ve conducted across industries. Names and identifying details
                 have been anonymized to respect client confidentiality.
               </p>
             </CSSFade>
@@ -538,7 +538,7 @@ export default function CorporateBackgroundInvestigationsContent() {
                 </h2>
                 <p className="text-vln-gray text-lg max-w-3xl mx-auto">
                   We respect the confidential nature of investigations. These anonymous reviews from Trystpilot
-                  show what clients share about their experience while maintaining the privacy that's central to our service.
+                  show what clients share about their experience while maintaining the privacy that&apos;s central to our service.
                 </p>
               </div>
 
@@ -606,7 +606,7 @@ export default function CorporateBackgroundInvestigationsContent() {
               </h2>
               <p className="text-vln-gray text-lg max-w-2xl mx-auto">
                 Schedule your free consultation with our investigation team.
-                We'll help you determine the right scope and approach for your specific needs.
+                We&apos;ll help you determine the right scope and approach for your specific needs.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <Button variant="primary" size="lg" href="/contact?service=corporate-investigation" className="group">
