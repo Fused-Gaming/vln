@@ -1,0 +1,50 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`About — ${SITE_TITLE}`}
+      description="About the VLN Blog and the Vulnerability Lab Network."
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <div class="prose">
+        <h1>About VLN</h1>
+        <p>
+          <strong>VLN — Vulnerability Lab Network</strong> provides advanced platform security,
+          RNG analysis, wallet-flow risk modeling, and EVM smart contract auditing for high-risk,
+          high-throughput systems.
+        </p>
+        <p>
+          This blog publishes security research, smart contract audit findings, iGaming threat
+          intelligence, and technical deep-dives from the VLN team.
+        </p>
+        <p>
+          <a href="https://vln.gg">Visit vln.gg</a> to learn more about our services.
+        </p>
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  .prose h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+</style>

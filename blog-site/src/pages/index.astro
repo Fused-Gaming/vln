@@ -1,0 +1,123 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <section>
+        <ul>
+          {
+            posts.map((post) => (
+              <li>
+                <a href={`/blog/${post.slug}/`}>
+                  <h4 class="title">{post.data.title}</h4>
+                  <p class="description">{post.data.description}</p>
+                  <p class="date">
+                    <FormattedDate date={post.data.pubDate} />
+                    {post.data.tags.length > 0 && (
+                      <span class="tags">
+                        {post.data.tags.map((tag: string) => (
+                          <span class="tag">#{tag}</span>
+                        ))}
+                      </span>
+                    )}
+                  </p>
+                </a>
+              </li>
+            ))
+          }
+          {posts.length === 0 && (
+            <li class="empty">
+              <p>No posts published yet. Check back soon.</p>
+            </li>
+          )}
+        </ul>
+      </section>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  li:last-child {
+    border-bottom: none;
+  }
+  li a {
+    display: block;
+    padding: 1.5rem 0;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+  li a:hover {
+    opacity: 0.8;
+  }
+  li a:hover .title {
+    color: var(--vln-sage);
+  }
+  .title {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: var(--vln-white);
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+  .description {
+    margin: 0 0 0.75rem;
+    font-size: 0.95rem;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+  .date {
+    margin: 0;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    color: var(--vln-sage);
+    font-size: 0.75rem;
+  }
+  .empty p {
+    color: #6b7280;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+  }
+</style>
