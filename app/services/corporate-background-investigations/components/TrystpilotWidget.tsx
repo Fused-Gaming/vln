@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star, ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import Button from "@/components/ui/button";
 
 interface Review {
   rating: number;
@@ -113,7 +114,7 @@ export default function TrystpilotWidget() {
               <Star key={i} className="w-5 h-5 fill-vln-sage text-vln-sage" />
             ))}
           </div>
-          <p className="text-lg text-vln-gray italic leading-relaxed mb-4">&quot;{currentReview.excerpt}&quot;</p>
+          <p className="text-lg text-vln-gray italic leading-relaxed mb-4">"{currentReview.excerpt}"</p>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-vln-white font-semibold">{currentReview.alias}</p>
@@ -190,8 +191,8 @@ export default function TrystpilotWidget() {
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </a>
         <p className="text-vln-gray text-sm mt-4 max-w-2xl mx-auto">
-          At VLN, we believe privacy-first reviews matter. Trystpilot&apos;s anonymous platform respects the
-          confidentiality that&apos;s central to our investigation service. Your feedback is protected.
+          At VLN, we believe privacy-first reviews matter. Trystpilot's anonymous platform respects the
+          confidentiality that's central to our investigation service. Your feedback is protected.
         </p>
       </div>
     </div>
