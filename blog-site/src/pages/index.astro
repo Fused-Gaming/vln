@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import '../styles/global.css';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VLN Blog — iGaming Security & Smart Contract Intelligence</title>
+    <meta
+      name="description"
+      content="Research, audit findings, and threat intelligence from the Vulnerability Lab Network."
+    />
+    <meta property="og:title" content="VLN Blog" />
+    <meta
+      property="og:description"
+      content="Research, audit findings, and threat intelligence from the Vulnerability Lab Network."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="VLN Blog" href="/rss.xml" />
+  </head>
+  <body class="min-h-screen bg-vln-bg text-gray-100">
+    <Header />
+    <main class="max-w-5xl mx-auto px-6 py-12">
+      <div class="mb-12">
+        <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3">
+          VLN <span class="text-vln-sage">Research</span>
+        </h1>
+        <p class="text-gray-400 text-lg max-w-xl">
+          Security research, smart contract audit findings, and iGaming threat intelligence from the Vulnerability Lab Network.
+        </p>
+      </div>
+
+      {posts.length === 0 ? (
+        <p class="text-gray-500 font-mono text-sm">No posts published yet.</p>
+      ) : (
+        <ul class="space-y-6">
+          {posts.map((post) => {
+            const formattedDate = post.data.pubDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
+            return (
+              <li>
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="block group rounded-vln border border-white/10 bg-white/[0.03] p-6 hover:border-vln-sage/40 hover:bg-white/[0.05] transition-all shadow-[0_0_0_0] hover:shadow-[0_0_8px_#a6c3a720]"
+                >
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {post.data.tags.map((tag: string) => (
+                      <span class="text-xs font-mono px-2 py-0.5 rounded bg-white/5 text-vln-sage border border-vln-sage/20">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h2 class="text-xl font-semibold text-white group-hover:text-vln-sage transition-colors mb-2">
+                    {post.data.title}
+                  </h2>
+                  <p class="text-gray-400 text-sm mb-4 leading-relaxed">{post.data.description}</p>
+                  <div class="flex items-center gap-3 text-xs font-mono text-gray-600">
+                    <span>{post.data.author}</span>
+                    <span>·</span>
+                    <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+                  </div>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </main>
+    <Footer />
+  </body>
+</html>

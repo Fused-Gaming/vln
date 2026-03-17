@@ -1,0 +1,24 @@
+{
+  "framework": "astro",
+  "regions": ["iad1"],
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "devCommand": "pnpm dev --port $PORT",
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "integration/vln": true
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)/index.html",
+      "destination": "/$1"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/"
+    }
+  ]
+}
