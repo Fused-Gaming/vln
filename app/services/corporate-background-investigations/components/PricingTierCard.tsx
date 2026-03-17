@@ -16,7 +16,6 @@ interface PricingTierProps {
 
 export default function PricingTierCard({ tier }: PricingTierProps) {
   const isPopular = tier.badge === "POPULAR";
-  const isEnterprise = tier.badge === "ENTERPRISE";
 
   return (
     <div
