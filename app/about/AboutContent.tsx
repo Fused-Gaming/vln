@@ -7,7 +7,8 @@ import CSSFade from "@/components/animations/css-fade";
 import StaggerFade from "@/components/animations/stagger-fade";
 import Button from "@/components/ui/button";
 import EmployeeCard from "@/components/vln/employee-card";
-import { Shield, Target, Users, Award } from "lucide-react";
+import { Shield, Target, Users, Award, Mic } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   const values = [
@@ -178,6 +179,122 @@ export default function AboutPage() {
               />
             ))}
           </StaggerFade>
+        </section>
+
+        {/* Keynote Speaking */}
+        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24 bg-vln-bg-light">
+          <CSSFade>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Mic className="w-6 h-6 text-vln-amber" />
+              <p className="text-vln-amber text-sm font-mono uppercase tracking-widest">Keynote Speaking</p>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center">
+              Book a <span className="text-vln-amber">Keynote Speaker</span>
+            </h2>
+            <p className="text-vln-gray text-lg text-center max-w-2xl mx-auto mb-12">
+              Bring a firsthand perspective on cybercrime, social engineering, and the adversary mindset to your next conference, corporate event, or security awareness program.
+            </p>
+          </CSSFade>
+
+          <CSSFade>
+            <div className="max-w-4xl mx-auto">
+              <div className="p-6 sm:p-10 rounded-vln border-2 border-vln-amber/20 hover:border-vln-amber/40 bg-vln-bg transition-all duration-300 glow-lift-amber">
+                <div className="flex flex-col sm:flex-row gap-8 items-start">
+
+                  {/* Photo */}
+                  <div className="flex-shrink-0 mx-auto sm:mx-0">
+                    <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-vln overflow-hidden border-2 border-vln-amber/30">
+                      <Image
+                        src="/brett-johnson.JPG"
+                        alt="Brett Johnson — Keynote Speaker"
+                        fill
+                        className="object-cover object-top"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = "/placeholder-avatar.svg";
+                        }}
+                      />
+                    </div>
+                    {/* Credential badge */}
+                    <div className="mt-3 text-center">
+                      <span className="inline-block px-3 py-1 rounded-full text-xs font-mono font-semibold bg-vln-amber/10 border border-vln-amber/30 text-vln-amber">
+                        The Original Internet Godfather
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-3xl sm:text-4xl font-bold text-vln-white mb-1">Brett Johnson</h3>
+                    <p className="text-vln-amber font-medium mb-4">Cybercrime Expert &amp; Keynote Speaker</p>
+
+                    <p className="text-vln-gray leading-relaxed mb-4">
+                      Brett Johnson is one of the world&apos;s leading authorities on cybercrime, identity theft, and social engineering. Once listed on the US Secret Service&apos;s Most Wanted list and the architect of ShadowCrew — the predecessor to every modern cybercrime forum — Brett now channels that experience into elite security education for enterprises, governments, and conferences worldwide.
+                    </p>
+                    <p className="text-vln-gray leading-relaxed mb-6">
+                      His talks bridge the gap between the attacker&apos;s mindset and practical defense, delivered with unmatched credibility and authenticity. Brett has spoken for the FBI, Secret Service, INTERPOL, financial institutions, and Fortune 500 companies, and is a trusted advisor to VLN on adversarial threat modeling and social engineering defense.
+                    </p>
+
+                    {/* Speaking topics */}
+                    <div className="mb-6">
+                      <p className="text-xs font-mono uppercase tracking-widest text-vln-gray-dark mb-3">Speaking Topics</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          "The Cybercriminal Mindset",
+                          "Social Engineering & Manipulation",
+                          "Identity Theft & Account Takeover",
+                          "Cybercrime Evolution",
+                          "Security Awareness Culture",
+                          "Insider Threat",
+                        ].map((topic) => (
+                          <span
+                            key={topic}
+                            className="px-3 py-1 rounded-full text-xs font-medium border border-vln-amber/20 bg-vln-amber/5 text-vln-amber"
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Engagement Pricing */}
+                    <div className="mb-6 p-4 rounded-vln border border-vln-amber/15 bg-vln-amber/5">
+                      <p className="text-xs font-mono uppercase tracking-widest text-vln-gray-dark mb-3">Engagement Pricing</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {[
+                          { tier: "Virtual Keynote",    price: "Starting at $15,000", detail: "Live remote presentation, Q&A, 60–90 min" },
+                          { tier: "In-Person Keynote",  price: "Starting at $25,000", detail: "On-site delivery, travel included, 60–90 min" },
+                          { tier: "Workshop / Training", price: "Starting at $35,000", detail: "Half or full day, custom curriculum, team deep-dive" },
+                        ].map(({ tier, price, detail }) => (
+                          <div key={tier} className="p-3 rounded-vln bg-vln-bg border border-vln-amber/10">
+                            <p className="text-xs font-mono text-vln-gray-dark mb-1">{tier}</p>
+                            <p className="text-vln-amber font-semibold text-sm mb-1">{price}</p>
+                            <p className="text-vln-gray text-xs leading-relaxed">{detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-vln-gray-dark text-xs mt-3">
+                        All engagements include pre-event consultation, customized content, and post-event follow-up materials. Contact us for multi-event, retainer, and non-profit rates.
+                      </p>
+                    </div>
+
+                    {/* CTAs */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        variant="primary"
+                        size="md"
+                        href="/contact?service=keynote&speaker=brett-johnson"
+                        className="group border-vln-amber text-vln-amber hover:bg-vln-amber hover:text-vln-bg glow-lift-amber"
+                      >
+                        <Mic className="w-4 h-4 mr-2" />
+                        Book Brett for Your Event
+                        <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CSSFade>
         </section>
 
         {/* Core Values */}

@@ -10,13 +10,18 @@ import FAQSection from "@/components/vln/faq-section";
 import ComparisonTable from "@/components/vln/comparison-table";
 import GuaranteeSection from "@/components/vln/guarantee-section";
 import UrgencyBanner from "@/components/vln/urgency-banner";
+import FounderMeetupPopup from "@/components/vln/founder-meetup-popup";
 import CSSFade from "@/components/animations/css-fade";
 import Button from "@/components/ui/button";
-import { Check, Search, DollarSign, ShieldCheck, Siren } from "lucide-react";
+import { Check, Search, DollarSign, ShieldCheck, Siren, ArrowRight } from "lucide-react";
+import { BLOG_POSTS } from "@/lib/blog/metadata";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
+      {/* Founder Meetup Popup */}
+      <FounderMeetupPopup />
+
       {/* Fixed Background - Futuristic IC Board */}
       <ICBoardBackground />
 
@@ -161,6 +166,75 @@ export default function Home() {
                 </div>
               </CSSFade>
             </div>
+          </div>
+        </section>
+
+        {/* Latest Research / Blog */}
+        <section className="py-12 sm:py-16 lg:py-24">
+          <div className="container mx-auto px-4 sm:px-6">
+            <CSSFade>
+              <div className="flex items-end justify-between mb-10">
+                <div>
+                  <p className="text-vln-sage text-sm font-mono uppercase tracking-widest mb-2">From the Lab</p>
+                  <h2 className="text-3xl sm:text-4xl font-bold">Latest Research</h2>
+                </div>
+                <a
+                  href="https://blog.vln.gg"
+                  className="hidden sm:flex items-center gap-2 text-vln-sage hover:text-vln-white transition-colors text-sm font-medium"
+                >
+                  All articles <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </CSSFade>
+
+            <div className="grid sm:grid-cols-2 gap-5">
+              {BLOG_POSTS.map((post, i) => {
+                const accentMap = {
+                  sage: { border: "border-vln-sage/20 hover:border-vln-sage/40", text: "text-vln-sage", badge: "bg-vln-sage/10 text-vln-sage" },
+                  blue: { border: "border-vln-bluegray/20 hover:border-vln-bluegray/40", text: "text-vln-bluegray", badge: "bg-vln-bluegray/10 text-vln-bluegray" },
+                  amber: { border: "border-vln-amber/20 hover:border-vln-amber/40", text: "text-vln-amber", badge: "bg-vln-amber/10 text-vln-amber" },
+                  purple: { border: "border-vln-purple/20 hover:border-vln-purple/40", text: "text-vln-purple", badge: "bg-vln-purple/10 text-vln-purple" },
+                };
+                const accent = accentMap[post.accent ?? "sage"];
+                return (
+                  <CSSFade key={post.slug} delay={i * 100}>
+                    <a
+                      href={`https://blog.vln.gg/${post.slug}`}
+                      className={`group flex flex-col p-6 rounded-vln border bg-vln-bg-light transition-all duration-300 ${accent.border}`}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <span className={`text-xs font-mono px-2 py-1 rounded ${accent.badge}`}>
+                          {post.category}
+                        </span>
+                        <span className="text-xs text-vln-gray-dark">
+                          {post.readTime}
+                        </span>
+                      </div>
+                      <h3 className={`font-semibold text-vln-white group-hover:${accent.text} transition-colors leading-snug mb-3`}>
+                        {post.title}
+                      </h3>
+                      <p className="text-vln-gray text-sm leading-relaxed flex-1 mb-4">
+                        {post.description}
+                      </p>
+                      <div className={`flex items-center gap-1 text-sm font-medium ${accent.text}`}>
+                        Read article <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </a>
+                  </CSSFade>
+                );
+              })}
+            </div>
+
+            <CSSFade>
+              <div className="mt-8 text-center sm:hidden">
+                <a
+                  href="https://blog.vln.gg"
+                  className="inline-flex items-center gap-2 text-vln-sage hover:text-vln-white transition-colors text-sm font-medium"
+                >
+                  View all articles <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </CSSFade>
           </div>
         </section>
 

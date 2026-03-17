@@ -31,6 +31,28 @@ const articles = [
     tags: ["Startups", "Bay Area", "Pre-Launch", "Best Practices"],
     color: "blue" as const,
   },
+  {
+    slug: "igaming-platform-security-audit-guide",
+    title: "iGaming Platform Security: A Complete Audit Guide",
+    excerpt:
+      "A comprehensive security audit guide covering every domain VLN assesses on iGaming platforms — RNG integrity, wallet-flow risk, smart contract integration, API attack surface, anti-fraud, and regulatory compliance.",
+    category: "Platform Security",
+    date: "March 10, 2025",
+    readTime: "14 min read",
+    tags: ["iGaming", "Platform Security", "RNG", "Wallet-Flow Risk"],
+    color: "amber" as const,
+  },
+  {
+    slug: "rng-manipulation-attacks-casino-platforms",
+    title: "RNG Manipulation Attacks: How Casino Platforms Get Exploited",
+    excerpt:
+      "A technical deep-dive into five RNG attack classes on casino and iGaming platforms — from on-chain block hash prediction and commit-reveal front-running to off-chain PRNG reconstruction and Chainlink VRF misconfiguration.",
+    category: "RNG Analysis",
+    date: "April 22, 2025",
+    readTime: "16 min read",
+    tags: ["RNG Security", "iGaming", "EVM", "Block Hash", "PRNG"],
+    color: "purple" as const,
+  },
 ];
 
 const colorMap = {
@@ -45,6 +67,18 @@ const colorMap = {
     text: "text-vln-bluegray",
     badge: "bg-vln-bluegray/10 text-vln-bluegray border border-vln-bluegray/20",
     glow: "glow-lift-blue",
+  },
+  amber: {
+    border: "border-vln-amber/20 hover:border-vln-amber/40",
+    text: "text-vln-amber",
+    badge: "bg-vln-amber/10 text-vln-amber border border-vln-amber/20",
+    glow: "glow-lift",
+  },
+  purple: {
+    border: "border-vln-purple/20 hover:border-vln-purple/40",
+    text: "text-vln-purple",
+    badge: "bg-vln-purple/10 text-vln-purple border border-vln-purple/20",
+    glow: "glow-lift",
   },
 };
 
