@@ -1,5 +1,6 @@
 /**
  * NextAuth.js API Route Handler
+ * Handles all authentication requests
  * Handles all authentication endpoints: login, logout, callback, etc.
  * Date: 2026-02-25
  */

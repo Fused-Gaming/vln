@@ -1,4 +1,19 @@
 /**
+ * VLN Authentication Configuration
+ * NextAuth.js setup for email/password, OAuth, and 2FA
+ * Date: 2026-02-25
+ */
+
+import { NextAuthOptions, getServerSession } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import GitHubProvider from 'next-auth/providers/github';
+import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+    // Email/Password authentication
  * NextAuth.js Configuration
  * Handles authentication, sessions, and OAuth providers
  * Date: 2026-02-25
@@ -61,6 +76,30 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.passwordHash) {
+h       throw new Error('Invalid email or password');
+        }
+
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash
+        );
+
+        if (!passwordMatch) {
+          throw new Error('Invalid email or password');
+        }
+
+        // Check if 2FA is enabled
+        if (user.twoFactorEnabled) {
+          // Return partial user info; full auth happens after 2FA
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            requiresTwoFactor: true,
+          } as any;
+        }
+
           throw new Error('User not found or password not set');
         }
 
@@ -128,6 +167,16 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (session.user) {
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
+      }
+      return session;
+    },
+  },
+
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/error',
         (session.user as unknown as Record<string, unknown>).id = token.id;
         (session.user as unknown as Record<string, unknown>).role = token.role;
       }
@@ -183,6 +232,10 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+export const getAuth = () => getServerSession(authOptions);
   events: {
     async signOut({ token }) {
       // Log sign out

@@ -1,6 +1,11 @@
 /**
  * Prisma Client Singleton
  * Ensures single instance across the application
+ */
+
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
  * Prevents connection pool exhaustion in serverless environments
  * Prisma 7.x compatible with PostgreSQL adapter
  * Date: 2026-02-25
@@ -19,6 +24,12 @@ const pool = postgres(connectionString);
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query'] : [],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
     adapter: new PrismaPg(pool),
     log:
       process.env.NODE_ENV === 'development'
