@@ -1,5 +1,12 @@
 import { Check, LucideIcon } from "lucide-react";
-import Button from "@/components/ui/button";
+
+interface ColorClass {
+  border: string;
+  text: string;
+  bg: string;
+  glow: string;
+  badge: string;
+}
 
 interface MethodCardProps {
   method: {
@@ -10,7 +17,7 @@ interface MethodCardProps {
     features: string[];
     color: "sage" | "blue" | "amber" | "purple";
   };
-  colorClasses: Record<string, any>;
+  colorClasses: Record<string, ColorClass>;
 }
 
 export default function MethodCard({ method, colorClasses }: MethodCardProps) {
