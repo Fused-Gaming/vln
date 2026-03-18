@@ -44,15 +44,20 @@ export default function FounderMeetupPopup({
 
   useEffect(() => {
     // Check if dismissed in last 24 hours
-    const dismissed = localStorage.getItem(STORAGE_KEY);
-    if (dismissed) {
-      const dismissedTime = parseInt(dismissed);
-      const now = Date.now();
-      const twentyFourHours = 24 * 60 * 60 * 1000;
+    try {
+      const dismissed = localStorage.getItem(STORAGE_KEY);
+      if (dismissed) {
+        const dismissedTime = parseInt(dismissed);
+        const now = Date.now();
+        const twentyFourHours = 24 * 60 * 60 * 1000;
 
-      if (now - dismissedTime < twentyFourHours) {
-        return; // Still within dismissal period
+        if (now - dismissedTime < twentyFourHours) {
+          return; // Still within dismissal period
+        }
       }
+    } catch {
+      // localStorage is unavailable (private browsing, third-party iframe, etc.)
+      // Continue to show the popup
     }
 
     // Determine delay based on viewport width
@@ -85,7 +90,12 @@ export default function FounderMeetupPopup({
 
   const handleDismiss = () => {
     // Save dismissal to localStorage
-    localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    try {
+      localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    } catch {
+      // localStorage is unavailable (private browsing, third-party iframe, etc.)
+      // Continue gracefully without persistence
+    }
 
     // Log analytics
     try {
