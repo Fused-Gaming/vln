@@ -181,7 +181,7 @@ const faqItems = [
   {
     question: "Is the investigation confidential?",
     answer:
-      "Absolutely. We treat all client information with the highest confidentiality. Our clients appear anonymously on Trystpilot, and all reports are protected by attorney-client privilege when applicable.",
+      "Absolutely. We treat all client information with the highest confidentiality. Our clients appear anonymously on Trustpilot, and all reports are protected by attorney-client privilege when applicable.",
   },
   {
     question: "Are your investigators licensed?",

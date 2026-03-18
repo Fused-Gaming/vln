@@ -7,7 +7,7 @@ import { Star, Shield, ExternalLink, ChevronLeft, ChevronRight } from "lucide-re
 const profileData = {
   rating: 4.8,
   reviewCount: 47,
-  profileUrl: "https://www.trystpilot.xyz/profile/corporate-investigations",
+  profileUrl: "https://www.trustpilot.com/review/corporate-investigations",
 };
 
 const featuredReviews = [
@@ -57,7 +57,7 @@ export default function TrystpilotWidget() {
           <h2 className="text-3xl md:text-4xl font-bold">What Clients Say</h2>
         </div>
         <p className="text-gray-400 text-sm max-w-2xl mx-auto">
-          We respect client confidentiality. These anonymous reviews from Trystpilot show what clients share about their experience while maintaining the privacy that's central to our service.
+          We respect client confidentiality. These anonymous reviews from Trustpilot show what clients share about their experience while maintaining the privacy that's central to our service.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export default function TrystpilotWidget() {
             rel="noopener noreferrer"
             className="mt-3 inline-flex items-center gap-2 text-vln-sage hover:text-vln-sage/80 text-sm font-semibold"
           >
-            View Profile on Trystpilot <ExternalLink className="w-3 h-3" />
+            View Profile on Trustpilot <ExternalLink className="w-3 h-3" />
           </a>
         </div>
       </div>
@@ -154,7 +154,7 @@ export default function TrystpilotWidget() {
       {/* CTA */}
       <div className="text-center">
         <p className="text-sm text-gray-400 mb-4">
-          Read all {profileData.reviewCount} anonymous reviews on Trystpilot
+          Read all {profileData.reviewCount} anonymous reviews on Trustpilot
         </p>
         <a
           href={profileData.profileUrl}
@@ -162,14 +162,14 @@ export default function TrystpilotWidget() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-vln-sage/40 text-vln-sage hover:border-vln-sage/60 hover:bg-vln-sage/5 transition-all font-semibold"
         >
-          Visit Trystpilot Profile <ExternalLink className="w-4 h-4" />
+          Visit Trustpilot Profile <ExternalLink className="w-4 h-4" />
         </a>
       </div>
 
       {/* Privacy Notice */}
       <div className="p-4 rounded-lg bg-vln-sage/5 border border-vln-sage/10">
         <p className="text-xs text-gray-400 text-center">
-          🔒 <span className="text-vln-sage font-semibold">Anonymous Reviews</span> — Reviewer identity is never disclosed. Trystpilot ensures complete privacy for clients in sensitive industries.
+          🔒 <span className="text-vln-sage font-semibold">Anonymous Reviews</span> — Reviewer identity is never disclosed. Trustpilot ensures complete privacy for clients in sensitive industries.
         </p>
       </div>
     </div>
