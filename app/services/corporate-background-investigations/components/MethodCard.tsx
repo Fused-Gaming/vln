@@ -2,6 +2,7 @@
 
 import { LucideIcon } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface MethodCardProps {
   icon: LucideIcon;
@@ -10,6 +11,7 @@ interface MethodCardProps {
   description: string;
   features: string[];
   cta: string;
+  ctaLink?: string;
 }
 
 export default function MethodCard({
@@ -19,6 +21,7 @@ export default function MethodCard({
   description,
   features,
   cta,
+  ctaLink,
 }: MethodCardProps) {
   return (
     <div className="group relative p-8 rounded-xl border border-vln-sage/20 bg-gradient-to-br from-black via-black to-vln-sage/5 hover:border-vln-sage/40 transition-all duration-300">
@@ -50,10 +53,17 @@ export default function MethodCard({
       </div>
 
       {/* CTA */}
-      <button className="inline-flex items-center gap-2 text-vln-sage font-semibold text-sm hover:gap-3 transition-all">
-        {cta}
-        <ArrowRight className="w-4 h-4" />
-      </button>
+      {ctaLink ? (
+        <Link href={ctaLink} className="inline-flex items-center gap-2 text-vln-sage font-semibold text-sm hover:gap-3 transition-all">
+          {cta}
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      ) : (
+        <button className="inline-flex items-center gap-2 text-vln-sage font-semibold text-sm hover:gap-3 transition-all cursor-not-allowed opacity-50">
+          {cta}
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 }
