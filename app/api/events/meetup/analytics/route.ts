@@ -25,8 +25,17 @@ export async function GET(request: NextRequest) {
   // In production, verify admin token
   const token = request.headers.get("x-admin-token");
   const expectedToken = process.env.ADMIN_ANALYTICS_TOKEN;
+  const isProduction = process.env.NODE_ENV === "production";
 
-  if (!expectedToken || token !== expectedToken) {
+  // In production, require valid token. In development, allow access if token is not configured.
+  if (isProduction && !expectedToken) {
+    return NextResponse.json(
+      { error: "Server misconfiguration: ADMIN_ANALYTICS_TOKEN not set" },
+      { status: 500 }
+    );
+  }
+
+  if (expectedToken && token !== expectedToken) {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }
@@ -148,8 +157,17 @@ export async function DELETE(request: NextRequest) {
   // In production, verify admin token
   const token = request.headers.get("x-admin-token");
   const expectedToken = process.env.ADMIN_ANALYTICS_TOKEN;
+  const isProduction = process.env.NODE_ENV === "production";
 
-  if (!expectedToken || token !== expectedToken) {
+  // In production, require valid token. In development, allow access if token is not configured.
+  if (isProduction && !expectedToken) {
+    return NextResponse.json(
+      { error: "Server misconfiguration: ADMIN_ANALYTICS_TOKEN not set" },
+      { status: 500 }
+    );
+  }
+
+  if (expectedToken && token !== expectedToken) {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }
