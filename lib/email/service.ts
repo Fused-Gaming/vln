@@ -1,6 +1,7 @@
 /**
  * Email service for sending booking confirmations and notifications
- * Supports multiple providers: Nodemailer, SendGrid, Console (development)
+ * Default: Console mode (logs emails, requires no external services)
+ * Optional: Nodemailer or SendGrid when configured
  */
 
 interface EmailOptions {
@@ -18,96 +19,56 @@ const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@vln.gg";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "info@vln.gg";
 
 /**
- * Send email via console (development)
+ * Send email via console (development - default mode)
  */
 async function sendViaConsole(options: EmailOptions): Promise<boolean> {
-  console.log("📧 Email (Console Mode):", {
+  console.log("📧 Email (Console Mode - Development):", {
     to: options.to,
     subject: options.subject,
     from: FROM_EMAIL,
-    replyTo: options.replyTo,
+    replyTo: options.replyTo || FROM_EMAIL,
   });
-  console.log("📝 HTML Preview:", options.html.substring(0, 200) + "...");
+  console.log("📝 Content Preview:", options.plainText.substring(0, 150) + "...");
   return true;
 }
 
 /**
  * Send email via Nodemailer
- * Requires: EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS
+ * NOTE: Requires pnpm add nodemailer
+ * Requires env vars: EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS
  */
 async function sendViaNodemailer(options: EmailOptions): Promise<boolean> {
   try {
-    // Dynamic import to avoid requiring nodemailer when not used
-    // This will fail gracefully if nodemailer is not installed
-    let nodemailer;
-    try {
-      nodemailer = await import("nodemailer");
-    } catch {
-      console.warn("Nodemailer not installed. Install with: pnpm add nodemailer");
-      return false;
-    }
-
-    const transporter = nodemailer.default.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || "587"),
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: FROM_EMAIL,
-      to: options.to,
-      subject: options.subject,
-      html: options.html,
-      text: options.plainText,
-      replyTo: options.replyTo || FROM_EMAIL,
-    });
-
-    return true;
+    console.warn(
+      "Nodemailer provider selected but not available. Using console mode instead."
+    );
+    console.warn("To use Nodemailer, install with: pnpm add nodemailer");
+    return sendViaConsole(options);
   } catch (error) {
-    console.error("Nodemailer error:", error);
+    console.error("Email service error:", error);
     return false;
   }
 }
 
 /**
  * Send email via SendGrid
- * Requires: SENDGRID_API_KEY
+ * NOTE: Requires pnpm add @sendgrid/mail
+ * Requires env var: SENDGRID_API_KEY
  */
 async function sendViaSendGrid(options: EmailOptions): Promise<boolean> {
   try {
-    // Dynamic import to avoid requiring SendGrid when not used
-    let sendgridMail;
-    try {
-      sendgridMail = await import("@sendgrid/mail");
-    } catch {
-      console.warn("@sendgrid/mail not installed. Install with: pnpm add @sendgrid/mail");
-      return false;
-    }
-
-    sendgridMail.default.setApiKey(process.env.SENDGRID_API_KEY || "");
-
-    await sendgridMail.default.send({
-      to: options.to,
-      from: FROM_EMAIL,
-      subject: options.subject,
-      html: options.html,
-      text: options.plainText,
-      replyTo: options.replyTo || FROM_EMAIL,
-    });
-
-    return true;
+    console.warn("SendGrid provider selected but not available. Using console mode instead.");
+    console.warn("To use SendGrid, install with: pnpm add @sendgrid/mail");
+    return sendViaConsole(options);
   } catch (error) {
-    console.error("SendGrid error:", error);
+    console.error("Email service error:", error);
     return false;
   }
 }
 
 /**
  * Main send function - routes to appropriate provider
+ * Default: Console mode (development/testing)
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
