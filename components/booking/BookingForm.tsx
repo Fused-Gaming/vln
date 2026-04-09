@@ -98,7 +98,6 @@ export default function BookingForm() {
   });
 
   const [errors, setErrors] = useState<FormError[]>([]);
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<FormData | null>(null);
 
@@ -154,6 +153,7 @@ export default function BookingForm() {
       }
 
       // Show confirmation modal with booking details
+      // Show confirmation modal with booking details
       setConfirmedBooking(formData);
 
       // Reset form
@@ -167,7 +167,6 @@ export default function BookingForm() {
         notes: "",
       });
 
-      setSubmitted(true);
       setErrors([]);
     } catch (error) {
       console.error("Booking error:", error);
@@ -179,7 +178,6 @@ export default function BookingForm() {
 
   const handleCloseConfirmation = () => {
     setConfirmedBooking(null);
-    setSubmitted(false);
   };
 
   const getErrorMessage = (field: string): string | undefined => {
