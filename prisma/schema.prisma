@@ -715,7 +715,6 @@ model Booking {
   @@index([status])
   @@index([date])
   @@index([createdAt])
-  @@fulltext([firstName, lastName, email])
 }
 
 enum AppointmentType {
