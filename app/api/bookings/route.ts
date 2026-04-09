@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getBookingConfirmationEmail, getAdminNotificationEmail } from "@/lib/email/templates";
 import { sendBookingConfirmation, sendAdminNotification } from "@/lib/email/service";
-
-const prisma = new PrismaClient();
 
 interface BookingRequest {
   appointmentType: "virtual" | "in-person";
