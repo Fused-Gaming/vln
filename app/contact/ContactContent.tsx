@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Send, Globe, Github, Check, Calendar, ExternalLink } from "lucide-react";
+import { Mail, Send, Globe, Github, Check, Calendar } from "lucide-react";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import CSSFade from "@/components/animations/css-fade";
 import Card from "@/components/ui/card";
-import Button from "@/components/ui/button";
 import BookingForm from "@/components/booking/BookingForm";
 import CalendlyEmbed from "@/components/booking/CalendlyEmbed";
 import { cn } from "@/lib/utils";
