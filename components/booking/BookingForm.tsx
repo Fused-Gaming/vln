@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Video, Mail, User, AlertCircle, CheckCircle } from "lucide-react";
+import { MapPin, Video, Mail, User, AlertCircle } from "lucide-react";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
+import BookingConfirmationModal from "./BookingConfirmationModal";
 import { DatePicker, TimePicker } from "./date-time-picker";
 import { cn } from "@/lib/utils";
 
@@ -99,6 +100,7 @@ export default function BookingForm() {
   const [errors, setErrors] = useState<FormError[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [confirmedBooking, setConfirmedBooking] = useState<FormData | null>(null);
 
   const validateForm = (): boolean => {
     const newErrors: FormError[] = [];
@@ -141,7 +143,6 @@ export default function BookingForm() {
 
     setLoading(true);
     try {
-      // TODO: Connect to your booking API endpoint
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -152,7 +153,10 @@ export default function BookingForm() {
         throw new Error("Failed to submit booking request");
       }
 
-      setSubmitted(true);
+      // Show confirmation modal with booking details
+      setConfirmedBooking(formData);
+
+      // Reset form
       setFormData({
         appointmentType: "virtual",
         firstName: "",
@@ -163,13 +167,19 @@ export default function BookingForm() {
         notes: "",
       });
 
-      // Reset success message after 5 seconds
-      setTimeout(() => setSubmitted(false), 5000);
-    } catch {
+      setSubmitted(true);
+      setErrors([]);
+    } catch (error) {
+      console.error("Booking error:", error);
       setErrors([{ field: "submit", message: "Failed to submit booking. Please try again." }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseConfirmation = () => {
+    setConfirmedBooking(null);
+    setSubmitted(false);
   };
 
   const getErrorMessage = (field: string): string | undefined => {
@@ -186,19 +196,6 @@ export default function BookingForm() {
 
   return (
     <div className="w-full">
-      {submitted && (
-        <Card className="mb-6 bg-vln-sage/10 border-vln-sage/30">
-          <div className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-vln-sage mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-vln-white mb-1">Booking Request Submitted</h3>
-              <p className="text-sm text-vln-gray">
-                We&apos;ve received your appointment request. We&apos;ll confirm your booking within 24 hours via email.
-              </p>
-            </div>
-          </div>
-        </Card>
-      )}
 
       {errors.some((e) => e.field === "submit") && (
         <Card className="mb-6 bg-red-500/10 border-red-500/30">
@@ -402,6 +399,12 @@ export default function BookingForm() {
           We&apos;ll send a confirmation email with meeting details and any necessary links or access information.
         </p>
       </form>
+
+      {/* Booking Confirmation Modal */}
+      <BookingConfirmationModal
+        booking={confirmedBooking}
+        onClose={handleCloseConfirmation}
+      />
     </div>
   );
 }
