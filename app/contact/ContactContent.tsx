@@ -1,14 +1,22 @@
 "use client";
 
-import { Mail, Send, Globe, Github, Check, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Mail, Send, Globe, Github, Check, Calendar, ExternalLink } from "lucide-react";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import PCBTraceBackground from "@/components/vln/pcb-trace-background";
 import CSSFade from "@/components/animations/css-fade";
 import Card from "@/components/ui/card";
+import Button from "@/components/ui/button";
 import BookingForm from "@/components/booking/BookingForm";
+import CalendlyEmbed from "@/components/booking/CalendlyEmbed";
+import { cn } from "@/lib/utils";
+
+const CALENDLY_URL = "https://calendly.com/hello-jlucus/30min?back=1";
 
 export default function ContactPage() {
+  const [bookingMethod, setBookingMethod] = useState<"calendly" | "form">("calendly");
+
   return (
     <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
       {/* Fixed Background - Optimized PCB Trace */}
@@ -33,22 +41,76 @@ export default function ContactPage() {
           </CSSFade>
         </section>
 
+        {/* Booking Method Selection */}
+        <section className="container mx-auto px-4 sm:px-6 py-8">
+          <CSSFade delay={50} direction="up">
+            <div className="max-w-2xl mx-auto mb-8">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => setBookingMethod("calendly")}
+                  className={cn(
+                    "flex-1 px-4 py-3 rounded-vln border-2 font-semibold transition-all",
+                    bookingMethod === "calendly"
+                      ? "border-vln-sage bg-vln-sage/10 text-vln-white"
+                      : "border-vln-sage/30 bg-vln-bg-light text-vln-gray hover:border-vln-sage/50"
+                  )}
+                >
+                  <Calendar className="w-4 h-4 inline mr-2" />
+                  Quick Schedule
+                </button>
+                <button
+                  onClick={() => setBookingMethod("form")}
+                  className={cn(
+                    "flex-1 px-4 py-3 rounded-vln border-2 font-semibold transition-all",
+                    bookingMethod === "form"
+                      ? "border-vln-bluegray bg-vln-bluegray/10 text-vln-white"
+                      : "border-vln-sage/30 bg-vln-bg-light text-vln-gray hover:border-vln-sage/50"
+                  )}
+                >
+                  <Mail className="w-4 h-4 inline mr-2" />
+                  Custom Request
+                </button>
+              </div>
+              <p className="text-sm text-vln-gray text-center mt-3">
+                {bookingMethod === "calendly"
+                  ? "Instantly view and select available time slots"
+                  : "Submit a detailed inquiry for enterprise meetings"}
+              </p>
+            </div>
+          </CSSFade>
+        </section>
+
         {/* Booking Form Section */}
         <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <CSSFade delay={100} direction="up">
-            <div className="max-w-2xl mx-auto mb-12">
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <Calendar className="w-5 h-5 text-vln-sage" />
-                <h2 className="text-2xl sm:text-3xl font-bold text-vln-sage">Schedule a Consultation</h2>
+            {bookingMethod === "calendly" ? (
+              <div className="max-w-2xl mx-auto">
+                <CalendlyEmbed
+                  url={CALENDLY_URL}
+                  height="900px"
+                  title="Schedule a Consultation"
+                  description="Book a free 30-minute consultation with our security team. Select your preferred time and let's discuss your project."
+                />
               </div>
-              <p className="text-center text-vln-gray text-base sm:text-lg mb-8">
-                Book a free 30-minute consultation with our security team. Choose between virtual or in-person meetings.
-              </p>
-            </div>
+            ) : (
+              <div>
+                <div className="max-w-2xl mx-auto mb-12">
+                  <div className="flex items-center justify-center gap-2 mb-6">
+                    <Calendar className="w-5 h-5 text-vln-bluegray" />
+                    <h2 className="text-2xl sm:text-3xl font-bold text-vln-bluegray">
+                      Schedule a Consultation
+                    </h2>
+                  </div>
+                  <p className="text-center text-vln-gray text-base sm:text-lg mb-8">
+                    Book a free 30-minute consultation with our security team. Choose between virtual or in-person meetings.
+                  </p>
+                </div>
 
-            <div className="max-w-2xl mx-auto bg-vln-bg-light/50 border border-vln-sage/20 rounded-vln p-6 sm:p-8">
-              <BookingForm />
-            </div>
+                <div className="max-w-2xl mx-auto bg-vln-bg-light/50 border border-vln-sage/20 rounded-vln p-6 sm:p-8">
+                  <BookingForm />
+                </div>
+              </div>
+            )}
           </CSSFade>
         </section>
 
