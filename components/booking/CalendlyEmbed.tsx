@@ -33,20 +33,24 @@ export default function CalendlyEmbed({
       script.async = true;
       script.onload = () => {
         // Initialize Calendly widget after script loads
-        if (window.Calendly) {
+        const embedElement = document.getElementById("calendly-embed");
+        if (window.Calendly && embedElement) {
           window.Calendly.initInlineWidget({
             url: url,
-            parentElement: document.getElementById("calendly-embed"),
+            parentElement: embedElement,
           });
         }
       };
       document.body.appendChild(script);
     } else if (window.Calendly) {
       // Script already loaded, initialize widget
-      window.Calendly.initInlineWidget({
-        url: url,
-        parentElement: document.getElementById("calendly-embed"),
-      });
+      const embedElement = document.getElementById("calendly-embed");
+      if (embedElement) {
+        window.Calendly.initInlineWidget({
+          url: url,
+          parentElement: embedElement,
+        });
+      }
     }
   }, [url]);
 
