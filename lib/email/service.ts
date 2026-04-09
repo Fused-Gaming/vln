@@ -38,12 +38,19 @@ async function sendViaConsole(options: EmailOptions): Promise<boolean> {
 async function sendViaNodemailer(options: EmailOptions): Promise<boolean> {
   try {
     // Dynamic import to avoid requiring nodemailer when not used
-    const nodemailer = await import("nodemailer");
+    // This will fail gracefully if nodemailer is not installed
+    let nodemailer;
+    try {
+      nodemailer = await import("nodemailer");
+    } catch {
+      console.warn("Nodemailer not installed. Install with: pnpm add nodemailer");
+      return false;
+    }
 
     const transporter = nodemailer.default.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT || "587"),
-      secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
+      secure: process.env.EMAIL_SECURE === "true",
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -62,7 +69,7 @@ async function sendViaNodemailer(options: EmailOptions): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Nodemailer error:", error);
-    throw error;
+    return false;
   }
 }
 
@@ -72,7 +79,14 @@ async function sendViaNodemailer(options: EmailOptions): Promise<boolean> {
  */
 async function sendViaSendGrid(options: EmailOptions): Promise<boolean> {
   try {
-    const sendgridMail = await import("@sendgrid/mail");
+    // Dynamic import to avoid requiring SendGrid when not used
+    let sendgridMail;
+    try {
+      sendgridMail = await import("@sendgrid/mail");
+    } catch {
+      console.warn("@sendgrid/mail not installed. Install with: pnpm add @sendgrid/mail");
+      return false;
+    }
 
     sendgridMail.default.setApiKey(process.env.SENDGRID_API_KEY || "");
 
@@ -88,7 +102,7 @@ async function sendViaSendGrid(options: EmailOptions): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("SendGrid error:", error);
-    throw error;
+    return false;
   }
 }
 

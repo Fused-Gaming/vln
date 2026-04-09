@@ -174,7 +174,7 @@ export async function POST(request: Request) {
       email: booking.email,
       date: booking.date,
       time: booking.time,
-      confirmationEmailSent,
+      confirmationSent,
       adminNotificationSent,
     });
 
