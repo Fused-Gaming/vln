@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { getBookingConfirmationEmail, getAdminNotificationEmail } from "@/lib/email/templates";
+import { sendBookingConfirmation, sendAdminNotification } from "@/lib/email/service";
+
+const prisma = new PrismaClient();
 
 interface BookingRequest {
   appointmentType: "virtual" | "in-person";
@@ -121,39 +126,77 @@ export async function POST(request: Request) {
 
     const booking = body as BookingRequest;
 
-    // TODO: Integrate with your booking system
-    // For now, this is a placeholder that accepts the request
-    // In production, you would:
-    // 1. Send a confirmation email
-    // 2. Store in database
-    // 3. Send notification to admin
-    // 4. Integrate with calendar system
+    // Get client IP and user agent for security/tracking
+    const forwarded = request.headers.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : request.headers.get("x-real-ip") || "unknown";
+    const userAgent = request.headers.get("user-agent") || undefined;
 
-    console.log("New booking request:", {
+    // Parse date and time to create DateTime
+    const appointmentDate = new Date(booking.date + "T" + booking.time);
+
+    // Store booking in database
+    const storedBooking = await prisma.booking.create({
+      data: {
+        firstName: booking.firstName,
+        lastName: booking.lastName,
+        email: booking.email,
+        appointmentType: booking.appointmentType === "virtual" ? "VIRTUAL" : "IN_PERSON",
+        date: appointmentDate,
+        time: booking.time,
+        notes: booking.notes || null,
+        source: "contact-form",
+        ipAddress: ip,
+        userAgent: userAgent,
+      },
+    });
+
+    // Generate and send confirmation email to customer
+    const { html: confirmationHtml, plainText: confirmationPlain } = getBookingConfirmationEmail(
+      booking
+    );
+    const confirmationSent = await sendBookingConfirmation(booking.email, confirmationHtml, confirmationPlain);
+
+    // Generate and send admin notification
+    const { html: adminHtml, plainText: adminPlain } = getAdminNotificationEmail(booking);
+    const adminNotificationSent = await sendAdminNotification(adminHtml, adminPlain, booking.email);
+
+    // Update booking to track email delivery
+    if (confirmationSent) {
+      await prisma.booking.update({
+        where: { id: storedBooking.id },
+        data: { confirmationEmailSent: true },
+      });
+    }
+
+    console.log("Booking created successfully:", {
+      id: storedBooking.id,
       name: `${booking.firstName} ${booking.lastName}`,
       email: booking.email,
-      type: booking.appointmentType,
       date: booking.date,
       time: booking.time,
-      notes: booking.notes,
+      confirmationEmailSent,
+      adminNotificationSent,
     });
 
     // Return success response
     return NextResponse.json(
       {
         success: true,
-        message: "Booking request received. We'll confirm within 24 hours.",
+        message: "Booking request received. Confirmation email sent.",
         booking: {
-          id: Math.random().toString(36).substr(2, 9),
+          id: storedBooking.id,
           ...booking,
-          createdAt: new Date().toISOString(),
+          createdAt: storedBooking.createdAt.toISOString(),
         },
       },
       { status: 201 }
     );
   } catch (error) {
     console.error("Booking API error:", error);
-    return NextResponse.json({ error: "Failed to process booking request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to process booking request" },
+      { status: 500 }
+    );
   }
 }
 
