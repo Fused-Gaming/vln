@@ -39,14 +39,16 @@ function validateMessageRequest(data: unknown): { valid: boolean; error?: string
     return { valid: false, error: "Email is required" };
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Safe email validation regex - avoids ReDoS vulnerability
+  // Pattern: local-part@domain.extension with realistic character constraints
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(message.email)) {
     return { valid: false, error: "Invalid email format" };
   }
 
   // Phone validation (optional, but if provided must be valid)
   if (message.phone) {
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    const phoneRegex = /^\+?[\d\s\-()]{10,}$/;
     if (!phoneRegex.test(message.phone) || message.phone.replace(/\D/g, "").length < 10) {
       return { valid: false, error: "Invalid phone number format" };
     }
