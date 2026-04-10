@@ -13,6 +13,17 @@ interface BookingData {
   notes?: string;
 }
 
+function escapeHtml(text: string): string {
+  const map: { [key: string]: string } = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr + "T00:00:00");
   return date.toLocaleDateString("en-US", {
@@ -90,7 +101,7 @@ https://vln.gg
       <h1>✓ Booking Confirmed</h1>
     </div>
 
-    <p>Dear <strong>${booking.firstName}</strong>,</p>
+    <p>Dear <strong>${escapeHtml(booking.firstName)}</strong>,</p>
 
     <p>Thank you for scheduling a consultation with VLN. Your booking has been confirmed with the following details:</p>
 
@@ -99,11 +110,11 @@ https://vln.gg
       <div class="details">
         <div class="detail-row">
           <div class="detail-label">Name:</div>
-          <div class="detail-value">${booking.firstName} ${booking.lastName}</div>
+          <div class="detail-value">${escapeHtml(booking.firstName)} ${escapeHtml(booking.lastName)}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">Email:</div>
-          <div class="detail-value"><a href="mailto:${booking.email}" class="link">${booking.email}</a></div>
+          <div class="detail-value"><a href="mailto:${escapeHtml(booking.email)}" class="link">${escapeHtml(booking.email)}</a></div>
         </div>
         <div class="detail-row">
           <div class="detail-label">Type:</div>
@@ -125,7 +136,7 @@ https://vln.gg
         ? `
     <div class="section">
       <h3 class="section-title">Your Notes</h3>
-      <div class="notes">${booking.notes.replace(/\n/g, "<br>")}</div>
+      <div class="notes">${escapeHtml(booking.notes).replace(/\n/g, "<br>")}</div>
     </div>
     `
         : ""
@@ -191,8 +202,8 @@ Contact: ${booking.email}
     </div>
 
     <div class="details">
-      <div class="row"><span class="label">Name:</span> ${booking.firstName} ${booking.lastName}</div>
-      <div class="row"><span class="label">Email:</span> <a href="mailto:${booking.email}">${booking.email}</a></div>
+      <div class="row"><span class="label">Name:</span> ${escapeHtml(booking.firstName)} ${escapeHtml(booking.lastName)}</div>
+      <div class="row"><span class="label">Email:</span> <a href="mailto:${escapeHtml(booking.email)}">${escapeHtml(booking.email)}</a></div>
       <div class="row"><span class="label">Type:</span> ${booking.appointmentType === "virtual" ? "Virtual" : "In-Person"}</div>
       <div class="row"><span class="label">Date:</span> ${formatDate(booking.date)}</div>
       <div class="row"><span class="label">Time:</span> ${formatTime(booking.time)} PT</div>
@@ -203,7 +214,7 @@ Contact: ${booking.email}
         ? `
     <div class="details">
       <strong>Notes:</strong><br>
-      ${booking.notes.replace(/\n/g, "<br>")}
+      ${escapeHtml(booking.notes).replace(/\n/g, "<br>")}
     </div>
     `
         : ""
@@ -211,7 +222,7 @@ Contact: ${booking.email}
 
     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
       <p><strong>Action Required:</strong> Confirm appointment within 24 hours</p>
-      <p>Reply to this email or contact: <strong>${booking.email}</strong></p>
+      <p>Reply to this email or contact: <strong>${escapeHtml(booking.email)}</strong></p>
     </div>
   </div>
 </body>
