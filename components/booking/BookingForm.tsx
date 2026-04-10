@@ -114,7 +114,7 @@ export default function BookingForm() {
 
     if (!formData.email.trim()) {
       newErrors.push({ field: "email", message: "Email is required" });
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
       newErrors.push({ field: "email", message: "Please enter a valid email address" });
     }
 
@@ -152,7 +152,6 @@ export default function BookingForm() {
         throw new Error("Failed to submit booking request");
       }
 
-      // Show confirmation modal with booking details
       // Show confirmation modal with booking details
       setConfirmedBooking(formData);
 

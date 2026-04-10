@@ -46,7 +46,9 @@ function validateBookingRequest(data: unknown): { valid: boolean; error?: string
     return { valid: false, error: "Email is required" };
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booking.email)) {
+  // Safe email validation regex - avoids ReDoS vulnerability
+  // Pattern: local-part@domain.extension with realistic character constraints
+  if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(booking.email)) {
     return { valid: false, error: "Invalid email format" };
   }
 
