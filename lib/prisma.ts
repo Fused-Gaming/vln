@@ -1,29 +1,55 @@
-/**
- * Prisma Client Singleton
- * Ensures single instance across the application
- * Prevents connection pool exhaustion in serverless environments
- * Prisma 7.x compatible with PostgreSQL adapter
- * Date: 2026-02-25
- */
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import postgres from "postgres";
 
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import postgres from 'postgres';
+// PrismaClient is attached to the `global` object in development to prevent
+// exhausting your database connection limit.
+//
+// Learn more:
+// https://pris.ly/d/help/next-js-best-practices
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = global as unknown as { prisma: PrismaClient | null };
 
-// Create connection pool for postgres
-const connectionString = process.env.DATABASE_URL || 'postgresql://localhost:5432/vln_dev';
-const pool = postgres(connectionString);
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    adapter: new PrismaPg(pool),
-    log:
-      process.env.NODE_ENV === 'development'
-        ? ['query', 'error', 'warn']
-        : ['error'],
+  // Create PostgreSQL connection
+  const client = postgres(connectionString);
+  const adapter = new PrismaPg(client);
+
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["error"] : [],
   });
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+let prismaInstance: PrismaClient | null = null;
+
+export function getPrisma(): PrismaClient {
+  if (prismaInstance) {
+    return prismaInstance;
+  }
+
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
+  }
+
+  prismaInstance = createPrismaClient();
+
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = prismaInstance;
+  }
+
+  return prismaInstance;
+}
+
+// Export lazy getter to avoid initialization during build
+export const prisma = new Proxy({} as PrismaClient, {
+  get(target, prop) {
+    return (getPrisma() as any)[prop];
+  },
+});
+
