@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaAdapter } from "@prisma/adapter-pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 import postgres from "postgres";
 
 // PostgreSQL connection for Prisma via the postgres driver
@@ -9,7 +9,7 @@ if (!connectionString) {
 }
 
 const client = postgres(connectionString);
-const adapter = new PrismaAdapter(client);
+const adapter = new PrismaPg(client);
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
