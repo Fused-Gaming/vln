@@ -91,7 +91,7 @@ export default function FounderMeetupPage() {
             <CSSFade delay={600} direction="up">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <a
-                  href="https://lu.ma/vlnfounders"
+                  href="https://luma.com/ija0zqkf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl font-semibold rounded-vln bg-vln-sage text-vln-bg hover:shadow-[0_0_8px_#a6c3a7] transition-all"
@@ -246,7 +246,7 @@ export default function FounderMeetupPage() {
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                   <a
-                    href="https://lu.ma/vlnfounders"
+                    href="https://luma.com/ija0zqkf"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl font-semibold rounded-vln bg-vln-sage text-vln-bg hover:shadow-[0_0_8px_#a6c3a7] transition-all"

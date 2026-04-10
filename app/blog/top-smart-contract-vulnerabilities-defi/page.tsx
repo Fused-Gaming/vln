@@ -146,8 +146,8 @@ export default function TopSmartContractVulnerabilitiesPage() {
       name: "VLN - Vulnerability Lab Network",
       logo: "https://vln.gg/vln-logo-dark.svg",
     },
-    datePublished: "2025-01-15",
-    dateModified: "2025-06-01",
+    datePublished: "2026-02-01",
+    dateModified: "2026-03-12",
     url: "https://vln.gg/blog/top-smart-contract-vulnerabilities-defi",
     keywords:
       "smart contract vulnerabilities, DeFi security, reentrancy, integer overflow, access control, Bay Area blockchain security",
@@ -177,7 +177,7 @@ export default function TopSmartContractVulnerabilitiesPage() {
                 <span className="text-vln-gray-dark">•</span>
                 <span className="text-vln-gray-dark text-sm">Security Research</span>
                 <span className="text-vln-gray-dark">•</span>
-                <span className="text-vln-gray-dark text-sm">January 15, 2025</span>
+                <span className="text-vln-gray-dark text-sm">February 1, 2026</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">

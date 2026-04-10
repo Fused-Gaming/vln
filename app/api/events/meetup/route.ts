@@ -30,7 +30,7 @@ export async function GET() {
       "Blockchain Developers",
     ],
     externalLinks: {
-      luma: "https://lu.ma/vlnfounders",
+      luma: "https://luma.com/ija0zqkf",
       linkedin: "https://linkedin.com/company/vlngg",
       website: "https://vln.gg",
     },
