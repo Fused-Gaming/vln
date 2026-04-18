@@ -20,6 +20,23 @@ interface QAPair {
   keywords: string[];
 }
 
+// Safely format message content for HTML rendering:
+// 1. Escape HTML meta-characters to prevent XSS.
+// 2. Convert newlines to <br />.
+// 3. Wrap backticked text in <code> tags.
+function formatMessageContent(content: string): string {
+  const escaped = content
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  return escaped
+    .replace(/\n/g, '<br />')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
 const predefinedQA: QAPair[] = [
   {
     question: "How do I prevent SSRF attacks?",
@@ -509,7 +526,7 @@ Would you like to rephrase your question or [Ask Claude directly](https://claude
                 <div key={idx} className={`${styles.message} ${styles[message.role]}`}>
                   <div className={styles.messageContent}>
                     {message.role === 'assistant' ? (
-                      <div dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />').replace(/`([^`]+)`/g, '<code>$1</code>') }} />
+                      <div dangerouslySetInnerHTML={{ __html: formatMessageContent(message.content) }} />
                     ) : (
                       message.content
                     )}
