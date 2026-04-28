@@ -1,394 +1,268 @@
 ---
-title: Peralta Architecture
-description: Complete system architecture and design for Peralta deployment platform
+title: PeraltaCC Architecture
+description: PeraltaCC system architecture, technology stack, and integration patterns
 ---
 
-# Peralta Architecture
+# PeraltaCC Architecture
 
-This document describes the complete architecture, components, and design patterns used in Peralta.
+PeraltaCC is built as a modular Node.js application leveraging Claude Flow v3 for automation, with integrated GitBook documentation and Git-based workflows.
 
-## Architecture Overview
+## Technology Stack
 
-Peralta follows a **cloud-native, microservices-based architecture** designed for high availability, scalability, and security.
+### Core Runtime
+- **Node.js** ≥ 18.0.0
+- **npm** ≥ 8.0.0
+- **TypeScript** (for type safety)
+
+### Key Technologies
+- **Claude Flow v3** - AI automation workflows
+- **GitBook** - Documentation platform (via Git Sync)
+- **Git** - Version control and proposal tracking
+- **GitHub Actions** - CI/CD automation
+
+## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        DNS / Global Load Balancer               │
-└─────────────────────────────┬───────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-    ┌───▼──────┐         ┌───▼──────┐         ┌───▼──────┐
-    │  AWS     │         │  GCP     │         │  Azure   │
-    │  Region  │         │  Region  │         │  Region  │
-    └──────────┘         └──────────┘         └──────────┘
-        │
-        ├─────────────────────────────────────┐
-        │                                     │
-    ┌───▼──────────────────┐      ┌──────────▼───────┐
-    │  Load Balancer (ALB) │      │  Service Mesh    │
-    │                      │      │  (Istio/Linkerd) │
-    └───┬──────────────────┘      └──────────┬───────┘
-        │                                    │
-    ┌───▼────────────────────────────────────▼──────────┐
-    │           Kubernetes Cluster                      │
-    │                                                   │
-    │  ┌──────────────┬──────────────┬──────────────┐  │
-    │  │ Ingress      │ API Gateway  │ Service Mesh │  │
-    │  │ Controller   │ (Kong/Nginx) │ Sidecar      │  │
-    │  └──────────────┴──────────────┴──────────────┘  │
-    │                                                   │
-    │  ┌────────────────────────────────────────────┐  │
-    │  │         Microservices (Pods)               │  │
-    │  │                                            │  │
-    │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐  │  │
-    │  │  │ API      │ │ Core     │ │ Analytics│  │  │
-    │  │  │ Gateway  │ │ App      │ │ Service  │  │  │
-    │  │  │ Service  │ │ Service  │ │          │  │  │
-    │  │  └──────────┘ └──────────┘ └──────────┘  │  │
-    │  │                                            │  │
-    │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐  │  │
-    │  │  │ Data     │ │ Infra    │ │ Backup   │  │  │
-    │  │  │ Pipeline │ │ Monitor  │ │ Service  │  │  │
-    │  │  └──────────┘ └──────────┘ └──────────┘  │  │
-    │  └────────────────────────────────────────────┘  │
-    │                                                   │
-    │  ┌────────────────────────────────────────────┐  │
-    │  │      Service Bus (Message Queue)           │  │
-    │  │      - RabbitMQ / Kafka                    │  │
-    │  │      - Event streaming                     │  │
-    │  └────────────────────────────────────────────┘  │
-    └────────────────────┬───────────────────────────┘
-                         │
-        ┌────────────────┼────────────────┐
-        │                │                │
-    ┌───▼────────┐  ┌────▼────────┐  ┌──▼──────────┐
-    │   Caching  │  │  Database   │  │   Storage   │
-    │   Layer    │  │   Layer     │  │   Layer     │
-    │            │  │             │  │             │
-    │ Redis      │  │ PostgreSQL  │  │ S3/GCS/Blob │
-    │ Memcached  │  │ Read Rep.   │  │ CDN         │
-    └────────────┘  └─────────────┘  └─────────────┘
-        │
-        ├──────────────────────────────────┐
-        │                                  │
-    ┌───▼──────────────────┐   ┌──────────▼──────────┐
-    │   Monitoring Stack   │   │  Security Services  │
-    │                      │   │                     │
-    │ Prometheus (metrics) │   │ WAF (Web App FW)    │
-    │ Grafana (dashboards) │   │ DDoS Protection     │
-    │ Jaeger (tracing)     │   │ Secrets Manager     │
-    │ ELK (logging)        │   │ KMS Encryption      │
-    └──────────────────────┘   └─────────────────────┘
+┌────────────────────────────────────────┐
+│     PeraltaCC Application              │
+│     (Node.js + Claude Flow v3)         │
+├────────────────────────────────────────┤
+│                                        │
+│  Modules:                              │
+│  ├─ Redistricting Engine               │
+│  ├─ ERP Automation                     │
+│  ├─ Proposal Manager                   │
+│  ├─ GitBook Sync                       │
+│  └─ Workflow Orchestrator              │
+│                                        │
+├────────────────────────────────────────┤
+│  Data Layer                            │
+│  ├─ JSON/YAML Configuration            │
+│  ├─ Proposal Artifacts                 │
+│  └─ Git Repository State               │
+├────────────────────────────────────────┤
+│  Documentation (GitBook)               │
+│  ├─ docs/gitbook/ (Primary Source)     │
+│  ├─ Git Sync (Automated)               │
+│  └─ PDF Exports                        │
+├────────────────────────────────────────┤
+│  CI/CD Pipeline (GitHub Actions)       │
+│  ├─ Quality Gate Validation            │
+│  ├─ Linting & Tests                    │
+│  └─ Deployment Automation              │
+└────────────────────────────────────────┘
 ```
 
-## Core Components
+## Core Modules
 
-### 1. Load Balancing Layer
+### 1. Redistricting Engine
+**Purpose:** District boundary planning and optimization
 
-**Cloud-Native Load Balancers:**
-- **AWS**: Application Load Balancer (ALB)
-- **GCP**: Cloud Load Balancing
-- **Azure**: Application Gateway
+**Responsibilities:**
+- Boundary calculation algorithms
+- Demographic analysis
+- Impact assessment
+- Optimization recommendations
+
+**Integration:** Feeds data to proposal generation and ERP systems
+
+### 2. ERP Automation
+**Purpose:** Streamlined enterprise resource planning workflows
+
+**Capabilities:**
+- Process automation
+- Workflow orchestration
+- Department coordination
+- Functional alignment
+
+**Integration:** Consumes redistricting output, coordinates across departments
+
+### 3. Proposal Manager
+**Purpose:** Bid and proposal lifecycle management
+
+**Responsibilities:**
+- Proposal artifact organization (Tasks 1-6)
+- Deliverable tracking
+- Version management
+- Quality gate enforcement
+
+**Integration:** GitHub branches, GitBook documentation, CI/CD gates
+
+### 4. GitBook Sync Integration
+**Purpose:** Automated documentation management
+
+**Workflow:**
+1. Canonical docs in `docs/gitbook/`
+2. Git Sync to GitBook space (automated)
+3. Manual editing in GitBook space
+4. Sync back to repository
+5. PDF exports generated
 
 **Features:**
-- SSL/TLS termination
-- Health checks and auto-failover
-- Request routing and path-based rules
-- DDoS protection
+- Bi-directional sync
+- Automatic versioning
+- PDF generation
+- Public/private visibility control
 
-### 2. Service Mesh
+### 5. Workflow Orchestrator
+**Purpose:** Claude Flow v3-based automation
 
-Optional service mesh implementation:
-- **Istio** (recommended)
-- **Linkerd** (lightweight alternative)
-
-**Provides:**
-- Inter-service communication control
-- Circuit breaking and retry logic
-- Distributed tracing
-- mTLS encryption
-- Traffic management
-
-### 3. Kubernetes Orchestration
-
-**Cluster Components:**
-- **Control Plane**: API server, scheduler, controller manager
-- **Data Plane**: Worker nodes with container runtime
-- **CNI**: Network plugin (Calico, Flannel, etc.)
-- **Ingress Controller**: Routes external traffic to services
-
-**Scaling:**
-- Horizontal Pod Autoscaler (HPA)
-- Vertical Pod Autoscaler (VPA)
-- Cluster Autoscaler
-
-### 4. Microservices
-
-Key services deployed as independent containers:
-
-#### API Gateway Service
-- Request routing and load distribution
-- API authentication and authorization
-- Rate limiting and quotas
-- Request/response transformation
-- API versioning
-
-#### Core Application Services
-- Business logic implementation
-- Service-to-service communication
-- Event processing and handling
-- Data transformation and validation
-
-#### Data Pipeline Service
-- ETL operations
-- Data ingestion and processing
-- Data validation and enrichment
-- Batch and stream processing
-
-#### Analytics Service
-- Metrics aggregation
-- Performance analytics
-- System health analysis
-- Custom reporting and dashboards
-
-#### Infrastructure Monitoring Service
-- Resource utilization tracking
-- Performance metrics collection
-- Infrastructure health checks
-- Auto-scaling triggers
-
-### 5. Data Layer
-
-#### Primary Database
-- **PostgreSQL 14+**
-- Multi-AZ with failover
-- Automated backups
-- Point-in-time recovery (PITR)
-
-**Key Tables:**
-- Players and accounts
-- Games and results
-- Transactions and settlements
-- Audit logs
-
-#### Read Replicas
-- Dedicated replicas for analytics
-- Read-only access
-- Async replication with <1s lag
-
-#### Cache Layer
-- **Redis Cluster** or **ElastiCache**
-- Session storage
-- Rate limit counters
-- Real-time metrics
-
-#### Object Storage
-- AWS S3 / GCP Cloud Storage / Azure Blob
-- Game archives
-- Backups
-- Reports and documents
-
-### 6. Message Queue
-
-Event-driven architecture:
-- **RabbitMQ** or **Apache Kafka**
-- Decouples microservices
-- Asynchronous processing
-- Event streaming for analytics
-
-**Topics/Queues:**
-- `service.events` - Application service events
-- `data.ingestion` - Data pipeline events
-- `system.alerts` - Infrastructure alerts
-- `audit.logs` - Compliance and audit trail
-- `deployment.events` - Infrastructure changes
-- `metrics.collection` - Monitoring data
-
-### 7. Monitoring & Observability
-
-#### Metrics Collection
-- **Prometheus** - Time-series metrics
-- **Telegraf** - Agent-based collection
-- Custom metrics from applications
-
-#### Visualization
-- **Grafana** - Dashboards and alerts
-- Custom KPIs and SLIs
-- Real-time monitoring
-
-#### Distributed Tracing
-- **Jaeger** - Request tracing
-- Service call visualization
-- Performance analysis
-
-#### Centralized Logging
-- **ELK Stack** (Elasticsearch, Logstash, Kibana)
-- Log aggregation and search
-- Real-time alerts
-- Compliance logging
-
-### 8. Security Layer
-
-#### Network Security
-- **VPC with subnets** - Network isolation
-- **Security Groups** - Firewall rules
-- **Network ACLs** - Additional filtering
-- **Private subnets** - No direct internet access
-
-#### API Security
-- **API Gateway** - Request validation
-- **WAF** - Web Application Firewall
-- **DDoS Protection** - Rate limiting and filtering
-- **CORS policies** - Cross-origin control
-
-#### Data Security
-- **TLS/SSL** - Encrypted transit
-- **KMS encryption** - Encrypted at-rest
-- **Secrets Manager** - Credential storage
-- **Data Loss Prevention** - Sensitive data protection
-
-#### Identity & Access
-- **IAM roles** - Service principals
-- **RBAC** - Role-based access control
-- **MFA** - Multi-factor authentication
-- **Audit logging** - Complete trail
+**Capabilities:**
+- Multi-step process automation
+- Conditional branching
+- Error handling and recovery
+- Human-in-loop approvals
 
 ## Data Flow
 
-### Typical Request Flow
-
+### Proposal Development Workflow
 ```
-Client Request
+GitHub Issue/Discussion
     ↓
-Load Balancer/Ingress
+Feature Branch Creation
     ↓
-API Gateway
+Proposal Development (Claude Flow)
     ↓
-Authentication & Authorization
+Artifact Creation (Tasks 1-6)
     ↓
-Core Application Service
-    │
-    ├→ Query Redis Cache
-    ├→ Query/Update PostgreSQL
-    ├→ Publish service.events
-    │
+Quality Gate Checks
+    ├→ Linting
+    ├→ Testing
+    ├→ Documentation Validation
+    └→ Governance Requirements
     ↓
-Response to Client
+PR Review & Approval
     ↓
-CDN (if static assets)
-```
-
-### Data Pipeline Flow
-
-```
-Data Ingestion
+GitBook Sync (Automated)
     ↓
-Message Queue (Kafka/RabbitMQ)
-    ↓
-Data Pipeline Service
-    ├→ Validation
-    ├→ Transformation
-    ├→ Enrichment
-    │
-    ↓
-PostgreSQL Data Store
-    ↓
-Analytics Service
-    ├→ Aggregations
-    ├→ Metrics Calculation
-    │
-    ↓
-Grafana Dashboards
+PDF Generation & Distribution
 ```
 
-### Infrastructure Monitoring Flow
-
+### Documentation Workflow
 ```
-Prometheus Scrape
+GitBook Space (Editor Editing)
     ↓
-Kubernetes Metrics
+Git Sync (Automated Pull)
     ↓
-System Metrics Collection
+Repository docs/gitbook/
     ↓
-Prometheus Time-Series DB
+CI/CD Pipeline Validation
     ↓
-Grafana Visualization
+PDF Export Generation
     ↓
-Alerting Rules
-    ↓
-Alert Notification (PagerDuty, Slack, etc.)
+Deployment & Distribution
 ```
 
-## Scalability Patterns
+## Quality Gates & Governance
 
-### Horizontal Scaling
-- **Pods**: Auto-scale via HPA based on CPU/memory
-- **Nodes**: Cluster Autoscaler adds/removes nodes
-- **Database**: Read replicas for query load
-- **Cache**: Redis cluster for distributed caching
+### Branch Protection Rules
+- `main` - Production branch (requires PR + approval)
+- `feature/gitbook` - Documentation staging (requires validation)
+- Feature branches - Development (`feature/*`, `fix/*`, `docs/*`)
 
-### Vertical Scaling
-- **Larger nodes** for memory-intensive workloads
-- **GPU nodes** for ML operations
-- **Network-optimized** instances for high-throughput
+### Quality Gate Validation
+```yaml
+gates:
+  - linting: ESLint, Prettier
+  - testing: Unit and integration tests
+  - documentation: Markdown validation, link checking
+  - governance: Task checklists, certification tracking
+  - security: Dependency scanning, secret detection
+```
 
-### Caching Strategy
-- **Layer 1**: Application-level caching (in-memory)
-- **Layer 2**: Distributed cache (Redis)
-- **Layer 3**: Database query results
-- **Layer 4**: CDN for static assets
+### Submission Requirements
+- All tasks completed (1-6)
+- Quality gates passing
+- Documentation updated
+- Certifications attached
+- Review approvals
 
-## High Availability
+## Integration Points
 
-### Redundancy
-- **Multi-AZ deployment** - Across availability zones
-- **Load balancing** - Distributes traffic
-- **Replicated databases** - Async replication
-- **Backup services** - Standby replicas
+### Claude Flow v3 Integration
+- Workflow automation for proposal generation
+- ERP process orchestration
+- Documentation generation
+- Quality gate enforcement
 
-### Failover
-- **Automatic failover** for database (RTO ~1 minute)
-- **DNS failover** (RTO ~30 seconds)
-- **Traffic rerouting** at load balancer (RTO <1 second)
+### GitHub Integration
+- Repository hosting
+- PR/branch workflow
+- Actions for CI/CD
+- Issue tracking
 
-### SLO Targets
-- **Availability**: 99.99% (4.38 minutes/month downtime)
-- **RTO**: <15 minutes
-- **RPO**: <5 minutes
+### GitBook Integration
+- Primary documentation source
+- Web-based editor access
+- PDF export capability
+- Public sharing options
 
-## Deployment Strategy
+## Deployment Architecture
 
-### GitOps Workflow
-1. Code push to Git
-2. CI/CD pipeline (GitHub Actions)
-3. Build and test
-4. Push image to registry
-5. Automated deployment to staging
-6. Manual approval for production
-7. Progressive rollout (blue-green or canary)
-8. Automated rollback on failure
+### Development Environment
+```
+Local Machine
+├─ Node.js + npm
+├─ Git repository
+├─ Claude Flow configuration
+└─ Local documentation preview
+```
 
-### Environments
-- **Development**: Single-node Kubernetes
-- **Staging**: Full replica of production
-- **Production**: Multi-region, multi-cloud
+### Staging Environment
+```
+GitHub feature/gitbook branch
+├─ GitBook space connected via Git Sync
+├─ CI/CD validation
+├─ Preview generation
+└─ Quality gate enforcement
+```
 
-## Security Architecture
+### Production Environment
+```
+GitHub main branch
+├─ Canonical proposal artifacts
+├─ Published documentation
+├─ PDF exports
+└─ Distribution ready
+```
 
-See detailed: [Security Architecture](/docs/peraltacc/security)
+## Performance & Scalability
 
-### Defense Layers
-1. **Network Layer** - VPC, security groups, WAF
-2. **API Layer** - Authentication, authorization, rate limiting
-3. **Application Layer** - Input validation, encryption
-4. **Data Layer** - Encryption, access control, DLP
-5. **Audit Layer** - Logging, monitoring, compliance
+### Current Approach
+- Node.js single process (suitable for current workload)
+- Git-based state management (infinite scalability)
+- GitBook handles documentation distribution
+- GitHub Actions for automation
+
+### Scaling Considerations
+If automation load increases:
+- Implement job queuing (Bull, RabbitMQ)
+- Add background workers
+- Distribute Claude Flow tasks
+- Consider containerization (Docker)
+
+## Security Considerations
+
+### Data Protection
+- GitHub branch protection
+- GitBook access control
+- Secret management via GitHub Secrets
+- No sensitive data in proposals
+
+### Authentication
+- GitHub OAuth (built-in)
+- GitBook workspace permissions
+- Role-based access control
+
+### Compliance
+- Audit logging via Git history
+- Certification tracking
+- Quality gate enforcement
+- Documentation of approvals
 
 ## Next Steps
 
-- [Getting Started](/docs/peraltacc/getting-started) - First deployment
-- [Deployment Guide](/docs/peraltacc/deployment) - Deploy Peralta
-- [Configuration](/docs/peraltacc/configuration) - Configure components
-- [Operations](/docs/peraltacc/operations) - Day-to-day operations
-- [Security](/docs/peraltacc/security) - Security hardening
+- [Getting Started](/docs/peraltacc/getting-started) - Installation guide
+- [Project Structure](/docs/peraltacc/project-overview) - Detailed breakdown
+- [Contributing Guidelines](/docs/peraltacc/contributing) - How to contribute
+- [GitBook Setup](/docs/peraltacc/gitbook-setup) - Documentation platform

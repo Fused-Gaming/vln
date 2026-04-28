@@ -1,476 +1,414 @@
 ---
-title: Peralta FAQ & Troubleshooting
-description: Frequently asked questions and troubleshooting guide for Peralta deployment
+title: PeraltaCC FAQ & Troubleshooting
+description: Frequently asked questions and troubleshooting guide for PeraltaCC
 ---
 
-# Peralta FAQ & Troubleshooting
+# PeraltaCC FAQ & Troubleshooting
 
-Common questions about Peralta deployment and operations.
+Common questions about PeraltaCC installation, usage, and development.
 
 ## General Questions
 
-### What is Peralta?
-Peralta is VLN's enterprise deployment and operations framework providing infrastructure-as-code templates, deployment automation, monitoring setup, and operational procedures.
+### What is PeraltaCC?
+PeraltaCC is a comprehensive platform for managing Peralta Community College redistricting initiatives and ERP automation, built with Claude Flow v3 for functional alignment across the district.
 
-### What does Peralta deploy?
-Peralta deploys:
-- Kubernetes or cloud-native infrastructure
-- Application services and microservices
-- Database (PostgreSQL)
-- Caching layer (Redis)
-- Monitoring stack (Prometheus, Grafana)
-- Logging stack (ELK)
-- API gateway and load balancing
+### What does PeraltaCC do?
+PeraltaCC provides:
+- Redistricting tools for district boundary planning
+- ERP automation for business process workflows
+- Proposal management for bid and deliverable tracking
+- GitBook integration for professional documentation
+- Quality gates and governance enforcement
 
-### What cloud providers are supported?
-- Amazon Web Services (AWS)
-- Google Cloud Platform (GCP)
-- Microsoft Azure
-- Kubernetes (any distribution)
+### Is PeraltaCC open source?
+PeraltaCC is maintained by Fused Gaming on GitHub. Check the LICENSE file for usage terms and restrictions.
 
-### How long does deployment take?
-- Kubernetes: 1-2 hours
-- AWS: 2-3 hours
-- GCP: 2-3 hours
-- Azure: 2-3 hours
-
-### What's the cost?
-Pricing depends on:
-- Cloud provider rates
-- Number of players/throughput
-- Multi-region deployment
-- Custom features
-
-Contact sales@vln.gg for estimate.
+### What are the main components?
+- **Redistricting Engine** - Boundary planning and optimization
+- **ERP Automation** - Workflow orchestration
+- **Proposal Manager** - Bid and deliverable tracking
+- **GitBook Sync** - Automated documentation
+- **Workflow Orchestrator** - Claude Flow v3 automation
 
 ## Prerequisites & Setup
 
 ### Q: What tools do I need?
 **A:** Required:
-- Terraform >= 1.0
-- Ansible >= 2.10
-- Docker >= 24.0
-- kubectl >= 1.27
+- Node.js >= 18.0.0
+- npm >= 8.0.0
 - Git
+- Text editor or IDE
 
-### Q: I don't have any of these tools
-**A:** Install them:
+Optional:
+- GitHub Desktop (for git operations)
+- GitBook account (for documentation editing)
+- Vercel account (for static hosting)
+
+### Q: How do I install Node.js?
 
 **macOS:**
 ```bash
-brew install terraform ansible docker kubernetes-cli git
+# Using Homebrew
+brew install node
+
+# Or download from nodejs.org
 ```
 
 **Ubuntu/Debian:**
 ```bash
-# Add HashiCorp repo
-curl https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-
-# Install
-sudo apt-get update
-sudo apt-get install terraform ansible docker.io
-
-# Install kubectl
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install kubectl /usr/local/bin/
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
-### Q: Do I need cloud provider CLI tools?
-**A:** Recommended:
-- AWS CLI for AWS deployments
-- gcloud for GCP
-- az for Azure
+**Windows:**
+- Download from https://nodejs.org/
+- Run the installer
+- Restart your terminal
 
-### Q: What permissions do I need?
-**A:** Full administrative access to cloud account for initial setup. After deployment, use least-privilege IAM roles.
-
-## Deployment
-
-### Q: Can I deploy to multiple clouds simultaneously?
-**A:** Yes! The architecture supports multi-cloud deployment. See [Multi-Region Setup](/docs/peraltacc/deployment/multi-region).
-
-### Q: What's the difference between environments?
-**A:**
-- **Development**: Single node, minimal redundancy
-- **Staging**: Full production configuration
-- **Production**: Multi-AZ, multi-region ready
-
-### Q: Can I deploy to an existing Kubernetes cluster?
-**A:** Yes, that's recommended:
-
-1. Ensure cluster meets requirements (1.27+, 3+ nodes)
-2. Configure kubeconfig
-3. Run Helm deployment
-
-### Q: Terraform plan shows unexpected changes
-**A:**
-1. Review the planned changes
-2. Check terraform.tfvars for unintended edits
-3. Ensure remote state is current
-4. Run `terraform refresh` to sync state
-
-### Q: Deployment fails halfway through
-**A:**
-1. Check logs for error message
-2. Fix the issue
-3. Re-run: `terraform apply` (idempotent)
-4. Or use Ansible directly for specific components
-
-### Q: How do I roll back a deployment?
-**A:** Several options:
-
-```bash
-# Option 1: Revert Terraform state
-terraform destroy -target=aws_instance.app
-terraform apply
-
-# Option 2: Kubernetes rollback
-kubectl rollout undo deployment/peralta-api
-
-# Option 3: Git rollback
-git checkout HEAD~1 -- terraform/
-terraform apply
-```
-
-## Configuration
-
-### Q: How do I change database size?
-**A:** Edit `terraform/environments/prod/terraform.tfvars`:
-
-```hcl
-db_instance_class = "db.r5.xlarge"  # Change this
-```
-
-Then:
-```bash
-terraform plan
-terraform apply
-```
-
-### Q: How do I enable multi-region?
+### Q: I get "command not found: node"
 **A:** 
+1. Verify installation: `node --version`
+2. Add Node to PATH (check installation guide)
+3. Restart terminal/IDE
+4. Reinstall if needed
 
-1. Update `terraform.tfvars` with regions
-2. Configure replication settings
-3. Run terraform
-4. Configure DNS failover
-
-See [Multi-Region Setup](/docs/peraltacc/deployment/multi-region).
-
-### Q: How do I use custom SSL certificates?
-**A:**
-
-```hcl
-# terraform.tfvars
-ssl_certificate_arn = "arn:aws:acm:..."
-```
-
-Or manually:
-1. Create certificate in AWS ACM/GCP
-2. Update load balancer configuration
-3. Configure DNS
-
-### Q: How do I change application configuration?
-**A:** Use Ansible to update running services:
-
-```bash
-ansible-playbook playbooks/configure-app.yml \
-  -i inventory/prod/hosts.yml \
-  -e "config_var=value"
-```
-
-### Q: How do I add environment variables?
+### Q: What's the difference between npm and Node.js?
 **A:** 
+- **Node.js** - JavaScript runtime that executes code
+- **npm** - Package manager that installs dependencies
+- Both are needed for PeraltaCC
 
-**For secrets:**
+## Installation & Setup
+
+### Q: How long does installation take?
+**A:** About 5-10 minutes depending on internet speed and system performance.
+
+### Q: Do I need Docker to run PeraltaCC?
+**A:** No. Docker is optional for advanced deployment scenarios. Standard npm installation works fine.
+
+### Q: Can I run PeraltaCC on Windows?
+**A:** Yes! Windows 10+ with WSL2 is recommended for best compatibility.
+
+### Q: How much disk space does PeraltaCC need?
+**A:** About 500MB after installation (depending on proposal artifacts).
+
+## Development & Usage
+
+### Q: How do I start development?
+
 ```bash
-# Use AWS Secrets Manager
-aws secretsmanager create-secret \
-  --name peralta/api-key \
-  --secret-string "value"
+# 1. Clone repository
+git clone https://github.com/Fused-Gaming/PeraltaCC.git
+cd PeraltaCC
+
+# 2. Install dependencies
+npm install
+
+# 3. Create feature branch
+git checkout -b feature/my-proposal
+
+# 4. Start development
+npm start
 ```
 
-**Then reference in deployment:**
-```hcl
-environment_variables = {
-  API_KEY = aws_secretsmanager_secret.api_key.id
-}
-```
-
-## Operations
-
-### Q: How do I check if services are healthy?
-**A:**
+### Q: How do I run tests?
 
 ```bash
-# Kubernetes
-kubectl get pods -A
-kubectl describe pod <pod-name>
+# Run all tests
+npm test
 
-# Or use dashboard
-kubectl proxy
-# Visit http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+# Watch mode
+npm test -- --watch
+
+# Coverage report
+npm test -- --coverage
 ```
 
-### Q: How do I view logs?
-**A:**
+### Q: What's the difference between `main` and `feature/gitbook`?
 
-**Kubernetes:**
-```bash
-kubectl logs deployment/peralta-api
-kubectl logs -f deployment/peralta-api  # Follow logs
-```
+**main branch:**
+- Production-ready proposals
+- Requires PR + approval
+- Quality gates enforced
+- Final deliverables
 
-**Cloud:**
-- AWS CloudWatch
-- Google Cloud Logging
-- Azure Monitor
+**feature/gitbook:**
+- Documentation staging
+- GitBook Git Sync target
+- Allows direct editing
+- Testing environment
 
-**ELK Stack:**
-```
-https://your-domain.com/kibana
-```
+**Feature branches:**
+- Development work (`feature/*`, `fix/*`)
+- Temporary branches
+- Merged to main via PR
 
-### Q: Services keep restarting
-**A:**
-1. Check logs: `kubectl logs <pod-name>`
-2. Check resource limits: `kubectl top pods`
-3. Check readiness probes: `kubectl describe pod <pod-name>`
-4. Check configuration: `kubectl get configmap`
-5. Contact support with logs
+### Q: How do I create a proposal?
 
-### Q: Database connection pool exhausted
-**A:**
-1. Increase pool size in configuration
-2. Check for connection leaks in application
-3. Add database replicas for read scaling
-4. Monitor active connections
+1. Create feature branch: `git checkout -b feature/proposal-name`
+2. Add proposal artifacts in `docs/addendum-bid/`
+3. Update documentation in `docs/gitbook/`
+4. Run tests: `npm test`
+5. Commit changes: `git add . && git commit -m "feat: proposal description"`
+6. Create PR: `git push -u origin feature/proposal-name`
+7. Request review
+8. Merge to main when approved
 
-### Q: High CPU usage
-**A:**
-1. Check slow queries
-2. Verify indexes are optimal
-3. Scale horizontally (add more pods)
-4. Review application code for inefficiencies
-
-### Q: High memory usage
-**A:**
-1. Check container memory limits
-2. Look for memory leaks in logs
-3. Scale memory allocation up
-4. Reduce cache TTL if cache-related
-
-### Q: Network connectivity issues
-**A:**
-1. Check VPC/security groups
-2. Verify DNS resolution
-3. Test network paths
-4. Review firewall logs
-
-## Monitoring & Alerts
-
-### Q: Where do I view metrics?
+### Q: Where do I put bid documents?
 **A:** 
+- `docs/addendum-bid/` - Addendum deliverables (Tasks 1-6)
+- `docs/gitbook/` - Documentation and proposals
+- `docs/proposals/` - Reference materials
 
-```
-https://your-domain.com/grafana
-```
-
-Login with:
-- Username: admin
-- Password: (set during deployment)
-
-### Q: How do I create custom alerts?
-**A:** In Grafana:
-1. Create alert rule
-2. Set threshold
-3. Configure notification channel
-4. Test alert
-
-### Q: I'm not receiving alerts
-**A:**
-1. Check alert rules are enabled
-2. Verify notification channel is configured
-3. Test channel manually
-4. Check email spam folder
-
-### Q: How do I export metrics?
-**A:** Prometheus API:
-
-```bash
-# Query metrics
-curl "http://prometheus:9090/api/v1/query?query=up"
-
-# Export metrics
-curl "http://prometheus:9090/api/v1/series?match[]=up"
-```
-
-## Scaling
-
-### Q: How do I scale up?
-**A:**
-
-**Horizontal (more nodes):**
-```hcl
-# terraform.tfvars
-app_desired_count = 10  # Increase replicas
-```
-
-```bash
-terraform apply
-```
-
-**Vertical (bigger nodes):**
-```hcl
-instance_type = "t3.xlarge"  # Bigger instances
-```
-
-### Q: How do I scale database?
-**A:**
-
-```bash
-# AWS RDS
-aws rds modify-db-instance \
-  --db-instance-identifier peralta-prod \
-  --db-instance-class db.r5.2xlarge \
-  --apply-immediately
-```
-
-### Q: Can I add read replicas?
-**A:** Yes, via Terraform:
-
-```hcl
-read_replicas = [
-  { az = "us-east-1b" },
-  { az = "us-east-1c" }
-]
-```
-
-### Q: Auto-scaling not working
-**A:**
-1. Check HPA is enabled
-2. Verify metrics are available
-3. Check resource limits
-4. Review HPA events: `kubectl describe hpa`
-
-## Backups & Recovery
-
-### Q: How often are backups created?
-**A:** Daily by default, configurable:
-
-```hcl
-backup_retention_days = 30
-backup_window          = "03:00-04:00"
-```
-
-### Q: How do I restore from backup?
-**A:**
-
-```bash
-# List available backups
-aws rds describe-db-snapshots \
-  --db-instance-identifier peralta-prod
-
-# Restore
-aws rds restore-db-instance-from-db-snapshot \
-  --db-instance-identifier peralta-prod-restored \
-  --db-snapshot-identifier <snapshot-id>
-```
-
-### Q: How do I test backups?
-**A:** Restore to staging environment monthly.
-
-### Q: Where are backups stored?
+### Q: How do I generate the PDF?
 **A:** 
-- AWS: S3 (encrypted)
-- GCP: Cloud Storage
-- Azure: Blob Storage
+If using GitBook:
+1. Go to GitBook space
+2. Share → PDF Export
+3. Download and distribute
 
-### Q: What about application data backups?
-**A:** Application files are:
-- In containerized system (immutable)
-- Configuration in version control
-- Data in database (covered by DB backups)
+If using Vercel:
+1. Vercel generates preview URLs
+2. Use Lighthouse or similar to create PDF
+
+## Quality Gates & Governance
+
+### Q: What quality gates are enforced?
+**A:** 
+- Linting checks (code style)
+- Unit tests (functionality)
+- Documentation validation (markdown)
+- Governance requirements (tasks, certifications)
+
+View results in GitHub Actions.
+
+### Q: What are the Task 1-6 requirements?
+**A:** 
+Tasks are organized in `docs/addendum-bid/`:
+1. Task 1 - Foundation deliverables
+2. Task 2 - Analysis and planning
+3. Task 3 - Implementation approach
+4. Task 4 - Timeline and resources
+5. Task 5 - First report and findings
+6. Task 6 - Certifications and compliance
+
+Each task has specific requirements and checklists.
+
+### Q: How do I submit a complete proposal?
+**A:** 
+Ensure all tasks completed:
+- [ ] All 6 tasks in `docs/addendum-bid/`
+- [ ] Tests passing: `npm test`
+- [ ] Linting passing: `npm run lint`
+- [ ] Documentation complete
+- [ ] Certifications attached
+- [ ] PR approved by reviewers
+
+Then merge to main.
+
+### Q: Can I have partial submissions?
+**A:** 
+Yes. Feature branches can have partial work. Only main branch requires all quality gates passing.
+
+## GitBook Integration
+
+### Q: How do GitBook and the repository work together?
+**A:** 
+1. **Primary source:** `docs/gitbook/` in repository
+2. **Git Sync:** Bidirectional sync with GitBook space
+3. **Editing:** Can edit in GitBook web UI or repository
+4. **Publishing:** GitBook generates web pages and PDF
+
+### Q: Do I need a GitBook account?
+**A:** 
+Optional. You can:
+- Just use GitHub for all work
+- Use GitBook for web-based editing (requires account)
+- Both simultaneously with Git Sync
+
+### Q: How do I enable Git Sync?
+**A:** 
+1. Create GitBook workspace/space
+2. Go to Share Settings
+3. Enable Git Sync
+4. Connect to GitHub repository
+5. Select target branch (usually `feature/gitbook`)
+6. Authorize connection
+
+### Q: How do I make documentation public?
+**A:** 
+In GitBook:
+1. Go to Share → Invite
+2. Select "Public link"
+3. Share the link
+4. Anyone can view (no login required)
 
 ## Troubleshooting
 
-### Q: Nodes not joining cluster
-**A:**
-1. Check node prerequisites
-2. Verify network connectivity
-3. Check security group rules
-4. Review Ansible logs
+### Common Issues
 
-### Q: Database migration failures
-**A:**
-1. Check database is accessible
-2. Verify schema is correct
-3. Check disk space
-4. Review error logs
-
-### Q: API returning 503 errors
-**A:**
-1. Check service health: `kubectl get pods`
-2. Check logs: `kubectl logs <pod>`
-3. Verify database connectivity
-4. Check external dependencies
-
-### Q: Terraform state corruption
-**A:**
+#### npm install fails
 ```bash
-# Refresh state
-terraform refresh
-
-# Inspect state
-terraform state list
-terraform state show <resource>
-
-# If necessary, recover from backup
-aws s3 cp s3://terraform-state/backup/terraform.tfstate .
+# Clear cache and retry
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
 ```
 
-### Q: Certificate expiring soon
-**A:**
-1. Renew certificate with provider (AWS ACM auto-renews)
-2. Update in load balancer
-3. Verify renewal: `openssl s_client -connect domain:443`
+#### Tests won't run
+```bash
+# Check Node version
+node --version
 
-## Security
+# Should be >= 18.0.0
+# If not, upgrade Node.js
 
-### Q: How do I secure API keys?
-**A:** Use secrets manager:
-- AWS Secrets Manager
-- Google Secret Manager
-- Azure Key Vault
-
-### Q: Can I restrict access by IP?
-**A:** Yes, via security groups:
-
-```hcl
-ingress_security_group = {
-  cidr_blocks = ["203.0.113.0/24"]
-}
+# Try running tests with verbose output
+npm test -- --verbose
 ```
 
-### Q: How do I enable VPN access?
-**A:** Configure VPN gateway:
+#### Git push fails
+```bash
+# Make sure you're on correct branch
+git branch
 
-```hcl
-enable_vpn_gateway = true
-vpn_cidr           = "10.0.0.0/16"
+# Pull latest changes
+git pull origin your-branch
+
+# Try push again
+git push origin your-branch
 ```
 
-### Q: Are backups encrypted?
-**A:** Yes, AES-256-GCM at rest, TLS in transit.
+#### GitBook sync not working
+```bash
+# Check Git status
+git status
 
-## Getting Help
+# Make sure branch is correct
+git branch -a
 
-**Still need help?**
+# Reset if needed
+git fetch origin
+git reset --hard origin/your-branch
+```
 
-- 📖 [Deployment Guide](/docs/peraltacc/deployment)
-- 🏗️ [Architecture](/docs/peraltacc/architecture)
-- ⚙️ [Configuration](/docs/peraltacc/configuration)
-- 🚀 [Operations](/docs/peraltacc/operations)
-- 🐛 [GitHub Issues](https://github.com/Fused-Gaming/vln/issues)
-- 📧 [support@vln.gg](mailto:support@vln.gg)
+#### Linting errors
+```bash
+# See what linter complains about
+npm run lint
+
+# Auto-fix issues
+npm run lint:fix
+
+# Or manually fix and retry
+npm run lint
+```
+
+#### Port already in use
+```bash
+# If port 3000 is taken by another process
+npm start -- --port 3001
+
+# Or kill process using the port
+# macOS/Linux:
+lsof -i :3000
+kill -9 <PID>
+
+# Windows:
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
+
+## Performance & Optimization
+
+### Q: How can I speed up npm install?
+**A:** 
+```bash
+# Use npm ci instead of npm install
+npm ci
+
+# Use offline mode if packages cached
+npm install --prefer-offline
+```
+
+### Q: How do I reduce repository size?
+**A:** 
+```bash
+# Remove node_modules before pushing
+rm -rf node_modules
+
+# Use .gitignore to exclude:
+node_modules/
+.env
+*.log
+dist/
+coverage/
+```
+
+### Q: How do I clean up old branches?
+**A:** 
+```bash
+# List all branches
+git branch -a
+
+# Delete local branch
+git branch -d branch-name
+
+# Delete remote branch
+git push origin --delete branch-name
+```
+
+## Advanced Topics
+
+### Q: Can I use custom GitHub Actions?
+**A:** 
+Yes. Modify `.github/workflows/` files to add custom automation.
+
+### Q: Can I integrate with CI/CD systems?
+**A:** 
+Yes. GitHub Actions automatically runs on push. You can also integrate with:
+- Jenkins
+- GitLab CI
+- CircleCI
+- TravisCI
+
+### Q: How do I add environment variables?
+**A:** 
+```bash
+# Local development
+Create .env file in root
+(Add to .gitignore to keep private)
+
+# GitHub Actions
+Settings → Secrets → Add environment variables
+Reference in workflow files
+```
+
+### Q: Can I use Vercel for hosting?
+**A:** 
+Yes, for static documentation/preview hosting:
+```bash
+npm i -g vercel
+vercel
+```
+
+## Support & Contact
+
+### Getting Help
+
+1. **Documentation:** Check this FAQ and guides
+2. **GitHub Issues:** Report bugs or request features
+3. **GitHub Discussions:** Ask questions and discuss
+4. **Email:** Contact maintainers for urgent issues
+
+### Providing Feedback
+
+Found a bug? Have a suggestion?
+1. Go to GitHub Issues
+2. Search for existing issues
+3. Create new issue if needed
+4. Provide detailed description and steps to reproduce
+
+### Contributing
+
+Want to contribute? See `CONTRIBUTING.md` for guidelines.
