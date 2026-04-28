@@ -1,357 +1,419 @@
 ---
-title: Peralta Deployment Guide
-description: Step-by-step deployment procedures for Peralta infrastructure
+title: PeraltaCC Deployment Guide
+description: Installation, setup, and deployment procedures for PeraltaCC
 ---
 
-# Peralta Deployment Guide
+# PeraltaCC Deployment Guide
 
-Complete guide to deploying Peralta across different cloud providers and on-premises environments.
+Complete guide to installing, configuring, and deploying PeraltaCC for development, staging, and production environments.
 
 ## Deployment Paths
 
-Choose your deployment target:
+Choose your deployment environment:
 
-### 1. Kubernetes (Recommended)
-**Best for:** Existing Kubernetes cluster or cloud-managed K8s service  
-**Time:** 1-2 hours  
+### 1. Local Development
+**Best for:** Feature development, testing, debugging  
+**Time:** 5 minutes  
 **Complexity:** Low
 
-[Deploy to Kubernetes →](/docs/peraltacc/deployment/kubernetes)
+### 2. Feature Branch (Staging)
+**Best for:** Proposal development, GitBook integration testing  
+**Time:** 10 minutes  
+**Complexity:** Low
 
-### 2. AWS
-**Best for:** AWS-native infrastructure  
-**Time:** 2-3 hours  
+### 3. Production (Main)
+**Best for:** Final proposal submission, distribution  
+**Time:** 15 minutes  
 **Complexity:** Medium
-
-[Deploy to AWS →](/docs/peraltacc/deployment/aws)
-
-### 3. Google Cloud
-**Best for:** GCP environment  
-**Time:** 2-3 hours  
-**Complexity:** Medium
-
-[Deploy to Google Cloud →](/docs/peraltacc/deployment/gcp)
-
-### 4. Azure
-**Best for:** Azure environment  
-**Time:** 2-3 hours  
-**Complexity:** Medium
-
-[Deploy to Azure →](/docs/peraltacc/deployment/azure)
 
 ## Pre-Deployment Checklist
 
 Before starting deployment, verify:
 
-### Infrastructure Requirements
-- [ ] Cloud provider account with appropriate permissions
-- [ ] Sufficient quota for desired resources
-- [ ] VPC/network planning completed
-- [ ] Domain names registered (if custom domains needed)
-- [ ] SSL certificates obtained or ready to generate
+### System Requirements
+- [ ] Node.js 18.0.0 or higher installed
+- [ ] npm 8.0.0 or higher installed
+- [ ] Git installed and configured
+- [ ] GitHub access configured
+- [ ] 500MB free disk space
 
-### Tools & Access
-- [ ] Terraform installed and tested
-- [ ] Ansible installed and tested
-- [ ] Cloud CLI configured (aws/gcloud/az)
-- [ ] kubectl configured (for K8s deployments)
-- [ ] Git repository cloned
+### Access & Permissions
+- [ ] Repository clone access
+- [ ] GitHub branch creation permission
+- [ ] GitBook workspace access (if using documentation)
+- [ ] npm package permissions
 
-### Configuration Files
-- [ ] terraform.tfvars created with values
-- [ ] ansible/inventory configured
-- [ ] SSH keys generated (if needed)
-- [ ] API keys/secrets prepared
+### Configuration
+- [ ] `.npmignore` configured correctly
+- [ ] Environment variables defined
+- [ ] GitHub Actions workflows configured
+- [ ] GitBook Git Sync settings ready
 
-### Knowledge
-- [ ] Read [Architecture Overview](/docs/peraltacc/architecture)
-- [ ] Review configuration options for your cloud provider
-- [ ] Understand your deployment environment
+## Installation Steps
 
-## Deployment Phases
+### Step 1: Clone Repository
 
-All deployments follow these phases:
-
-### Phase 1: Infrastructure
 ```bash
-# Initialize and validate Terraform
-terraform init
-terraform fmt
-terraform validate
+# Clone the PeraltaCC repository
+git clone https://github.com/Fused-Gaming/PeraltaCC.git
+cd PeraltaCC
 
-# Plan deployment
-terraform plan -out=tfplan
-
-# Apply infrastructure
-terraform apply tfplan
+# Verify you're on the correct branch
+git branch -a
 ```
 
-**Outputs:**
-- VPC and networking
-- Database (RDS/Cloud SQL)
-- Load balancer configuration
-- Security groups/firewall rules
-- Storage buckets
+### Step 2: Install Dependencies
 
-### Phase 2: Base Configuration
 ```bash
-# Configure compute instances with Ansible
-ansible-playbook playbooks/configure-base.yml \
-  -i inventory/prod/hosts.yml
+# Install npm packages
+npm install
+
+# Verify installation
+npm list --depth=0
 ```
 
-**Configures:**
-- Operating system security hardening
-- System package updates
-- Container runtime (Docker)
-- Monitoring agents
-- Logging agents
+### Step 3: Development Setup
 
-### Phase 3: Application Deployment
 ```bash
-# Deploy Peralta services
-ansible-playbook playbooks/deploy.yml \
-  -i inventory/prod/hosts.yml
+# Create feature branch for your work
+git checkout -b feature/your-feature-name
 
-# Verify deployment
-ansible-playbook playbooks/verify.yml \
-  -i inventory/prod/hosts.yml
+# Verify development setup
+npm test
+npm run lint
 ```
 
-**Deploys:**
-- Containerized services
-- Database migrations
-- Configuration management
-- Health checks
+## Development Workflow
 
-### Phase 4: Post-Deployment Validation
+### Start Development Server
+
 ```bash
-# Run validation tests
-bash scripts/validate-deployment.sh
+# Start the application
+npm start
 
-# Check all services healthy
-kubectl get pods -A
-# or
-ansible all -i inventory/prod/hosts.yml -m ping
+# Expected output:
+# > PeraltaCC@1.0.0 start
+# > node src/index.js
 ```
 
-## Configuration Management
+### Run Tests
 
-### Environment-Specific Variables
+```bash
+# Run all tests
+npm test
 
-Create `terraform/environments/{environment}/terraform.tfvars`:
+# Run tests in watch mode
+npm test -- --watch
 
-```hcl
+# Generate coverage report
+npm test -- --coverage
+```
+
+### Code Quality
+
+```bash
+# Run linter
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+```
+
+## Staging Deployment (Feature Branch)
+
+### Feature Branch Workflow
+
+```bash
+# Create and switch to feature branch
+git checkout -b feature/your-proposal
+
+# Make your changes
+git add .
+git commit -m "feat: your proposal description"
+
+# Push to remote
+git push -u origin feature/your-proposal
+```
+
+### GitHub Actions Validation
+
+The repository automatically runs:
+1. Linting checks
+2. Unit tests
+3. Documentation validation
+4. Quality gates
+
+**View results:**
+- GitHub Actions tab → Select your workflow
+- Review test results and logs
+
+### GitBook Integration (Optional)
+
+```bash
+# If using GitBook Git Sync:
+# 1. Push changes to feature/gitbook branch
+git checkout -b feature/gitbook
+git push -u origin feature/gitbook
+
+# 2. GitBook automatically syncs
+# 3. Review at: https://your-gitbook-space.gitbook.io
+
+# 4. Make edits in GitBook web editor
+# 5. Sync back to repository (automatic)
+```
+
+## Production Deployment
+
+### Merge to Main
+
+```bash
+# Switch to main branch
+git checkout main
+git pull origin main
+
+# Merge feature branch (via PR recommended)
+git merge feature/your-proposal
+
+# Push to production
+git push origin main
+```
+
+### Quality Gate Validation
+
+Before production merge, ensure:
+- ✅ All tests passing
+- ✅ Linting checks passed
+- ✅ Documentation complete
+- ✅ All tasks (1-6) completed
+- ✅ Certifications attached
+- ✅ Review approvals received
+
+### PDF Generation & Distribution
+
+```bash
+# Generate PDF export (if GitBook connected)
+# 1. Go to GitBook space
+# 2. Share menu → PDF export
+# 3. Download and distribute
+
+# Or use Vercel (if configured)
+# Preview URL: https://your-vercel-domain.vercel.app
+```
+
+## Environment Configuration
+
+### Environment Variables
+
+Create `.env` file in project root:
+
+```bash
 # Development
-environment = "development"
-node_count  = 1
-db_instance  = "db.t3.small"
-min_replicas = 1
-max_replicas = 2
-
-# Staging
-environment = "staging"
-node_count  = 3
-db_instance  = "db.r5.large"
-min_replicas = 2
-max_replicas = 5
+NODE_ENV=development
+DEBUG=true
+LOG_LEVEL=debug
 
 # Production
-environment = "production"
-node_count  = 5
-db_instance  = "db.r5.xlarge"
-min_replicas = 3
-max_replicas = 10
+NODE_ENV=production
+DEBUG=false
+LOG_LEVEL=error
+
+# Claude Flow (if using API)
+CLAUDE_FLOW_API_KEY=your_api_key
+CLAUDE_FLOW_ENDPOINT=https://api.claude-flow.example.com
+
+# GitBook (optional)
+GITBOOK_SPACE_ID=your_space_id
+GITBOOK_API_KEY=your_gitbook_api_key
 ```
 
-## Post-Deployment Steps
+### Package Configuration
 
-### 1. Verify Services
+Edit `package.json` scripts as needed:
+
+```json
+{
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "build": "npm run lint && npm run test",
+    "pretest": "npm run lint",
+    "posttest": "npm run format"
+  }
+}
+```
+
+## Post-Deployment Validation
+
+### Verify Installation
 
 ```bash
-# Check API endpoint
-curl https://api.your-domain.com/health
+# Check all dependencies installed
+npm list --depth=0
 
-# Expected response:
-# {"status":"ok","version":"1.0.0"}
+# Verify key files present
+ls -la docs/addendum-bid/
+ls -la docs/gitbook/
+
+# Check configuration
+cat package.json | grep version
 ```
 
-### 2. Configure Monitoring
+### Test Functionality
 
 ```bash
-# Access Grafana dashboard
-open https://monitoring.your-domain.com
+# Run tests
+npm test
 
-# Configure alerts and dashboards
+# Check documentation builds
+npm run docs:build
+
+# Verify quality gates
+npm run validate
 ```
 
-### 3. Test Critical Paths
+### Manual Verification
 
-```bash
-# Test API endpoints
-curl -X POST https://api.your-domain.com/api/health \
-  -H "Authorization: Bearer $API_KEY"
-  
-# Test application workflow
-curl -X GET https://api.your-domain.com/api/services/status \
-  -H "Authorization: Bearer $API_KEY"
-```
-
-### 4. Setup Backups
-
-```bash
-# Verify database backups
-aws rds describe-db-instances \
-  --db-instance-identifier peralta-prod
-
-# Check backup retention
-```
-
-### 5. Enable Auto-Scaling
-
-```bash
-# Configure Horizontal Pod Autoscaler
-kubectl autoscale deployment peralta-api \
-  --min=3 --max=10 --cpu-percent=70
-
-# Configure Cluster Autoscaler
-# (Already configured in Terraform)
-```
-
-## Scaling the Deployment
-
-### Horizontal Scaling
-
-```bash
-# Scale application pods
-kubectl scale deployment peralta-api --replicas=5
-
-# Or update HPA
-kubectl patch hpa peralta-api-hpa -p '{"spec":{"minReplicas":5}}'
-```
-
-### Vertical Scaling
-
-```bash
-# Update node instance type
-# Edit terraform.tfvars
-instance_type = "t3.xlarge"
-
-# Apply changes
-terraform plan
-terraform apply
-```
+- [ ] Application starts without errors
+- [ ] All tests pass
+- [ ] Linting issues resolved
+- [ ] Documentation accessible
+- [ ] GitBook sync working (if configured)
+- [ ] GitHub Actions passing
+- [ ] Proposal artifacts present
 
 ## Troubleshooting
 
-### Services Not Starting
+### Dependency Issues
 
 ```bash
-# Check pod logs
-kubectl logs deployment/peralta-api
-
-# Describe pod for events
-kubectl describe pod <pod-name>
-
-# Check resource constraints
-kubectl top nodes
-kubectl top pods
+# Clear npm cache and reinstall
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
 ```
 
-### Database Connection Issues
+### Permission Errors
 
 ```bash
-# Test database connection
-psql postgres://user:pass@db-host:5432/peralta
+# Fix permission issues on macOS/Linux
+sudo chown -R $USER:$USER ~/.npm
+sudo chown -R $USER:$USER .
 
-# Check security group rules
-aws ec2 describe-security-groups \
-  --group-ids sg-xxxxx
+# Or use npm ci instead of npm install
+npm ci
 ```
 
-### Performance Issues
+### Git Sync Issues (GitBook)
 
 ```bash
-# Check metrics
-kubectl get hpa peralta-api-hpa --watch
+# Check Git status
+git status
+git log --oneline -5
 
-# View Prometheus metrics
-open https://monitoring.your-domain.com/prometheus
-
-# Check database query performance
-# See database monitoring guide
+# If sync is stuck, reset to remote
+git fetch origin
+git reset --hard origin/feature/gitbook
 ```
+
+### Test Failures
+
+```bash
+# Run tests with verbose output
+npm test -- --verbose
+
+# Run specific test file
+npm test -- path/to/test.js
+
+# Update snapshots if needed
+npm test -- -u
+```
+
+## Scaling & Advanced Deployment
+
+### Docker Deployment (Optional)
+
+If you need containerization:
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+Build and run:
+```bash
+docker build -t peraltacc:latest .
+docker run -p 3000:3000 peraltacc:latest
+```
+
+### Vercel Deployment (Optional)
+
+If using Vercel for static docs:
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Production deployment
+vercel --prod
+```
+
+### Continuous Deployment
+
+GitHub Actions automatically:
+- Runs tests on every push
+- Generates documentation
+- Creates preview builds
+- Validates quality gates
+- Updates GitBook (if configured)
 
 ## Rollback Procedures
 
-If deployment fails:
-
-### Option 1: Terraform Rollback
+### Quick Rollback
 
 ```bash
-# Revert to previous state
-git checkout HEAD~1 -- terraform/
-
-# Apply previous state
-terraform apply
+# If something breaks on main
+git revert HEAD
+git push origin main
 ```
 
-### Option 2: Kubernetes Rollback
+### Full Rollback to Previous Version
 
 ```bash
-# Rollback deployment
-kubectl rollout undo deployment/peralta-api
+# Find previous commit
+git log --oneline -10
 
-# Check rollout history
-kubectl rollout history deployment/peralta-api
-```
-
-## Maintenance Windows
-
-### Planned Maintenance
-
-```bash
-# Update services with zero downtime
-kubectl set image deployment/peralta-api \
-  peralta-api=peralta:new-version \
-  --record
-
-# Monitor rollout
-kubectl rollout status deployment/peralta-api
-```
-
-### Database Maintenance
-
-```bash
-# Perform maintenance on read replicas first
-# Then promote new primary
-aws rds modify-db-instance \
-  --db-instance-identifier peralta-prod-replica-1 \
-  --apply-immediately
+# Reset to previous state
+git reset --hard commit-hash
+git push origin main --force-with-lease
 ```
 
 ## Next Steps
 
-1. **Choose deployment method** - Select Kubernetes, AWS, GCP, or Azure
-2. **Review prerequisites** - Check all requirements are met
-3. **Follow cloud-specific guide** - Go to your chosen deployment path
-4. **Validate deployment** - Run verification scripts
-5. **Configure monitoring** - Set up alerts and dashboards
-6. **Plan backups** - Configure backup retention
-
-## Quick Links
-
-- [Architecture Overview](/docs/peraltacc/architecture)
-- [Getting Started](/docs/peraltacc/getting-started)
-- [Configuration Guide](/docs/peraltacc/configuration)
-- [Operations Guide](/docs/peraltacc/operations)
-- [Security Guide](/docs/peraltacc/security)
+1. **Complete Installation** - Follow the Installation Steps above
+2. **Create Feature Branch** - Start your proposal work
+3. **Run Tests** - Ensure everything works: `npm test`
+4. **Make Changes** - Develop your proposals and deliverables
+5. **Submit PR** - Create pull request with quality gates passing
+6. **Merge to Main** - Final submission to production
 
 ## Support
 
 For deployment issues:
-- **Kubernetes Issues**: [Kubernetes Deployment](/docs/peraltacc/deployment/kubernetes)
-- **AWS Issues**: [AWS Deployment](/docs/peraltacc/deployment/aws)
-- **Cloud Issues**: Check cloud-specific deployment guide
-- **General Help**: [GitHub Issues](https://github.com/Fused-Gaming/vln/issues)
-- **Email**: security@vln.gg
+- Check GitHub Actions logs
+- Review error messages carefully
+- Verify all prerequisites met
+- Check documentation
+- Open a GitHub issue with details
