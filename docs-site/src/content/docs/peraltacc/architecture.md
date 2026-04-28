@@ -42,14 +42,14 @@ Peralta follows a **cloud-native, microservices-based architecture** designed fo
     │  │         Microservices (Pods)               │  │
     │  │                                            │  │
     │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐  │  │
-    │  │  │ Auth     │ │ Game     │ │ Analytics│  │  │
-    │  │  │ Service  │ │ Service  │ │ Service  │  │  │
-    │  │  │ (ACE)    │ │ (ACE)    │ │          │  │  │
+    │  │  │ API      │ │ Core     │ │ Analytics│  │  │
+    │  │  │ Gateway  │ │ App      │ │ Service  │  │  │
+    │  │  │ Service  │ │ Service  │ │          │  │  │
     │  │  └──────────┘ └──────────┘ └──────────┘  │  │
     │  │                                            │  │
     │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐  │  │
-    │  │  │ API      │ │ Payment  │ │ Admin    │  │  │
-    │  │  │ Service  │ │ Service  │ │ Service  │  │  │
+    │  │  │ Data     │ │ Infra    │ │ Backup   │  │  │
+    │  │  │ Pipeline │ │ Monitor  │ │ Service  │  │  │
     │  │  └──────────┘ └──────────┘ └──────────┘  │  │
     │  └────────────────────────────────────────────┘  │
     │                                                   │
@@ -127,35 +127,36 @@ Optional service mesh implementation:
 
 Key services deployed as independent containers:
 
-#### Authentication Service
-- User identity management
-- OAuth 2.0 / OpenID Connect
-- JWT token generation and validation
-- Session management
+#### API Gateway Service
+- Request routing and load distribution
+- API authentication and authorization
+- Rate limiting and quotas
+- Request/response transformation
+- API versioning
 
-#### Game Service (ACE)
-- Blackjack game logic
-- Game state management
-- RNG operations
-- Settlement and payout calculations
+#### Core Application Services
+- Business logic implementation
+- Service-to-service communication
+- Event processing and handling
+- Data transformation and validation
+
+#### Data Pipeline Service
+- ETL operations
+- Data ingestion and processing
+- Data validation and enrichment
+- Batch and stream processing
 
 #### Analytics Service
-- Player behavior analysis
-- Game metrics aggregation
-- Fraud detection
-- Reporting and dashboards
+- Metrics aggregation
+- Performance analytics
+- System health analysis
+- Custom reporting and dashboards
 
-#### Payment Service
-- Payment processing
-- Wallet management
-- Transaction recording
-- Reconciliation
-
-#### API Service
-- REST/GraphQL endpoints
-- Request validation
-- Response serialization
-- Rate limiting
+#### Infrastructure Monitoring Service
+- Resource utilization tracking
+- Performance metrics collection
+- Infrastructure health checks
+- Auto-scaling triggers
 
 ### 5. Data Layer
 
@@ -197,10 +198,12 @@ Event-driven architecture:
 - Event streaming for analytics
 
 **Topics/Queues:**
-- `game.dealt` - Game deal events
-- `game.settled` - Settlement events
-- `player.action` - Player action events
-- `payment.processed` - Payment events
+- `service.events` - Application service events
+- `data.ingestion` - Data pipeline events
+- `system.alerts` - Infrastructure alerts
+- `audit.logs` - Compliance and audit trail
+- `deployment.events` - Infrastructure changes
+- `metrics.collection` - Monitoring data
 
 ### 7. Monitoring & Observability
 
@@ -253,43 +256,68 @@ Event-driven architecture:
 
 ## Data Flow
 
-### Typical Game Flow
+### Typical Request Flow
 
 ```
-Player Request
+Client Request
     ↓
-ALB/Ingress
+Load Balancer/Ingress
     ↓
-API Gateway/Service Mesh
+API Gateway
     ↓
-Authentication Service
+Authentication & Authorization
     ↓
-Game Service (ACE)
+Core Application Service
     │
     ├→ Query Redis Cache
     ├→ Query/Update PostgreSQL
-    ├→ Publish game.dealt event
+    ├→ Publish service.events
     │
     ↓
-Response to Player
+Response to Client
     ↓
-CDN/Client
+CDN (if static assets)
 ```
 
-### Analytics Flow
+### Data Pipeline Flow
 
 ```
-Game Events (game.settled)
+Data Ingestion
     ↓
 Message Queue (Kafka/RabbitMQ)
     ↓
+Data Pipeline Service
+    ├→ Validation
+    ├→ Transformation
+    ├→ Enrichment
+    │
+    ↓
+PostgreSQL Data Store
+    ↓
 Analytics Service
+    ├→ Aggregations
+    ├→ Metrics Calculation
+    │
     ↓
-Aggregations & Models
+Grafana Dashboards
+```
+
+### Infrastructure Monitoring Flow
+
+```
+Prometheus Scrape
     ↓
-PostgreSQL Read Replica
+Kubernetes Metrics
     ↓
-Grafana Dashboard
+System Metrics Collection
+    ↓
+Prometheus Time-Series DB
+    ↓
+Grafana Visualization
+    ↓
+Alerting Rules
+    ↓
+Alert Notification (PagerDuty, Slack, etc.)
 ```
 
 ## Scalability Patterns

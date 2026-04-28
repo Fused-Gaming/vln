@@ -15,7 +15,7 @@ Peralta is VLN's enterprise deployment and operations framework providing infras
 ### What does Peralta deploy?
 Peralta deploys:
 - Kubernetes or cloud-native infrastructure
-- ACE Blackjack services
+- Application services and microservices
 - Database (PostgreSQL)
 - Caching layer (Redis)
 - Monitoring stack (Prometheus, Grafana)
