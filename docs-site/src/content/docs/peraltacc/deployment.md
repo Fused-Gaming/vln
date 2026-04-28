@@ -188,10 +188,13 @@ open https://monitoring.your-domain.com
 ### 3. Test Critical Paths
 
 ```bash
-# Test game flow
-curl -X POST https://api.your-domain.com/api/sessions \
-  -H "Authorization: Bearer $API_KEY" \
-  -d '{...}'
+# Test API endpoints
+curl -X POST https://api.your-domain.com/api/health \
+  -H "Authorization: Bearer $API_KEY"
+  
+# Test application workflow
+curl -X GET https://api.your-domain.com/api/services/status \
+  -H "Authorization: Bearer $API_KEY"
 ```
 
 ### 4. Setup Backups
@@ -259,7 +262,7 @@ kubectl top pods
 
 ```bash
 # Test database connection
-psql postgres://user:pass@db-host:5432/ace
+psql postgres://user:pass@db-host:5432/peralta
 
 # Check security group rules
 aws ec2 describe-security-groups \

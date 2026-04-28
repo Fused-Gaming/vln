@@ -123,10 +123,10 @@ ansible-playbook playbooks/deploy.yml -i inventory/prod
 │   API Gateway / Service Mesh (Istio)    │
 ├─────────────────────────────────────────┤
 │  Microservices (ECS/GKE/AKS Containers) │
-│  ├─ Authentication Service              │
-│  ├─ Game Service (ACE)                  │
+│  ├─ API Gateway Service                 │
+│  ├─ Core Application Services           │
 │  ├─ Analytics Service                   │
-│  └─ API Service                         │
+│  └─ Data Pipeline Service               │
 ├─────────────────────────────────────────┤
 │  Caching Layer (Redis/ElastiCache)      │
 ├─────────────────────────────────────────┤
