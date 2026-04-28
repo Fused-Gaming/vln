@@ -1,313 +1,209 @@
 ---
-title: Skill-MCP Tools Documentation
-description: Complete guide to Skill-MCP tools, protocol reference, and integration patterns
+title: Skill-MCP Overview
+description: Fused Gaming MCP - Model Context Protocol server with 19 specialized skills
 ---
 
-# Skill-MCP Tools Documentation
+# Skill-MCP (Fused Gaming MCP)
 
-**Skill-MCP** is VLN's comprehensive implementation of the Model Context Protocol (MCP), providing a standardized framework for AI tool integration, security analysis, and intelligent automation across gaming and blockchain ecosystems.
+**Skill-MCP** is a production-ready Model Context Protocol server built with TypeScript and Node.js, extending Claude's capabilities through a modular ecosystem of 19 specialized skills for creative, development, and automation workflows.
 
 ## What is Skill-MCP?
 
-Skill-MCP extends the Model Context Protocol with:
+Skill-MCP provides AI-powered tools for:
 
-- **Standardized Tool Interface** - Consistent API for tool definition and execution
-- **Security & Sandboxing** - Isolated execution environments
-- **AI Integration** - Native support for LLM-powered tools
-- **Smart Contract Analysis** - EVM security and vulnerability detection
-- **Real-time Data Feeds** - Market, blockchain, and gaming metrics
-- **Extensible Architecture** - Easy custom tool development
+- **Creative & Design** - Generative art, UI/UX systems, wireframing
+- **Development & Infrastructure** - MCP server scaffolding, deployment validation
+- **Content & Narrative** - Character building, world creation, storytelling
+- **Automation** - Workflow orchestration, task automation
 
-## Key Features
+## Core Technologies
 
-✅ **MCP Protocol Compliant** - Full MCP v1.0 implementation  
-✅ **50+ Built-in Tools** - Security, analytics, blockchain operations  
-✅ **Type-Safe Execution** - TypeScript with full type inference  
-✅ **Rate Limiting & Quotas** - Usage-based access control  
-✅ **Audit Logging** - Complete execution history  
-✅ **Hot Reload** - Dynamic tool registration without downtime  
+- **Node.js** ≥ 20.0.0
+- **TypeScript** 5.3.2+
+- **npm** ≥ 8.0.0
+- **License:** Apache 2.0
+
+## Skills Catalog (19 Total)
+
+### Published Skills (11 packages)
+
+**Creative & Design:**
+- Algorithmic Art - Procedural generation using p5.js
+- Canvas Design - Visual design tool
+- Theme Factory - Design system generation
+- SVG Generation - Vector graphics creation
+- Mobile Wireframe - Mobile-first UI prototyping
+
+**Development:**
+- MCP Builder - Create custom MCP servers
+- Pre-Deployment Validator - Validation before deployment
+- Skill Creator - Build new skills framework
+
+**Content:**
+- Underworld Writer - Narrative and storytelling
+- ASCII Mockup - ASCII art generation
+- CLI - Command-line interface tools
+
+### In Development (9+ skills)
+
+- Mermaid Terminal - Diagram generation
+- UX Journey Mapping - User experience flows
+- Project Management - Task and timeline tracking
+- Session Tracking - State management
+- Daily Review - Reflection and analysis
+- LinkedIn Automation - Social media integration
+- And more...
+
+## Installation
+
+### Option 1: Interactive Setup
+
+```bash
+npm install -g fused-gaming-mcp
+fused-gaming-mcp setup
+# Follow guided setup wizard
+```
+
+### Option 2: Manual Installation
+
+```bash
+# Clone repository
+git clone https://github.com/Fused-Gaming/Fused-Gaming-Skill-MCP.git
+cd Fused-Gaming-Skill-MCP
+
+# Install dependencies
+npm install
+
+# Start MCP server
+npm start
+```
+
+### Option 3: Install Individual Skills
+
+```bash
+# Install from npm scope
+npm install @h4shed/mcp-algorithmic-art
+npm install @h4shed/mcp-theme-factory
+npm install @h4shed/mcp-skill-creator
+# ... and more
+```
 
 ## Quick Start
 
-### Installation & Setup
 ```bash
-# Clone the Skill-MCP repository
-git clone https://github.com/Fused-Gaming/skill-mcp.git
-cd skill-mcp
+# Install
+npm install
 
-# Install dependencies
-pnpm install
+# Start server
+npm start
 
-# Configure environment
-cp .env.example .env
-# Edit .env with your API keys and settings
+# Server runs on default port
+# Ready to accept MCP connections
 
-# Start the MCP server
-pnpm dev
+# In Claude Code or your MCP client:
+# Connect to localhost:<port>
 ```
 
-### Your First Tool Call
-```typescript
-// Initialize Skill-MCP client
-import { SkillClient } from '@vln/skill-mcp';
+## Architecture
 
-const client = new SkillClient({
-  apiKey: process.env.SKILL_API_KEY
-});
-
-// Execute a tool
-const result = await client.executeTool('analyze-contract', {
-  contractAddress: '0x...',
-  chainId: 1
-});
-
-console.log(result.vulnerabilities);
+```
+Skill-MCP Server (Node.js + TypeScript)
+├── MCP Protocol Handler
+├── Skill Registry
+├── Skills (19 total)
+│   ├── Creative Skills
+│   ├── Development Skills
+│   └── Content Skills
+├── Authentication
+├── State Management
+└── API Interface
 ```
 
-## Documentation Map
+## Available Skills
 
-### 📚 Core Documentation (10 Pages)
-
-1. **[MCP Protocol Overview](/docs/skill/mcp-protocol)** - Protocol fundamentals
-2. **[Tool Reference Index](/docs/skill/tools)** - All 50+ tools documented
-3. **[Getting Started](/docs/skill/getting-started)** - Installation and setup
-4. **[Integration Guide](/docs/skill/integration)** - Framework integration patterns
-5. **[API Reference](/docs/skill/api)** - Complete endpoint documentation
-6. **[Security & Permissions](/docs/skill/security)** - Access control and sandboxing
-7. **[Custom Tools](/docs/skill/custom-tools)** - Building your own tools
-8. **[Best Practices](/docs/skill/best-practices)** - Design patterns and performance
-9. **[Monitoring & Debugging](/docs/skill/debugging)** - Logging and observability
-10. **[FAQ & Troubleshooting](/docs/skill/faq)** - Common issues and solutions
-
----
-
-## MCP Protocol Overview
-
-### What is MCP?
-
-The Model Context Protocol (MCP) is a standardized interface for AI models to interact with external tools and data sources. Skill-MCP implements MCP with security and performance optimizations.
-
-**Key Concepts:**
-- **Tools** - Atomic operations (analyze, fetch, execute)
-- **Resources** - Data sources (contracts, markets, reports)
-- **Prompts** - Reusable AI instructions
-- **Sampling** - Model inference with tool access
-
-[Learn MCP Basics](/docs/skill/mcp-protocol)
-
----
-
-## Tool Categories
-
-### Security & Analysis (15 tools)
-- Smart contract vulnerability scanning
-- RNG analysis and validation
-- Wallet risk scoring
-- Pattern detection
-- Compliance checking
-
-### Blockchain Operations (12 tools)
-- Contract deployment
-- Transaction simulation
-- State queries
-- Event monitoring
-- Gas optimization
-
-### Gaming Analytics (10 tools)
-- Player behavior analysis
-- Game fairness verification
-- Statistical modeling
-- Anomaly detection
-- Reporting
-
-### Data & Integration (13 tools)
-- Market data feeds
-- API integration
-- Database operations
-- File processing
-- Transformation pipelines
-
-[View All Tools](/docs/skill/tools)
-
----
-
-## API Quick Reference
-
-### Core Endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/tools/execute` | POST | Execute a tool |
-| `/api/tools/list` | GET | List available tools |
-| `/api/tools/{id}` | GET | Get tool details |
-| `/api/resources` | GET | List available resources |
-| `/api/executions` | GET | View execution history |
-
-**Full API Reference**: [API Documentation](/docs/skill/api)
-
----
-
-## Integration Examples
-
-### Python Integration
-```python
-from skill_mcp import SkillClient
-
-client = SkillClient(api_key='sk_...')
-
-# Analyze a smart contract
-result = client.tools.execute(
-    'analyze-contract',
-    contractAddress='0x...',
-    chainId=1
-)
-
-print(f"Found {len(result.vulnerabilities)} issues")
-```
-
-### JavaScript/Node.js
-```typescript
-import { SkillClient } from '@vln/skill-mcp';
-
-const client = new SkillClient({
-  apiKey: process.env.SKILL_API_KEY
-});
-
-const analysis = await client.tools.execute('analyze-contract', {
-  contractAddress: '0x...',
-  chainId: 1
-});
-```
-
-### REST API
-```bash
-curl -X POST https://skill-mcp.api.vln.gg/api/tools/execute \
-  -H "Authorization: Bearer sk_..." \
-  -H "Content-Type: application/json" \
-  -d '{
-    "toolName": "analyze-contract",
-    "parameters": {
-      "contractAddress": "0x...",
-      "chainId": 1
-    }
-  }'
-```
-
-[View Integration Guide](/docs/skill/integration)
-
----
-
-## Best Practices
-
-### Tool Execution
-- **Batch operations** - Group multiple tool calls
-- **Caching results** - Avoid redundant analysis
-- **Timeout handling** - Set appropriate timeouts
-- **Error recovery** - Implement retry logic
-
-### Security
-- **API key rotation** - Regular credential updates
-- **Rate limiting** - Respect quota limits
-- **Audit trails** - Log all tool executions
-- **Permissions** - Use least privilege principle
-
-### Performance
-- **Connection pooling** - Reuse client instances
-- **Async execution** - Non-blocking operations
-- **Resource optimization** - Monitor tool costs
-- **Monitoring** - Track latency and errors
-
-[Best Practices Guide](/docs/skill/best-practices)
-
----
-
-## Tool Development
-
-### Creating Custom Tools
+### Algorithmic Art
+Generate procedural artwork using p5.js algorithms
 
 ```typescript
-import { Tool, ToolContext } from '@vln/skill-mcp';
-
-export class MyCustomTool extends Tool {
-  name = 'my-custom-tool';
-  description = 'Does something useful';
-
-  parameters = {
-    input: { type: 'string', required: true }
-  };
-
-  async execute(ctx: ToolContext) {
-    const result = await myLogic(ctx.parameters.input);
-    return { success: true, data: result };
-  }
-}
-```
-
-[Custom Tools Guide](/docs/skill/custom-tools)
-
----
-
-## Monitoring & Debugging
-
-### View Execution History
-```bash
-curl https://skill-mcp.api.vln.gg/api/executions \
-  -H "Authorization: Bearer sk_..."
-```
-
-### Enable Debug Logging
-```typescript
-const client = new SkillClient({
-  apiKey: process.env.SKILL_API_KEY,
-  debug: true // Enable verbose logging
+const art = await skillMcp.algorithmicArt.generate({
+  type: 'fractal',
+  complexity: 7,
+  palette: 'vibrant'
 });
 ```
 
-### Performance Monitoring
-- Dashboard: https://skill-mcp.vln.gg/dashboard
-- Metrics: Latency, throughput, errors
-- Alerts: Performance degradation notifications
+### Theme Factory
+Create complete design systems automatically
 
-[Debugging Guide](/docs/skill/debugging)
+```typescript
+const theme = await skillMcp.themeFactory.generate({
+  baseColor: '#a6c3a7',
+  name: 'sage',
+  includeComponents: true
+});
+```
 
----
+### MCP Builder
+Scaffold and build custom MCP servers
 
-## FAQ & Troubleshooting
+```typescript
+const server = await skillMcp.mcpBuilder.scaffold({
+  name: 'my-mcp',
+  description: 'Custom MCP server',
+  skills: ['skill1', 'skill2']
+});
+```
 
-### Common Questions
+### Skill Creator
+Framework for creating new skills
 
-**Q: How many tools can I execute concurrently?**  
-A: Up to 100 concurrent executions per API key. See [Rate Limiting](/docs/skill/api#rate-limits)
+```typescript
+const newSkill = await skillMcp.skillCreator.create({
+  name: 'my-skill',
+  category: 'custom',
+  description: 'My custom skill'
+});
+```
 
-**Q: Can I create custom tools?**  
-A: Yes! See [Custom Tools Guide](/docs/skill/custom-tools)
+## Key Features
 
-**Q: What languages are supported?**  
-A: Python, JavaScript/Node.js, Go, and REST API. See [Integration Guide](/docs/skill/integration)
+✅ **19 Specialized Skills** - Growing skill ecosystem  
+✅ **Production Ready** - TypeScript, tested, documented  
+✅ **Modular Design** - Use individual skills or full server  
+✅ **Easy Integration** - Standard MCP protocol  
+✅ **Active Development** - New skills constantly added  
+✅ **Open Source** - Apache 2.0 licensed  
 
-[Full FAQ](/docs/skill/faq)
+## Use Cases
 
----
+### For Designers
+- Generate design systems
+- Create wireframes
+- Build component libraries
+- Automate design workflows
 
-## Getting Help
+### For Developers  
+- Scaffold MCP servers
+- Validate deployments
+- Generate code
+- Build custom tools
 
-- **Documentation**: You're reading it!
-- **Tool Issues**: [Tool Reference](/docs/skill/tools)
-- **API Questions**: [API Reference](/docs/skill/api)
-- **Technical Support**: [GitHub Issues](https://github.com/Fused-Gaming/vln/issues)
-- **Email Support**: security@vln.gg
+### For Content Creators
+- Character development
+- Worldbuilding
+- Story generation
+- Narrative assistance
 
----
+### For Automation
+- Workflow orchestration
+- Process automation
+- Social media management
+- Project tracking
 
 ## Next Steps
 
-Choose your starting point:
-
-- **🚀 [Get Started: Installation](/docs/skill/getting-started)** - Set up Skill-MCP
-- **📚 [Learn MCP Protocol](/docs/skill/mcp-protocol)** - Protocol fundamentals
-- **🔧 [Tool Reference](/docs/skill/tools)** - Explore all tools
-- **🔌 [Integrate](/docs/skill/integration)** - Connect to your system
-
----
-
-*Last Updated: April 2026 | [View Changelog](/docs/skill/changelog)*
+- [Getting Started](/docs/skill/getting-started) - Installation guide
+- [Skill Reference](/docs/skill/skill-reference) - Complete skills catalog
+- [API Reference](/docs/skill/api-reference) - API documentation
+- [Integration Guide](/docs/skill/integration-guide) - How to integrate
+- [GitHub Repository](https://github.com/Fused-Gaming/Fused-Gaming-Skill-MCP)

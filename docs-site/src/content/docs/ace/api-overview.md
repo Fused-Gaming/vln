@@ -1,208 +1,204 @@
 ---
-title: ACE API Reference
-description: Complete API reference for ACE Blackjack platform
+title: Blackjack Premium - Component API
+description: React components, hooks, and game engine API for Blackjack Premium
 ---
 
-# ACE API Reference
+# Blackjack Premium Component API
 
-Complete documentation for all ACE REST API endpoints.
+Complete reference for components, hooks, and game engine APIs in Blackjack Premium.
 
-## Authentication
+## React Components
 
-All API requests require authentication via Bearer token:
+### Game Component
+Main game container component
 
-```bash
-curl https://ace.api.vln.gg/api/tables \
-  -H "Authorization: Bearer YOUR_API_KEY"
+```tsx
+<Game
+  initialBalance={1000}
+  minBet={10}
+  maxBet={500}
+  onGameEnd={(result) => {}}
+/>
 ```
 
-## Base URL
+**Props:**
+- `initialBalance` (number) - Starting player balance
+- `minBet` (number) - Minimum wager
+- `maxBet` (number) - Maximum wager  
+- `onGameEnd` (function) - Callback when game ends
 
-```
-https://ace.api.vln.gg/api
-```
+### Card Component
+Individual playing card display with animations
 
-## Core Endpoints
-
-### Tables API
-
-#### Create Table
-- **POST** `/tables`
-- Creates a new game table with configurable bet limits
-
-#### List Tables
-- **GET** `/tables`
-- Retrieve all active tables
-
-#### Get Table
-- **GET** `/tables/{tableId}`
-- Get details for a specific table
-
-### Sessions API
-
-#### Create Session
-- **POST** `/sessions`
-- Start a new player gaming session
-
-#### Get Session
-- **GET** `/sessions/{sessionId}`
-- Retrieve session details and player state
-
-#### List Sessions
-- **GET** `/sessions`
-- List all sessions (paginated)
-
-### Play API
-
-#### Deal Cards
-- **POST** `/play/deal`
-- Deal cards to player and dealer
-
-#### Player Action
-- **POST** `/play/action`
-- Execute player action (hit, stand, double, split)
-
-#### Get Hand Status
-- **GET** `/play/{sessionId}/hand`
-- Retrieve current hand state
-
-### Settlements API
-
-#### Settle Game
-- **POST** `/settlements`
-- Finalize and settle a game round
-
-#### Get Settlement
-- **GET** `/settlements/{settlementId}`
-- Retrieve settlement details
-
-## Error Handling
-
-Standard HTTP status codes:
-- `200` - Success
-- `400` - Bad request
-- `401` - Unauthorized
-- `403` - Forbidden
-- `404` - Not found
-- `429` - Rate limited
-- `500` - Server error
-
-## Rate Limiting
-
-- **Standard**: 1000 requests/minute per API key
-- **Premium**: 10000 requests/minute per API key
-
-Check rate limit headers:
-```
-X-RateLimit-Limit: 1000
-X-RateLimit-Remaining: 950
-X-RateLimit-Reset: 1704067200
+```tsx
+<Card
+  suit="♠"
+  rank="A"
+  faceUp={true}
+  animated={true}
+/>
 ```
 
-## Pagination
+**Props:**
+- `suit` (string) - ♠ ♥ ♦ ♣
+- `rank` (string) - A, 2-10, J, Q, K
+- `faceUp` (boolean) - Show or hide card
+- `animated` (boolean) - Play entrance animation
 
-List endpoints support pagination:
+### Hand Component
+Display player or dealer hand with value
 
-```bash
-curl "https://ace.api.vln.gg/api/sessions?page=1&limit=50"
+```tsx
+<Hand
+  cards={[card1, card2]}
+  position="player"
+  showValue={true}
+/>
 ```
 
-Response includes:
-```json
-{
-  "data": [...],
-  "pagination": {
-    "page": 1,
-    "limit": 50,
-    "total": 1234,
-    "pages": 25
-  }
-}
+**Props:**
+- `cards` (Card[]) - Array of cards
+- `position` ("player" | "dealer") - Hand position
+- `showValue` (boolean) - Display total value
+
+### ActionButtons Component
+Hit, Stand, Double, Split controls
+
+```tsx
+<ActionButtons
+  canHit={true}
+  canStand={true}
+  canDouble={true}
+  canSplit={false}
+  onHit={() => {}}
+  onStand={() => {}}
+  onDouble={() => {}}
+  onSplit={() => {}}
+/>
 ```
 
-## Request/Response Format
+### BetControls Component
+Betting interface with chip buttons
 
-All requests and responses use JSON.
-
-### Request Example
-```bash
-curl -X POST https://ace.api.vln.gg/api/sessions \
-  -H "Authorization: Bearer sk_live_..." \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tableId": "tbl_xyz123",
-    "playerId": "player_abc456",
-    "buyIn": 1000,
-    "currency": "USD"
-  }'
+```tsx
+<BetControls
+  balance={1000}
+  currentBet={50}
+  minBet={10}
+  maxBet={500}
+  onBetChange={(amount) => {}}
+/>
 ```
 
-### Response Example
-```json
-{
-  "sessionId": "sess_def789",
-  "tableId": "tbl_xyz123",
-  "playerId": "player_abc456",
-  "balance": 1000,
-  "status": "active",
-  "createdAt": "2026-04-28T10:00:00Z"
-}
+## Custom Hooks
+
+### useGame
+Main game state hook
+
+```tsx
+const game = useGame({
+  initialBalance: 1000,
+  minBet: 10,
+  maxBet: 500
+});
+
+// Returns:
+// {
+//   balance: number
+//   currentBet: number
+//   dealerHand: Card[]
+//   playerHands: Card[][]
+//   gamePhase: 'betting' | 'playing' | 'results'
+//   deal: () => void
+//   hit: () => void
+//   stand: () => void
+//   double: () => void
+//   split: () => void
+// }
 ```
 
-## Full Endpoint Documentation
+### useHand
+Hand evaluation and management
 
-See detailed documentation for each endpoint group:
-- [Tables API](/docs/ace/api/tables)
-- [Sessions API](/docs/ace/api/sessions)
-- [Play API](/docs/ace/api/play)
-- [Settlements API](/docs/ace/api/settlements)
-- [Analytics API](/docs/ace/api/analytics)
+```tsx
+const hand = useHand(cards);
 
-## SDKs & Client Libraries
-
-### JavaScript/Node.js
-```bash
-npm install @vln/ace-sdk
+// Returns:
+// {
+//   value: number
+//   isBust: boolean
+//   isBlackjack: boolean
+//   canSplit: boolean
+// }
 ```
+
+### useRNG
+Random number generation interface
+
+```tsx
+const rng = useRNG();
+
+// Methods:
+rng.shuffle(deck) // Shuffle deck
+rng.deal()        // Draw random card
+rng.verify()      // Verify fairness
+```
+
+## Game Engine
+
+### Deck Management
 
 ```typescript
-import { AceClient } from '@vln/ace-sdk';
-
-const client = new AceClient({
-  apiKey: process.env.ACE_API_KEY
-});
+const deck = new Deck();
+deck.shuffle();        // Randomize deck
+const card = deck.deal();  // Get next card
+const remaining = deck.remaining();  // Cards left
 ```
 
-### Python
-```bash
-pip install vln-ace
+### Hand Evaluation
+
+```typescript
+const hand = new Hand([cardA, cardB]);
+const value = hand.getValue();     // 21
+const isBust = hand.isBust();      // false
+const isBlackjack = hand.isBlackjack(); // true
 ```
 
-```python
-from vln_ace import AceClient
+### Dealer Logic
 
-client = AceClient(api_key=os.getenv('ACE_API_KEY'))
+```typescript
+const dealer = new Dealer(hand);
+const shouldHit = dealer.shouldHit();  // boolean
+dealer.playHand();  // Execute dealer turn
 ```
 
-## Webhooks
+## Type Definitions
 
-Subscribe to real-time events:
+```typescript
+interface Card {
+  suit: 'spades' | 'hearts' | 'diamonds' | 'clubs';
+  rank: 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K';
+}
 
-```bash
-curl -X POST https://ace.api.vln.gg/api/webhooks \
-  -H "Authorization: Bearer sk_live_..." \
-  -d '{
-    "url": "https://your-app.example.com/webhooks/ace",
-    "events": ["game.dealt", "game.settled", "player.busted"]
-  }'
+interface Hand {
+  cards: Card[];
+  value: number;
+  isBust: boolean;
+  isBlackjack: boolean;
+}
+
+interface GameState {
+  phase: 'betting' | 'playing' | 'results';
+  playerBalance: number;
+  currentBet: number;
+  dealerHand: Card[];
+  playerHands: Card[][];
+  result: 'win' | 'lose' | 'push' | null;
+}
 ```
 
-## API Changelog
+## Next Steps
 
-- **v1.0.0** (2026-04) - Initial release
-- **v1.1.0** (Planned) - Enhanced analytics
-
-## Support
-
-- **API Issues**: [GitHub Issues](https://github.com/Fused-Gaming/vln/issues)
-- **Email**: security@vln.gg
+- [Getting Started](/docs/ace/getting-started) - Install and play
+- [Game Mechanics](/docs/ace/game-mechanics) - Rules and gameplay
+- [Integration Guide](/docs/ace/integration) - Use in your project
