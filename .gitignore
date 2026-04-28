@@ -59,3 +59,13 @@ design-site/node_modules/
 # Monorepo build artifacts
 dist/
 .turbo/
+
+# Claude Code sessions and local configs
+.claude/sessions/
+.claude/local-docs/
+.claude/configs/
+.claude/*.local.json
+claude-workspace.json
+
+# Local document uploads
+*.local.md
