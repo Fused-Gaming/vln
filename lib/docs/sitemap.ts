@@ -428,6 +428,102 @@ export const docsSitemap: DocSection[] = [
         order: 3
       }
     ]
+  },
+  {
+    slug: 'peraltacc',
+    title: 'Peralta Platform',
+    description: 'Peralta security platform documentation',
+    icon: '🛡️',
+    order: 11,
+    pages: [
+      {
+        slug: 'project-overview',
+        title: 'Project Overview',
+        description: 'Peralta mission and key features',
+        order: 1
+      },
+      {
+        slug: 'architecture',
+        title: 'Architecture Guide',
+        description: 'System design and component hierarchy',
+        order: 2
+      },
+      {
+        slug: 'implementation',
+        title: 'Implementation Guide',
+        description: 'Setup and integration instructions',
+        order: 3
+      },
+      {
+        slug: 'api-reference',
+        title: 'API Reference',
+        description: 'Endpoint documentation and specifications',
+        order: 4
+      },
+      {
+        slug: 'deployment',
+        title: 'Deployment Guide',
+        description: 'Deployment options and configuration',
+        order: 5
+      },
+      {
+        slug: 'configuration',
+        title: 'Configuration Guide',
+        description: 'Settings and environment setup',
+        order: 6
+      },
+      {
+        slug: 'troubleshooting',
+        title: 'Troubleshooting',
+        description: 'Common issues and solutions',
+        order: 7
+      }
+    ]
+  },
+  {
+    slug: 'ace-blackjack',
+    title: 'ACE Blackjack',
+    description: 'ACE blackjack game documentation and integration guide',
+    icon: '🃏',
+    order: 12,
+    pages: [
+      {
+        slug: 'overview',
+        title: 'Overview',
+        description: 'Game rules and mechanics',
+        order: 1
+      },
+      {
+        slug: 'getting-started',
+        title: 'Getting Started',
+        description: 'Setup and initialization',
+        order: 2
+      },
+      {
+        slug: 'api-reference',
+        title: 'API Reference',
+        description: 'Player, Betting, Game State, and Event APIs',
+        order: 3
+      },
+      {
+        slug: 'integration-guide',
+        title: 'Integration Guide',
+        description: 'Component usage and state management',
+        order: 4
+      },
+      {
+        slug: 'code-examples',
+        title: 'Code Examples',
+        description: 'Basic setup and usage examples',
+        order: 5
+      },
+      {
+        slug: 'faq',
+        title: 'FAQ & Troubleshooting',
+        description: 'Common questions and solutions',
+        order: 6
+      }
+    ]
   }
 ];
 
