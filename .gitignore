@@ -69,3 +69,8 @@ claude-workspace.json
 
 # Local document uploads
 *.local.md
+
+# Project scaffolds (local development)
+peralta-docs/
+demo-scaffold/
+skill-scaffold/
