@@ -1,29 +1,33 @@
 ---
-title: ACE Blackjack Documentation
-description: Advanced Card Engine - Complete documentation for ACE Blackjack platform
+title: Blackjack Premium Documentation
+description: Professional blackjack game with provably fair RNG and modern web technology
 ---
 
-# ACE Blackjack Documentation
+# Blackjack Premium
 
-**ACE** – Advanced Card Engine – is VLN's premier blackjack gaming platform providing enterprise-grade game mechanics, RNG validation, and secure server-side operations for iGaming environments.
+**Blackjack Premium** is a professional-grade blackjack implementation featuring modern web technologies, transparent RNG mechanics, and a polished user experience for desktop and mobile platforms.
 
-## What is ACE?
+## What is Blackjack Premium?
 
-ACE is a high-performance, cryptographically-secure blackjack engine designed for:
+Blackjack Premium is a full-featured blackjack game built with:
 
-- **Enterprise Gaming Platforms** - Fully managed iGaming operations
-- **RNG & Game Integrity** - Mathematically provable fairness
-- **High-Throughput Operations** - Millions of concurrent players
-- **Regulatory Compliance** - Meeting global gaming standards
+- **React 18** + TypeScript for robust frontend
+- **Vite** for fast development and optimized builds
+- **Tailwind CSS** for modern, responsive design
+- **Framer Motion** for smooth UI animations
+- **Zustand** for lightweight state management
+- **Provably Fair RNG** for transparent gameplay
+- **Dark Theme** with smooth animations and responsive layout
 
 ## Key Features
 
-✅ **True Random Number Generation** - CSPRNG with cryptographic verification  
-✅ **Game Rule Flexibility** - Multiple blackjack variants  
-✅ **Wallet Integration** - Multi-currency support  
-✅ **Real-time Analytics** - Player behavior and game metrics  
-✅ **Security First** - Server-side validation, no client-side trust  
-✅ **Low Latency** - Optimized for global distribution  
+✅ **Classic Blackjack Rules** - Dealer stands on 17, standard payouts  
+✅ **Multi-Seat Support** - Up to 3 simultaneous hands  
+✅ **Advanced Options** - Split, double down, insurance, side bets  
+✅ **Provably Fair** - Transparent RNG with security-grade live demo  
+✅ **Responsive Design** - Perfect on desktop, tablet, and mobile  
+✅ **Smooth Animations** - Professional dark theme with Framer Motion  
+✅ **Type-Safe Code** - Full TypeScript for reliability  
 
 ## Quick Start
 

@@ -1,148 +1,109 @@
 ---
-title: Peralta Documentation
-description: Enterprise deployment, architecture, and configuration guide for Peralta
+title: PeraltaCC Documentation
+description: Peralta Community College redistricting, automation, and ERP management platform
 ---
 
-# Peralta Documentation
+# PeraltaCC Documentation
 
-**Peralta** is VLN's enterprise-grade deployment and systems architecture framework, providing comprehensive deployment procedures, configuration management, security hardening, and operational best practices for high-availability gaming and blockchain infrastructure.
+**PeraltaCC** is a comprehensive platform for managing Peralta Community College redistricting initiatives and ERP (Enterprise Resource Planning) automation, built with Claude Flow v3 for functional alignment across the district.
 
-## What is Peralta?
+## What is PeraltaCC?
 
-Peralta is a complete operational framework for:
+PeraltaCC provides a complete solution for:
 
-- **Enterprise Deployments** - Multi-region, multi-cloud architecture
-- **System Architecture** - Microservices design patterns
-- **Infrastructure Automation** - IaC with Terraform and Ansible
-- **Security Hardening** - Defense-in-depth implementation
-- **Operational Excellence** - Monitoring, logging, and incident response
-- **Disaster Recovery** - RTO/RPO optimization and failover procedures
+- **Redistricting Management** - District boundary planning and optimization
+- **ERP Automation** - Streamlined enterprise resource planning workflows
+- **Functional Alignment** - Cross-departmental coordination and synchronization
+- **Bid & Proposal Automation** - Proposal generation and management tools
+- **Documentation & Compliance** - GitBook-integrated governance and quality gates
+- **District Operations** - Community college administrative processes and automation
 
 ## Key Features
 
-✅ **Complete Architecture Reference** - Production-ready system design  
-✅ **Multi-Cloud Support** - AWS, GCP, Azure compatibility  
-✅ **Infrastructure as Code** - Terraform modules and configurations  
-✅ **Security Hardening** - CIS benchmarks and compliance  
-✅ **CI/CD Automation** - GitHub Actions and deployment pipelines  
-✅ **Observability Stack** - Prometheus, Grafana, ELK integration  
+✅ **Redistricting Tools** - Boundary planning and optimization algorithms  
+✅ **ERP Automation** - Streamlined business process workflows  
+✅ **Claude Flow v3 Integration** - Advanced AI workflow automation  
+✅ **GitBook Documentation** - Professional proposal and governance documentation  
+✅ **Bid Management** - Automated proposal and deliverable tracking  
+✅ **Quality Gates** - Branch protection, submission requirements, and go/no-go criteria  
 
 ## Quick Start
 
 ### Prerequisites
 ```bash
 # Required tools
-- Terraform >= 1.0
-- Ansible >= 2.10
-- Docker >= 24.0
-- kubectl >= 1.27
-- AWS CLI v2 (or gcloud/az)
+- Node.js >= 18.0.0
+- npm >= 8.0.0
+- Git
+- GitBook (optional, for docs editing)
 ```
 
-### Initial Deployment
+### Installation
 ```bash
-# Clone the Peralta repository
-git clone https://github.com/Fused-Gaming/peralta.git
-cd peralta
+# Clone the PeraltaCC repository
+git clone https://github.com/Fused-Gaming/PeraltaCC.git
+cd PeraltaCC
 
-# Review configuration
-cat terraform/environments/prod/terraform.tfvars
+# Install dependencies
+npm install
 
-# Initialize Terraform
-cd terraform
-terraform init
-terraform plan
+# Start development
+npm start
 
-# Deploy infrastructure
-terraform apply
+# Run tests
+npm test
 
-# Configure applications
-cd ../ansible
-ansible-playbook playbooks/deploy.yml -i inventory/prod
+# Build for production
+npm run build
 ```
 
 ---
 
-## Documentation Map
-
-### 📚 Complete Documentation (33 Pages)
-
-#### **Part 1: Foundation (5 Pages)**
-1. **[Project Overview](/docs/peraltacc/overview)** - Vision and scope
-2. **[Architecture Overview](/docs/peraltacc/architecture)** - System design
-3. **[Getting Started](/docs/peraltacc/getting-started)** - First deployment
-4. **[Prerequisites](/docs/peraltacc/prerequisites)** - Tools and access
-5. **[Quick Start](/docs/peraltacc/quick-start)** - 30-minute setup
-
-#### **Part 2: Deployment (8 Pages)**
-6. **[Deployment Procedures](/docs/peraltacc/deployment)** - Step-by-step guide
-7. **[AWS Deployment](/docs/peraltacc/deployment/aws)** - AWS-specific setup
-8. **[GCP Deployment](/docs/peraltacc/deployment/gcp)** - Google Cloud setup
-9. **[Azure Deployment](/docs/peraltacc/deployment/azure)** - Azure setup
-10. **[Kubernetes Deployment](/docs/peraltacc/deployment/kubernetes)** - K8s guide
-11. **[Multi-Region Setup](/docs/peraltacc/deployment/multi-region)** - Distributed deployment
-12. **[Blue-Green Deployment](/docs/peraltacc/deployment/blue-green)** - Zero-downtime updates
-13. **[Rollback Procedures](/docs/peraltacc/deployment/rollback)** - Recovery steps
-
-#### **Part 3: Configuration (7 Pages)**
-14. **[Configuration Guide](/docs/peraltacc/configuration)** - Configuration overview
-15. **[Network Configuration](/docs/peraltacc/configuration/network)** - VPC and security groups
-16. **[Database Configuration](/docs/peraltacc/configuration/database)** - PostgreSQL, Redis setup
-17. **[Application Config](/docs/peraltacc/configuration/application)** - Service configuration
-18. **[Secrets Management](/docs/peraltacc/configuration/secrets)** - AWS Secrets Manager, Vault
-19. **[SSL/TLS Setup](/docs/peraltacc/configuration/tls)** - Certificate management
-20. **[Monitoring Config](/docs/peraltacc/configuration/monitoring)** - Prometheus, Grafana
-
-#### **Part 4: Operations (8 Pages)**
-21. **[Operations Guide](/docs/peraltacc/operations)** - Day-to-day operations
-22. **[Monitoring & Alerting](/docs/peraltacc/operations/monitoring)** - Observability setup
-23. **[Logging & Centralization](/docs/peraltacc/operations/logging)** - ELK stack configuration
-24. **[Performance Tuning](/docs/peraltacc/operations/performance)** - Optimization guide
-25. **[Scaling Strategies](/docs/peraltacc/operations/scaling)** - Horizontal/vertical scaling
-26. **[Disaster Recovery](/docs/peraltacc/operations/disaster-recovery)** - Backup and recovery
-27. **[Incident Response](/docs/peraltacc/operations/incidents)** - Incident management
-28. **[Upgrades & Patches](/docs/peraltacc/operations/upgrades)** - Version management
-
-#### **Part 5: Security & Compliance (5 Pages)**
-29. **[Security Architecture](/docs/peraltacc/security)** - Defense strategy
-30. **[Compliance & Standards](/docs/peraltacc/security/compliance)** - PCI, HIPAA, SOC2
-31. **[Network Security](/docs/peraltacc/security/network)** - Firewalls, WAF
-32. **[Data Security](/docs/peraltacc/security/data)** - Encryption, DLP
-33. **[Audit & Logging](/docs/peraltacc/security/audit)** - Compliance logging
-
----
-
-## Architecture Overview
-
-### System Components
+## Project Structure
 
 ```
-┌─────────────────────────────────────────┐
-│     Load Balancer (ALB/Cloud LB)        │
-├─────────────────────────────────────────┤
-│   API Gateway / Service Mesh (Istio)    │
-├─────────────────────────────────────────┤
-│  Microservices (ECS/GKE/AKS Containers) │
-│  ├─ API Gateway Service                 │
-│  ├─ Core Application Services           │
-│  ├─ Analytics Service                   │
-│  └─ Data Pipeline Service               │
-├─────────────────────────────────────────┤
-│  Caching Layer (Redis/ElastiCache)      │
-├─────────────────────────────────────────┤
-│  Data Layer                             │
-│  ├─ PostgreSQL (Primary Database)       │
-│  ├─ Read Replicas                       │
-│  └─ S3/Cloud Storage (Backups)          │
-├─────────────────────────────────────────┤
-│  Observability Stack                    │
-│  ├─ Prometheus (Metrics)                │
-│  ├─ Grafana (Visualization)             │
-│  └─ ELK (Logs)                          │
-└─────────────────────────────────────────┘
+├── .github/                    # GitHub templates and workflows
+├── .npmignore                  # npm ignore configuration
+├── docs/
+│   ├── addendum-bid/          # Addendum bid deliverables (Tasks 1-6)
+│   ├── gitbook/               # GitBook documentation (canonical source)
+│   └── proposals/             # Proposal artifacts and references
+├── src/
+│   ├── components/            # React components
+│   ├── pages/                 # Application pages
+│   ├── utils/                 # Utility functions
+│   └── styles/                # Styling
+├── package.json               # Dependencies and scripts
+├── CONTRIBUTING.md            # Contribution guidelines
+├── CODE_OF_CONDUCT.md         # Code of conduct
+├── SECURITY.md                # Security policy
+├── CHANGELOG.md               # Version history
+└── README.md                  # Project overview
 ```
 
-[Detailed Architecture](/docs/peraltacc/architecture)
+## Key Deliverables
+
+### Bid & Proposal Documentation
+- **Addendum Package** - Tasks 1-6 organized in `/docs/addendum-bid/`
+- **First Report (Task 5)** - Initial findings and recommendations
+- **Certifications (Task 6)** - Compliance and audit certifications
+- **Final Delivery Proposal** - Platform deployment recommendation
+
+### Core Features
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Redistricting Tools** | District boundary planning and optimization | Active |
+| **ERP Automation** | Workflow automation for college operations | Active |
+| **GitBook Integration** | Professional documentation with Git Sync | Active |
+| **Governance Gates** | Quality gates and submission requirements | Active |
+| **Bid Management** | Proposal tracking and deliverable organization | Active |
+
+## Documentation Platforms
+
+**Primary:** GitBook (`docs/gitbook/`) with Git Sync to repository  
+**Preview:** Vercel (optional, for static hosting snapshots)  
+**Legacy:** Root-level proposal documents (being reorganized into GitBook)
 
 ---
 
