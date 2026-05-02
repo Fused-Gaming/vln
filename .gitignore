@@ -59,3 +59,24 @@ design-site/node_modules/
 # Monorepo build artifacts
 dist/
 .turbo/
+
+# Claude Code sessions and local configs
+.claude/sessions/
+.claude/local-docs/
+.claude/configs/
+.claude/*.local.json
+claude-workspace.json
+
+# Local document uploads
+*.local.md
+
+# Project scaffolds (local development)
+peralta-docs/
+demo-scaffold/
+skill-scaffold/
+docs/skill/
+docs/game/
+docs/peralta/
+app/skill/
+app/ace/
+app/peralta/

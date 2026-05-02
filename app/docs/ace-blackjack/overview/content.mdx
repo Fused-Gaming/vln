@@ -1,0 +1,145 @@
+# ACE Blackjack Overview
+
+ACE is a precision-engineered, RNG-audited blackjack game platform built for enterprise iGaming. This section covers game mechanics, rules, and player actions.
+
+## Game Rules
+
+ACE follows traditional casino blackjack rules with the following specifications:
+
+### Card Values
+- **2-10:** Face value (2 = 2 points, 10 = 10 points)
+- **Face Cards (J, Q, K):** 10 points each
+- **Ace:** 1 or 11 points (player choice in certain game states)
+
+### Win Conditions
+
+1. **Blackjack (Natural):** Player receives an Ace and a 10-value card on initial deal (21 with 2 cards)
+   - Payout: 3:2 (1.5x bet)
+   - Beats all other hands except dealer blackjack
+
+2. **Player 21:** Player reaches 21 without busting
+   - Payout: 1:1 (equal bet)
+
+3. **Dealer Bust:** Dealer's hand exceeds 21 while player's hand is ≤21
+   - Payout: 1:1 (equal bet)
+
+4. **Higher Hand:** Player's hand is higher than dealer's without exceeding 21
+   - Payout: 1:1 (equal bet)
+
+5. **Push (Tie):** Player and dealer have the same hand value
+   - Payout: 0 (bet returned)
+
+### Loss Conditions
+
+1. **Player Bust:** Player's hand exceeds 21
+   - Loss: Full bet amount
+
+2. **Dealer Wins:** Dealer's hand is higher than player's and doesn't bust
+   - Loss: Full bet amount
+
+3. **Dealer Blackjack:** Dealer has 21 with 2 cards (only if player doesn't have blackjack)
+   - Loss: Full bet amount
+
+## Game Flow
+
+### Phase 1: Betting
+- Player places initial wager
+- Bet amount must be within table limits
+
+### Phase 2: Deal
+- Both player and dealer receive 2 cards
+- Player's cards are face-up
+- Dealer shows 1 card (upcard) and hides 1 card (hole card)
+
+### Phase 3: Player Actions
+- Player decides action based on hand value and dealer upcard
+- Actions remain available until player stands or busts
+
+### Phase 4: Dealer Play
+- Dealer reveals hole card
+- Dealer must hit on 16 or less (soft 17 rule)
+- Dealer must stand on 17 or more
+
+### Phase 5: Outcome Resolution
+- Compare final hands
+- Apply appropriate payout
+- Display results
+
+## Player Actions
+
+### Hit
+- Request additional card to increase hand value
+- Available when: hand < 21
+- Risk: May cause hand to bust (exceed 21)
+
+### Stand
+- Keep current hand and proceed to dealer play
+- Ends player's turn
+
+### Double Down
+- Double the initial bet and receive exactly 1 additional card
+- Available when: hand value is 9, 10, or 11, and no cards have been drawn yet
+- Strategy: Increases payout on strong starting hands
+- Restricts to single card (cannot hit again after doubling)
+
+### Split
+- Divide a pair into two separate hands
+- Available when: first two cards have equal value
+- Each hand receives an additional card
+- Each hand plays independently with original bet on each
+- Restriction: Aces split into single card draws (no additional cards)
+
+### Insurance (if enabled)
+- Side bet against dealer blackjack
+- Available when: dealer shows Ace
+- Bet amount: 50% of original wager
+- Payout: 2:1 if dealer has blackjack
+- Loss: Bet amount if dealer doesn't have blackjack
+
+## Payout Structure
+
+| Outcome | Multiplier | Example (100 unit bet) |
+|---------|-----------|----------------------|
+| Blackjack | 3:2 | 150 units |
+| Standard Win | 1:1 | 100 units (200 total) |
+| Push/Tie | 0 | Bet returned |
+| Bust/Loss | -1 | -100 units |
+| Insurance Win | 2:1 | 50 units |
+
+## House Edge
+
+The default ACE configuration implements:
+- **House Edge: ~0.5-0.6%** (with basic strategy play)
+- Based on standard Las Vegas rules
+- Edge varies with specific rule variations
+
+## Soft Hand Rules
+
+A "soft hand" contains an Ace counted as 11 without busting.
+
+**Examples:**
+- Ace + 5 = Soft 16 (can count as 6 or 16)
+- Ace + 7 = Soft 18 (can count as 8 or 18)
+
+Soft hands allow additional strategic flexibility:
+- Player can never bust with a hit on soft hand (worst case: Ace becomes 1)
+- Dealer typically stands on soft 17 in ACE rules
+
+## Terminology
+
+| Term | Definition |
+|------|-----------|
+| **Upcard** | Dealer's visible card |
+| **Hole Card** | Dealer's hidden card (revealed at end) |
+| **Bust** | Hand value exceeds 21 |
+| **Push** | Tie between player and dealer |
+| **Stiff Hand** | Hand value 12-16 (high bust risk) |
+| **Soft Hand** | Hand containing Ace counted as 11 |
+| **Unit** | Standard betting denomination |
+
+## Next Steps
+
+- **Getting Started:** Learn how to set up ACE in your application
+- **API Reference:** Explore all available endpoints and events
+- **Integration Guide:** Implement components and state management
+- **Code Examples:** See practical implementation patterns

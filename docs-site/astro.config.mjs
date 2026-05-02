@@ -20,7 +20,23 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: 'Documentation',
+          label: 'Home',
+          link: '/',
+        },
+        {
+          label: 'ACE Blackjack',
+          autogenerate: { directory: 'ace' },
+        },
+        {
+          label: 'Skill-MCP Tools',
+          autogenerate: { directory: 'skill' },
+        },
+        {
+          label: 'Peralta Deployment',
+          autogenerate: { directory: 'peraltacc' },
+        },
+        {
+          label: 'VLN Documentation',
           autogenerate: { directory: 'getting-started' },
         },
         {

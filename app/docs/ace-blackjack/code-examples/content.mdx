@@ -1,0 +1,690 @@
+# ACE Code Examples
+
+Practical code examples demonstrating common ACE integration patterns.
+
+## Complete Minimal Example
+
+```typescript
+'use client';
+
+import { ACEGame } from '@vln/ace-blackjack';
+import { useEffect, useState } from 'react';
+
+export default function MinimalBlackjack() {
+  const [game, setGame] = useState<ACEGame | null>(null);
+  const [balance, setBalance] = useState(1000);
+  const [gameState, setGameState] = useState<any>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const newGame = new ACEGame({
+        tableId: 'minimal-table',
+        minBet: 10,
+        maxBet: 500,
+        currency: 'USD'
+      });
+
+      await newGame.initialize();
+      newGame.setPlayerBalance(balance);
+
+      // Subscribe to updates
+      newGame.on('balanceUpdate', setBalance);
+      newGame.on('gameStart', () => {
+        setGameState(newGame.getGameState());
+      });
+
+      setGame(newGame);
+    };
+
+    init();
+  }, []);
+
+  if (!game) return <div>Loading...</div>;
+
+  return (
+    <div className="p-6">
+      <h1>Balance: ${balance}</h1>
+      {!gameState ? (
+        <PlayButton game={game} />
+      ) : (
+        <GameBoard game={game} state={gameState} />
+      )}
+    </div>
+  );
+}
+
+function PlayButton({ game }: { game: ACEGame }) {
+  return (
+    <button
+      onClick={async () => {
+        await game.placeBet(50);
+        await game.deal();
+      }}
+      className="px-4 py-2 bg-green-600 text-white rounded"
+    >
+      Play Hand (50 units)
+    </button>
+  );
+}
+
+function GameBoard({ game, state }: { game: ACEGame; state: any }) {
+  return (
+    <div>
+      <h2>Dealer: {state.dealerValue}</h2>
+      <h2>You: {state.playerValue}</h2>
+      <div className="space-y-2">
+        {state.availableActions.includes('hit') && (
+          <button
+            onClick={() => game.hit()}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Hit
+          </button>
+        )}
+        {state.availableActions.includes('stand') && (
+          <button
+            onClick={() => game.stand()}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Stand
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+## Advanced Game with Full State Management
+
+```typescript
+'use client';
+
+import { ACEGame, Card } from '@vln/ace-blackjack';
+import { useReducer, useEffect, useCallback } from 'react';
+
+interface GameState {
+  game: ACEGame | null;
+  phase: string;
+  playerCards: Card[];
+  dealerCards: Card[];
+  dealerUpcard: Card | null;
+  playerValue: number;
+  dealerValue: number;
+  balance: number;
+  betAmount: number;
+  availableActions: string[];
+  outcome: any | null;
+  error: string | null;
+}
+
+type GameAction =
+  | { type: 'INIT_GAME'; game: ACEGame }
+  | { type: 'UPDATE_STATE'; state: Partial<GameState> }
+  | { type: 'SET_ERROR'; error: string }
+  | { type: 'CLEAR_ERROR' }
+  | { type: 'RESET_HAND' };
+
+function gameReducer(state: GameState, action: GameAction): GameState {
+  switch (action.type) {
+    case 'INIT_GAME':
+      return { ...state, game: action.game };
+    case 'UPDATE_STATE':
+      return { ...state, ...action.state };
+    case 'SET_ERROR':
+      return { ...state, error: action.error };
+    case 'CLEAR_ERROR':
+      return { ...state, error: null };
+    case 'RESET_HAND':
+      return {
+        ...state,
+        phase: 'betting',
+        playerCards: [],
+        dealerCards: [],
+        dealerUpcard: null,
+        playerValue: 0,
+        dealerValue: 0,
+        betAmount: 0,
+        availableActions: [],
+        outcome: null
+      };
+    default:
+      return state;
+  }
+}
+
+export function AdvancedBlackjackGame() {
+  const [state, dispatch] = useReducer(gameReducer, {
+    game: null,
+    phase: 'betting',
+    playerCards: [],
+    dealerCards: [],
+    dealerUpcard: null,
+    playerValue: 0,
+    dealerValue: 0,
+    balance: 1000,
+    betAmount: 0,
+    availableActions: [],
+    outcome: null,
+    error: null
+  });
+
+  // Initialize game
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const game = new ACEGame({
+          tableId: 'advanced-table',
+          minBet: 10,
+          maxBet: 500,
+          currency: 'USD'
+        });
+
+        await game.initialize();
+        game.setPlayerBalance(state.balance);
+
+        // Setup event listeners
+        game.on('dealCards', (data) => {
+          dispatch({
+            type: 'UPDATE_STATE',
+            state: {
+              playerCards: data.playerCards,
+              dealerUpcard: data.dealerUpcard,
+              playerValue: data.playerValue,
+              phase: 'playing'
+            }
+          });
+        });
+
+        game.on('balanceUpdate', (balance) => {
+          dispatch({
+            type: 'UPDATE_STATE',
+            state: { balance }
+          });
+        });
+
+        game.on('gameEnd', (result) => {
+          dispatch({
+            type: 'UPDATE_STATE',
+            state: {
+              outcome: result,
+              phase: 'resolved'
+            }
+          });
+        });
+
+        game.on('error', (error) => {
+          dispatch({
+            type: 'SET_ERROR',
+            error: error.message
+          });
+        });
+
+        dispatch({ type: 'INIT_GAME', game });
+      } catch (error) {
+        dispatch({
+          type: 'SET_ERROR',
+          error: String(error)
+        });
+      }
+    };
+
+    init();
+  }, []);
+
+  const handlePlaceBet = useCallback(
+    async (amount: number) => {
+      if (!state.game) return;
+
+      try {
+        dispatch({ type: 'CLEAR_ERROR' });
+
+        if (!state.game.isValidBet(amount)) {
+          throw new Error('Bet outside table limits');
+        }
+
+        await state.game.placeBet(amount);
+        dispatch({
+          type: 'UPDATE_STATE',
+          state: { betAmount: amount, phase: 'dealing' }
+        });
+
+        const dealt = await state.game.deal();
+        dispatch({
+          type: 'UPDATE_STATE',
+          state: {
+            playerCards: dealt.playerCards,
+            dealerUpcard: dealt.dealerUpcard,
+            playerValue: dealt.playerValue,
+            phase: 'playing'
+          }
+        });
+      } catch (error) {
+        dispatch({
+          type: 'SET_ERROR',
+          error: String(error)
+        });
+      }
+    },
+    [state.game]
+  );
+
+  const handleHit = useCallback(async () => {
+    if (!state.game) return;
+
+    try {
+      const result = await state.game.hit();
+      dispatch({
+        type: 'UPDATE_STATE',
+        state: {
+          playerCards: result.hand,
+          playerValue: result.value
+        }
+      });
+
+      if (result.isBust) {
+        const outcome = state.game.getOutcome();
+        dispatch({
+          type: 'UPDATE_STATE',
+          state: { outcome, phase: 'resolved' }
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        error: String(error)
+      });
+    }
+  }, [state.game]);
+
+  const handleStand = useCallback(async () => {
+    if (!state.game) return;
+
+    try {
+      const result = await state.game.stand();
+      const outcome = state.game.getOutcome();
+
+      dispatch({
+        type: 'UPDATE_STATE',
+        state: {
+          dealerCards: result.dealerPlay.cards,
+          dealerValue: result.dealerPlay.value,
+          outcome,
+          phase: 'resolved'
+        }
+      });
+    } catch (error) {
+      dispatch({
+        type: 'SET_ERROR',
+        error: String(error)
+      });
+    }
+  }, [state.game]);
+
+  const handleNextHand = useCallback(() => {
+    dispatch({ type: 'RESET_HAND' });
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-green-900 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Error Display */}
+        {state.error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-100 p-4 rounded">
+            {state.error}
+            <button
+              onClick={() => dispatch({ type: 'CLEAR_ERROR' })}
+              className="ml-4 underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Balance Display */}
+        <div className="text-white text-2xl font-bold">
+          Balance: ${state.balance}
+        </div>
+
+        {state.phase === 'betting' && (
+          <BettingPhase
+            balance={state.balance}
+            limits={state.game?.getBetLimits() || { min: 10, max: 500 }}
+            onBet={handlePlaceBet}
+          />
+        )}
+
+        {state.phase === 'playing' && (
+          <PlayingPhase
+            playerCards={state.playerCards}
+            playerValue={state.playerValue}
+            dealerUpcard={state.dealerUpcard}
+            availableActions={state.game?.getAvailableActions() || []}
+            onHit={handleHit}
+            onStand={handleStand}
+          />
+        )}
+
+        {state.phase === 'resolved' && state.outcome && (
+          <ResolutionPhase
+            outcome={state.outcome}
+            playerValue={state.playerValue}
+            dealerValue={state.dealerValue}
+            onNextHand={handleNextHand}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Phase components would follow...
+```
+
+## Betting Integration Example
+
+```typescript
+'use client';
+
+import { ACEGame } from '@vln/ace-blackjack';
+import { useState } from 'react';
+
+interface BetSliderProps {
+  game: ACEGame;
+  onBetPlaced: (amount: number) => void;
+}
+
+export function BetSlider({ game, onBetPlaced }: BetSliderProps) {
+  const [betAmount, setBetAmount] = useState(50);
+  const limits = game.getBetLimits();
+  const balance = game.getPlayerBalance();
+
+  const maxAllowed = Math.min(limits.max, balance);
+
+  const handlePlaceBet = async () => {
+    try {
+      if (!game.isValidBet(betAmount)) {
+        throw new Error('Invalid bet amount');
+      }
+
+      const receipt = await game.placeBet(betAmount);
+      console.log('Bet placed:', receipt.betId);
+      onBetPlaced(betAmount);
+    } catch (error) {
+      alert(String(error));
+    }
+  };
+
+  // Preset bet buttons
+  const presets = [10, 25, 50, 100, 250, 500];
+
+  return (
+    <div className="space-y-4 p-4 bg-blue-900/50 rounded-lg">
+      <h3 className="text-white font-bold">Place Your Bet</h3>
+
+      {/* Preset Buttons */}
+      <div className="flex flex-wrap gap-2">
+        {presets
+          .filter(p => p <= maxAllowed)
+          .map(preset => (
+            <button
+              key={preset}
+              onClick={() => setBetAmount(preset)}
+              className={`px-3 py-2 rounded ${
+                betAmount === preset
+                  ? 'bg-yellow-500 text-black'
+                  : 'bg-blue-600 text-white'
+              }`}
+            >
+              ${preset}
+            </button>
+          ))}
+      </div>
+
+      {/* Slider */}
+      <input
+        type="range"
+        min={limits.min}
+        max={maxAllowed}
+        value={betAmount}
+        onChange={(e) => setBetAmount(parseInt(e.target.value))}
+        className="w-full"
+      />
+
+      {/* Manual Input */}
+      <input
+        type="number"
+        min={limits.min}
+        max={maxAllowed}
+        value={betAmount}
+        onChange={(e) => setBetAmount(Math.min(maxAllowed, parseInt(e.target.value) || 0))}
+        className="w-full px-3 py-2 rounded bg-gray-800 text-white"
+      />
+
+      {/* Info */}
+      <div className="text-sm text-gray-300">
+        <p>Table limits: ${limits.min} - ${limits.max}</p>
+        <p>Your balance: ${balance}</p>
+        <p>Selected: ${betAmount}</p>
+      </div>
+
+      {/* Place Bet Button */}
+      <button
+        onClick={handlePlaceBet}
+        disabled={betAmount < limits.min || betAmount > maxAllowed}
+        className="w-full px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50 font-bold"
+      >
+        Place Bet
+      </button>
+    </div>
+  );
+}
+```
+
+## Event Listener Pattern
+
+```typescript
+'use client';
+
+import { ACEGame } from '@vln/ace-blackjack';
+import { useEffect } from 'react';
+
+export function GameEventMonitor({ game }: { game: ACEGame }) {
+  useEffect(() => {
+    // Create handlers
+    const handlers = {
+      gameStart: (data: any) => {
+        console.log('Game started', data);
+        addLog(`Game started with balance ${data.balance}`);
+      },
+
+      dealCards: (data: any) => {
+        console.log('Cards dealt', data);
+        addLog(`You: ${data.playerValue}, Dealer shows: ${data.dealerUpcard.rank}`);
+      },
+
+      playerAction: (action: any) => {
+        console.log('Player action:', action.type);
+        addLog(`You ${action.type}: ${action.card?.rank || ''}`);
+      },
+
+      dealerAction: (action: any) => {
+        console.log('Dealer action:', action.type);
+        addLog(`Dealer ${action.type}: ${action.card?.rank || ''}`);
+      },
+
+      gameEnd: (result: any) => {
+        console.log('Game ended:', result);
+        addLog(`Result: ${result.result}. Payout: ${result.payout}`);
+      },
+
+      balanceUpdate: (balance: number) => {
+        console.log('Balance updated:', balance);
+        updateBalanceDisplay(balance);
+      },
+
+      error: (error: any) => {
+        console.error('Game error:', error);
+        addLog(`ERROR: ${error.message}`, 'error');
+      }
+    };
+
+    // Subscribe to all events
+    Object.entries(handlers).forEach(([event, handler]) => {
+      game.on(event, handler);
+    });
+
+    // Cleanup
+    return () => {
+      Object.entries(handlers).forEach(([event, handler]) => {
+        game.off(event, handler);
+      });
+    };
+  }, [game]);
+
+  return <EventLog />;
+}
+
+function addLog(message: string, type = 'info') {
+  // Implementation
+}
+
+function updateBalanceDisplay(balance: number) {
+  // Implementation
+}
+
+function EventLog() {
+  return <div>Event log would display here</div>;
+}
+```
+
+## Performance-Optimized Rendering
+
+```typescript
+'use client';
+
+import { ACEGame, Card } from '@vln/ace-blackjack';
+import { memo, useMemo, useCallback } from 'react';
+
+const CardComponent = memo(function Card({ card }: { card: Card }) {
+  return (
+    <div className="w-20 h-28 bg-white border-2 border-black rounded flex items-center justify-center font-bold">
+      <div>
+        {card.rank}
+        <div className={card.suit === 'hearts' || card.suit === 'diamonds' ? 'text-red-600' : ''}>
+          {getSuitSymbol(card.suit)}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const HandComponent = memo(function Hand({ cards, value }: { cards: Card[]; value: number }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        {cards.map((card, i) => (
+          <CardComponent key={`${card.suit}-${card.rank}-${i}`} card={card} />
+        ))}
+      </div>
+      <div className="text-lg font-bold">Total: {value}</div>
+    </div>
+  );
+});
+
+export function OptimizedGameBoard({ game }: { game: ACEGame }) {
+  // Memoize expensive computations
+  const gameState = useMemo(() => game.getGameState(), [game]);
+  const playerState = useMemo(() => game.getPlayer(), [game]);
+
+  // Memoize handlers
+  const handleHit = useCallback(() => game.hit(), [game]);
+  const handleStand = useCallback(() => game.stand(), [game]);
+
+  return (
+    <div>
+      <HandComponent cards={gameState.playerCards} value={gameState.playerValue} />
+      <HandComponent cards={[gameState.dealerUpcard]} value={gameState.dealerValue} />
+      <div className="mt-4">Balance: ${playerState.balance}</div>
+    </div>
+  );
+}
+
+function getSuitSymbol(suit: string): string {
+  const map: Record<string, string> = {
+    hearts: '♥',
+    diamonds: '♦',
+    clubs: '♣',
+    spades: '♠'
+  };
+  return map[suit] || '';
+}
+```
+
+## Testing Example
+
+```typescript
+// game.test.ts
+import { ACEGame } from '@vln/ace-blackjack';
+import { describe, it, expect, beforeEach } from 'vitest';
+
+describe('ACE Game', () => {
+  let game: ACEGame;
+
+  beforeEach(() => {
+    game = new ACEGame({
+      tableId: 'test-table',
+      minBet: 10,
+      maxBet: 100,
+      currency: 'USD',
+      rngProvider: 'internal',
+      rngSeed: '12345' // Fixed seed for reproducibility
+    });
+  });
+
+  it('initializes correctly', async () => {
+    const result = await game.initialize();
+    expect(result.status).toBe('ready');
+  });
+
+  it('validates bets correctly', () => {
+    expect(game.isValidBet(5)).toBe(false); // Below minimum
+    expect(game.isValidBet(50)).toBe(true); // Valid
+    expect(game.isValidBet(150)).toBe(false); // Above maximum
+  });
+
+  it('places bets and deals cards', async () => {
+    game.setPlayerBalance(1000);
+    await game.placeBet(50);
+
+    const dealt = await game.deal();
+    expect(dealt.playerCards).toHaveLength(2);
+    expect(dealt.dealerUpcard).toBeDefined();
+  });
+
+  it('processes hit action', async () => {
+    game.setPlayerBalance(1000);
+    await game.placeBet(50);
+    await game.deal();
+
+    const result = await game.hit();
+    expect(result.hand.length).toBe(3);
+  });
+
+  it('emits events', (done) => {
+    game.on('gameStart', (data) => {
+      expect(data.balance).toBe(1000);
+      done();
+    });
+
+    game.setPlayerBalance(1000);
+    game.startSession();
+  });
+});
+```
+
+## Next Steps
+
+- **Integration Guide:** Component architecture and state management
+- **API Reference:** Complete method documentation
+- **FAQ & Troubleshooting:** Common solutions
