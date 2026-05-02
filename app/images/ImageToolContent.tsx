@@ -10,8 +10,17 @@ import {
   processImages,
   type CompressedImage,
 } from "@/lib/image-compression";
-import { Download, Upload, RefreshCw, Image as ImageIcon } from "lucide-react";
+import {
+  Download,
+  Upload,
+  RefreshCw,
+  Image as ImageIcon,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type ProcessingStage = "idle" | "uploading" | "compressing" | "completed" | "error";
 
 export default function ImageToolContent() {
   const [compressedImages, setCompressedImages] = useState<CompressedImage[]>(
@@ -23,40 +32,77 @@ export default function ImageToolContent() {
   const [fileList, setFileList] = useState<File[]>([]);
   const [progress, setProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
+  const [stage, setStage] = useState<ProcessingStage>("idle");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleImageUpload = useCallback((files: FileList | File[]) => {
     const filesArray = Array.from(files);
     const validFiles = filesArray.filter(validateFileType);
 
     if (validFiles.length === 0) {
-      alert("Please upload only JPEG, PNG, or WebP images.");
+      setErrorMessage("Please upload only JPEG, PNG, or WebP images.");
+      setStage("error");
+      setTimeout(() => setStage("idle"), 5000);
       return;
     }
 
-    setFileList(validFiles);
+    setErrorMessage("");
+    setStage("uploading");
+    setUploadProgress(0);
+    setCompressedImages([]);
+    setProgress(0);
+
+    // Simulate upload progress
+    const uploadInterval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(uploadInterval);
+          return 90;
+        }
+        return prev + Math.random() * 30;
+      });
+    }, 300);
+
+    // After upload simulation, move to compression
+    setTimeout(() => {
+      clearInterval(uploadInterval);
+      setUploadProgress(100);
+      setFileList(validFiles);
+      setStage("compressing");
+    }, 800);
   }, []);
 
   useEffect(() => {
     const processFilesAsync = async () => {
-      if (fileList.length === 0) return;
+      if (fileList.length === 0 || stage !== "compressing") return;
 
       setLoading(true);
       try {
         const { compressedImages: newCompressedImages, zipFile: newZipFile } =
-          await processImages(fileList, quality, setProgress);
+          await processImages(fileList, quality, (compressionProgress) => {
+            setProgress(compressionProgress);
+          });
 
         setCompressedImages(newCompressedImages);
         setZipFile(newZipFile);
+        setStage("completed");
+        setProgress(100);
       } catch (error) {
         console.error("Error processing images:", error);
-        alert("Error processing images. Please try again.");
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Error processing images. Please try again."
+        );
+        setStage("error");
       } finally {
         setLoading(false);
       }
     };
 
     processFilesAsync();
-  }, [fileList, quality]);
+  }, [fileList, quality, stage]);
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -111,7 +157,10 @@ export default function ImageToolContent() {
     setCompressedImages([]);
     setZipFile(null);
     setProgress(0);
+    setUploadProgress(0);
     setQuality(60);
+    setStage("idle");
+    setErrorMessage("");
   };
 
   return (
@@ -202,16 +251,73 @@ export default function ImageToolContent() {
             </div>
           )}
 
-          {/* Loading State */}
-          {loading && (
-            <div className="rounded-vln border border-vln-sage/20 bg-vln-bg-light p-6 text-center">
-              <div className="mb-4 flex justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-vln-sage/20 border-t-vln-sage" />
+          {/* Status Bar - Upload & Compression Progress */}
+          {stage === "uploading" && (
+            <div className="rounded-vln border border-vln-bluegray/20 bg-vln-bg-light p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-vln-bluegray/30 border-t-vln-bluegray" />
+                <h3 className="font-semibold text-vln-white">Uploading files...</h3>
               </div>
-              <p className="mb-2 font-semibold text-vln-white">
-                Compressing images...
+              <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-vln-bluegray/20">
+                <div
+                  className="h-full bg-gradient-to-r from-vln-bluegray to-vln-sage transition-all duration-300"
+                  style={{ width: `${Math.min(uploadProgress, 100)}%` }}
+                />
+              </div>
+              <p className="text-right text-sm text-vln-gray">
+                {Math.round(uploadProgress)}%
               </p>
-              <p className="text-sm text-vln-gray">{progress}% complete</p>
+            </div>
+          )}
+
+          {/* Status Bar - Compression Progress */}
+          {stage === "compressing" && (
+            <div className="rounded-vln border border-vln-sage/20 bg-vln-bg-light p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-vln-sage/30 border-t-vln-sage" />
+                <h3 className="font-semibold text-vln-white">
+                  Compressing {fileList.length} image
+                  {fileList.length !== 1 ? "s" : ""}...
+                </h3>
+              </div>
+              <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-vln-sage/20">
+                <div
+                  className="h-full bg-gradient-to-r from-vln-sage to-vln-amber transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-right text-sm text-vln-gray">{progress}% complete</p>
+            </div>
+          )}
+
+          {/* Status Bar - Completed */}
+          {stage === "completed" && (
+            <div className="rounded-vln border border-vln-sage/20 bg-vln-sage/10 p-6">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-6 w-6 text-vln-sage" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-vln-sage">
+                    Compression complete!
+                  </h3>
+                  <p className="text-sm text-vln-gray">
+                    {compressedImages.length} image
+                    {compressedImages.length !== 1 ? "s" : ""} ready for download
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Status Bar - Error */}
+          {stage === "error" && (
+            <div className="rounded-vln border border-red-500/30 bg-red-500/10 p-6">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-6 w-6 text-red-500" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-500">Error</h3>
+                  <p className="text-sm text-red-400">{errorMessage}</p>
+                </div>
+              </div>
             </div>
           )}
 
