@@ -133,7 +133,6 @@ describe("Meetup API Endpoints", () => {
       });
 
       it("should track requests per IP", () => {
-        const ipAddress = "203.0.113.42";
         const timestamps = [
           Date.now(),
           Date.now() + 100,
