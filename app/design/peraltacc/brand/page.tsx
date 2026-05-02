@@ -72,7 +72,7 @@ export default function PeraltaBrandPage() {
               <div className="text-3xl">⚡</div>
               <h3 className="font-semibold text-white text-lg">Speed & Efficiency</h3>
               <p className="text-gray-400">
-                Security shouldn't slow development. We build fast, scalable systems that
+                Security shouldn&apos;t slow development. We build fast, scalable systems that
                 integrate naturally into DevOps pipelines.
               </p>
             </div>
@@ -208,11 +208,11 @@ export default function PeraltaBrandPage() {
               <ul className="space-y-2 text-gray-400">
                 <li className="flex items-center gap-2">
                   <span className="text-sage-500">▸</span>
-                  <span><span className="font-semibold">Inter</span> – Primary sans-serif for UI and body text</span>
+                  <span><span className="font-semibold">Inter</span> &ndash; Primary sans-serif for UI and body text</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-sage-500">▸</span>
-                  <span><span className="font-semibold">JetBrains Mono</span> – Technical content and code</span>
+                  <span><span className="font-semibold">JetBrains Mono</span> &ndash; Technical content and code</span>
                 </li>
               </ul>
             </div>
@@ -244,7 +244,7 @@ export default function PeraltaBrandPage() {
           <h2 className="text-2xl sm:text-3xl font-bold text-white">Brand Tone</h2>
           <div className="space-y-4">
             <p className="text-gray-300 leading-relaxed">
-              Peralta's voice is:
+              Peralta&apos;s voice is:
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 p-4 bg-white/5 rounded-lg border border-white/10">
@@ -256,7 +256,7 @@ export default function PeraltaBrandPage() {
               <div className="space-y-2 p-4 bg-white/5 rounded-lg border border-white/10">
                 <p className="font-semibold text-white">Precise & Technical</p>
                 <p className="text-sm text-gray-400">
-                  We respect our users' intelligence and provide specific, detailed information.
+                  We respect our users&apos; intelligence and provide specific, detailed information.
                 </p>
               </div>
               <div className="space-y-2 p-4 bg-white/5 rounded-lg border border-white/10">
@@ -268,7 +268,7 @@ export default function PeraltaBrandPage() {
               <div className="space-y-2 p-4 bg-white/5 rounded-lg border border-white/10">
                 <p className="font-semibold text-white">Collaborative & Helpful</p>
                 <p className="text-sm text-gray-400">
-                  We position ourselves as partners in our clients' security journey.
+                  We position ourselves as partners in our clients&apos; security journey.
                 </p>
               </div>
             </div>

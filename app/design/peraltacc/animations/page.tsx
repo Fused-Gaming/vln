@@ -250,7 +250,7 @@ linear                      /* Continuous motion */`}</code>
           <h2 className="text-2xl font-bold text-white">Animation Best Practices</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="p-6 bg-green-500/5 border border-green-500/20 rounded-lg space-y-3">
-              <p className="font-semibold text-white text-sm">Do's</p>
+              <p className="font-semibold text-white text-sm">Do&apos;s</p>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li className="flex gap-2">
                   <span className="text-green-500">✓</span>
@@ -266,7 +266,7 @@ linear                      /* Continuous motion */`}</code>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-green-500">✓</span>
-                  <span>Animate only properties that don't cause layout shift</span>
+                  <span>Animate only properties that don&apos;t cause layout shift</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-green-500">✓</span>
@@ -275,7 +275,7 @@ linear                      /* Continuous motion */`}</code>
               </ul>
             </div>
             <div className="p-6 bg-red-500/5 border border-red-500/20 rounded-lg space-y-3">
-              <p className="font-semibold text-white text-sm">Don'ts</p>
+              <p className="font-semibold text-white text-sm">Don&apos;ts</p>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li className="flex gap-2">
                   <span className="text-red-500">✗</span>
@@ -307,7 +307,7 @@ linear                      /* Continuous motion */`}</code>
           <h2 className="text-2xl font-bold text-white">Respecting Motion Preferences</h2>
           <div className="space-y-4 text-gray-400">
             <p>
-              Always respect the user's motion preferences. Implement prefers-reduced-motion media queries:
+              Always respect the user&apos;s motion preferences. Implement prefers-reduced-motion media queries:
             </p>
             <pre className="bg-white/5 border border-white/10 rounded p-4 text-sm overflow-x-auto">
               <code>{`@media (prefers-reduced-motion: reduce) {

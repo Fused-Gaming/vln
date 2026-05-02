@@ -51,6 +51,21 @@ export default defineConfig({
           label: 'DevOps & CI/CD',
           autogenerate: { directory: 'devops' },
         },
+        {
+          label: 'PeraltaCC Engagement',
+          badge: { text: 'Confidential', variant: 'caution' },
+          items: [
+            { label: 'Overview', link: '/peralta/' },
+            { label: 'Executive Summary', link: '/peralta/executive-summary/' },
+            { label: 'Scope of Work', link: '/peralta/scope-of-work/' },
+            { label: 'Methodology', link: '/peralta/methodology/' },
+            { label: 'Deliverables', link: '/peralta/deliverables/' },
+            { label: 'Timeline', link: '/peralta/timeline/' },
+            { label: 'Pricing & Retainer', link: '/peralta/pricing/' },
+            { label: 'Team & Credentials', link: '/peralta/team/' },
+            { label: 'Terms & References', link: '/peralta/terms/' },
+          ],
+        },
       ],
       editLink: {
         baseUrl: 'https://github.com/Fused-Gaming/vln/edit/integration/vln/docs-site/src/content/docs/',

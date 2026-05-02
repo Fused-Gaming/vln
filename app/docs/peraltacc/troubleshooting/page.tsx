@@ -110,7 +110,7 @@ export default async function PeraltaTroubleshootingPage() {
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-white">Getting Help</h2>
           <p className="leading-relaxed">
-            If you can't resolve an issue, contact support with the following information:
+            If you can&apos;t resolve an issue, contact support with the following information:
           </p>
           <ul className="space-y-2 text-gray-300 list-disc list-inside">
             <li>Detailed error message and stack trace</li>
