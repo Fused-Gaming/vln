@@ -218,7 +218,7 @@ export default function IGamingSecurityAuditPage() {
                 <span className="text-vln-gray-dark">•</span>
                 <span className="text-vln-gray-dark text-sm">Platform Security</span>
                 <span className="text-vln-gray-dark">•</span>
-                <span className="text-vln-gray-dark text-sm">March 10, 2025</span>
+                <span className="text-vln-gray-dark text-sm">March 10, 2026</span>
                 <span className="text-vln-gray-dark">•</span>
                 <span className="text-vln-gray-dark text-sm">14 min read</span>
               </div>

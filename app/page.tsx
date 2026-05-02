@@ -183,8 +183,8 @@ export default function Home() {
               </div>
             </CSSFade>
 
-            <div className="grid sm:grid-cols-2 gap-5">
-              {BLOG_POSTS.map((post, i) => {
+            <div className="grid sm:grid-cols-1 gap-5 max-w-2xl">
+              {BLOG_POSTS.slice(0, 1).map((post, i) => {
                 const accentMap = {
                   sage: { border: "border-vln-sage/20 hover:border-vln-sage/40", text: "text-vln-sage", badge: "bg-vln-sage/10 text-vln-sage" },
                   blue: { border: "border-vln-bluegray/20 hover:border-vln-bluegray/40", text: "text-vln-bluegray", badge: "bg-vln-bluegray/10 text-vln-bluegray" },

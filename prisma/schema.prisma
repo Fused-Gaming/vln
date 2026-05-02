@@ -672,3 +672,61 @@ model ComplianceRecord {
   @@index([auditId])
   @@index([type])
 }
+
+// ============================================================================
+// BOOKINGS & CONSULTATIONS
+// ============================================================================
+
+model Booking {
+  id                  String            @id @default(cuid())
+
+  // Contact information
+  firstName           String
+  lastName            String
+  email               String
+  phone               String?
+  company             String?
+
+  // Appointment details
+  appointmentType     AppointmentType   @default(VIRTUAL)
+  date                DateTime
+  time                String            // HH:MM format (PT)
+  notes               String?
+
+  // Status tracking
+  status              BookingStatus     @default(PENDING)
+  confirmedAt         DateTime?
+  cancelledAt         DateTime?
+  completedAt         DateTime?
+
+  // Email delivery tracking
+  confirmationEmailSent Boolean         @default(false)
+  reminderEmailSent   Boolean           @default(false)
+
+  // Metadata
+  source              String            @default("contact-form") // contact-form, referral, etc
+  userAgent           String?
+  ipAddress           String?
+
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([date])
+  @@index([createdAt])
+}
+
+enum AppointmentType {
+  VIRTUAL
+  IN_PERSON
+}
+
+enum BookingStatus {
+  PENDING           // Awaiting admin review
+  CONFIRMED         // Admin confirmed the booking
+  REMINDER_SENT     // Reminder email sent
+  COMPLETED         // Meeting occurred
+  CANCELLED         // User or admin cancelled
+  NO_SHOW           // User didn't show up
+}

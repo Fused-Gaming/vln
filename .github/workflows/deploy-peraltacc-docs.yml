@@ -1,0 +1,215 @@
+name: 🚀 Deploy PeraltaCC Documentation
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: 'Source branch/ref from PeraltaCC repository'
+        required: false
+        default: 'main'
+        type: string
+  schedule:
+    # Run daily at 2 AM UTC to keep docs in sync
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy-peraltacc-docs:
+    name: 📚 Deploy PeraltaCC Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout VLN Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📥 Checkout PeraltaCC Repository
+        uses: actions/checkout@v4
+        with:
+          repository: Fused-Gaming/PeraltaCC
+          path: ./peraltacc-source
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📂 Prepare Documentation Directory
+        run: |
+          # Create target directory structure
+          mkdir -p docs/peraltacc-addendum
+
+          # Check if source docs exist
+          if [ ! -d "./peraltacc-source/docs/addendum-bid" ]; then
+            echo "❌ Source directory docs/addendum-bid not found in PeraltaCC repository"
+            exit 1
+          fi
+
+          echo "✅ Source directory found"
+
+      - name: 📋 Copy PeraltaCC Documentation
+        run: |
+          # Copy the addendum-bid documentation
+          cp -r ./peraltacc-source/docs/addendum-bid/* docs/peraltacc-addendum/
+
+          # Verify copy was successful
+          if [ ! -f "docs/peraltacc-addendum/README.md" ] && [ ! -f "docs/peraltacc-addendum/index.md" ]; then
+            echo "⚠️  Warning: No README.md or index.md found in copied docs"
+          fi
+
+          echo "✅ Documentation copied successfully"
+
+      - name: 📝 Generate Metadata
+        id: metadata
+        run: |
+          # Get commit info from PeraltaCC
+          PERALTACC_COMMIT=$(cd ./peraltacc-source && git rev-parse --short HEAD)
+          PERALTACC_DATE=$(cd ./peraltacc-source && git log -1 --pretty=%cd --date=iso)
+          PERALTACC_AUTHOR=$(cd ./peraltacc-source && git log -1 --pretty=%an)
+
+          echo "commit=$PERALTACC_COMMIT" >> $GITHUB_OUTPUT
+          echo "date=$PERALTACC_DATE" >> $GITHUB_OUTPUT
+          echo "author=$PERALTACC_AUTHOR" >> $GITHUB_OUTPUT
+
+          # Create metadata file
+          cat > docs/peraltacc-addendum/.source-metadata.json << EOF
+          {
+            "source": "https://github.com/Fused-Gaming/PeraltaCC",
+            "source_path": "docs/addendum-bid",
+            "source_commit": "$PERALTACC_COMMIT",
+            "source_date": "$PERALTACC_DATE",
+            "source_author": "$PERALTACC_AUTHOR",
+            "synced_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "synced_by": "GitHub Actions"
+          }
+          EOF
+
+          echo "✅ Metadata generated"
+
+      - name: 🔍 Validate Documentation
+        run: |
+          # Check that essential files exist
+          DOC_COUNT=$(find docs/peraltacc-addendum -type f \( -name "*.md" -o -name "*.mdx" \) | wc -l)
+
+          if [ "$DOC_COUNT" -eq 0 ]; then
+            echo "❌ No markdown files found in documentation"
+            exit 1
+          fi
+
+          echo "✅ Found $DOC_COUNT documentation files"
+
+          # List files for verification
+          echo ""
+          echo "📄 Documentation Files:"
+          find docs/peraltacc-addendum -type f \( -name "*.md" -o -name "*.mdx" \) | head -20
+
+      - name: 💾 Commit Documentation
+        id: commit
+        run: |
+          if git diff --quiet docs/peraltacc-addendum; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No changes detected in documentation"
+          else
+            git config --local user.name "VLN Documentation Bot"
+            git config --local user.email "bot@vln.gg"
+
+            git add docs/peraltacc-addendum/
+
+            git commit -m "docs(peraltacc): sync PeraltaCC addendum-bid documentation
+
+Automated sync from Fused-Gaming/PeraltaCC
+- Source: docs/addendum-bid
+- Commit: ${{ steps.metadata.outputs.commit }}
+- Author: ${{ steps.metadata.outputs.author }}
+- Date: ${{ steps.metadata.outputs.date }}
+
+✅ Documentation validated and deployed
+📚 ${{ job.status }}"
+
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes committed"
+          fi
+
+      - name: 🚀 Push Changes
+        if: steps.commit.outputs.has_changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          # Clean up the temporary checkout
+          rm -rf ./peraltacc-source
+          echo "✅ Temporary files cleaned up"
+
+      - name: 📊 Generate Deployment Summary
+        if: always()
+        id: summary
+        run: |
+          if [ "${{ steps.commit.outputs.has_changes }}" == "true" ]; then
+            echo "status=✅ Deployment Successful"
+            echo "message=PeraltaCC documentation has been synced to docs/peraltacc-addendum/"
+          else
+            echo "status=ℹ️  No Changes"
+            echo "message=Documentation is already up to date"
+          fi
+
+      - name: 💬 Create PR Comment
+        if: github.event_name == 'workflow_dispatch' && github.event.pull_request != null
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 📚 PeraltaCC Documentation Deployed
+
+${{ steps.summary.outputs.status }}
+
+### 📋 Details
+- **Source Repository:** \`Fused-Gaming/PeraltaCC\`
+- **Source Path:** \`docs/addendum-bid\`
+- **Target Path:** \`docs/peraltacc-addendum/\`
+- **Source Commit:** \`${{ steps.metadata.outputs.commit }}\`
+- **Source Author:** \`${{ steps.metadata.outputs.author }}\`
+- **Sync Date:** \`${{ steps.metadata.outputs.date }}\`
+
+### ✅ Validation Results
+- Documentation files validated
+- Metadata generated and stored
+- Files staged and committed
+
+🤖 Generated by VLN Documentation Bot`
+            })
+
+  notify-deployment:
+    name: 🔔 Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: deploy-peraltacc-docs
+    if: always()
+
+    steps:
+      - name: Determine Status
+        id: status
+        run: |
+          if [ "${{ needs.deploy-peraltacc-docs.result }}" == "success" ]; then
+            echo "emoji=✅"
+            echo "color=3066993"
+            echo "status=Successful"
+          else
+            echo "emoji=❌"
+            echo "color=15158332"
+            echo "status=Failed"
+          fi
+
+      - name: 📢 Send Notification
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/integration/vln'
+        run: |
+          echo "Deployment Status: ${{ steps.status.outputs.emoji }} ${{ steps.status.outputs.status }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Triggered by: ${{ github.event_name }}"
