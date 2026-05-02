@@ -185,7 +185,7 @@ export default function PeraltaDesignHub() {
                   Review Brand Identity
                 </h3>
                 <p className="text-gray-300 ml-10">
-                  Start by understanding Peralta's mission, values, and design philosophy.
+                  Start by understanding Peralta&apos;s mission, values, and design philosophy.
                 </p>
               </div>
               <div className="space-y-4">
@@ -238,7 +238,7 @@ export default function PeraltaDesignHub() {
             </h2>
             <p className="text-gray-400 mb-8">
               Explore the complete design system and start building beautiful, accessible interfaces
-              with Peralta's comprehensive guidelines and components.
+              with Peralta&apos;s comprehensive guidelines and components.
             </p>
             <Link
               href="/design/peraltacc/brand"
