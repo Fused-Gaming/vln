@@ -142,18 +142,17 @@ export async function POST(request: NextRequest) {
     const scopeSize = lineOfCode || (contracts?.length || 0) + (files?.length || 0);
 
     // Create audit request
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const auditRequest = await prisma.auditRequest.create({
       data: {
         userId,
         teamId: teamId || null,
         projectName: projectName.trim(),
         description: description.trim(),
-        serviceType: validatedServiceType as any,
+        serviceType: validatedServiceType,
         scope: JSON.stringify(scope),
         scopeSize: scopeSize || 0,
-        status: 'INTAKE' as any,
-        priority: 'MEDIUM' as any,
+        status: 'INTAKE',
+        priority: 'MEDIUM',
         estimatedCost: estimatedCost,
       },
     });

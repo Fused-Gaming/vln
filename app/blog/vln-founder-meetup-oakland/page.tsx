@@ -103,12 +103,12 @@ export default function FounderMeetupBlog() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-6">
-                Connect with Oakland's Web3{" "}
+                Connect with Oakland&apos;s Web3{" "}
                 <span className="text-gradient-rainbow">Founder Community</span>
               </h1>
 
               <p className="text-xl text-vln-gray leading-relaxed mb-8">
-                Introducing VLN's weekly founder meetup — a drop-in gathering for web3 founders, CTOs, and security leaders to network, exchange insights, and build lasting relationships.
+                Introducing VLN&apos;s weekly founder meetup — a drop-in gathering for web3 founders, CTOs, and security leaders to network, exchange insights, and build lasting relationships.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -159,7 +159,7 @@ export default function FounderMeetupBlog() {
             <div className="max-w-3xl mx-auto">
               <CSSFade>
                 <h2 className="text-3xl sm:text-4xl font-bold mb-8">
-                  Why We're Doing This
+                  Why We&apos;re Doing This
                 </h2>
 
                 <div className="space-y-6 text-vln-gray leading-relaxed">
@@ -168,11 +168,11 @@ export default function FounderMeetupBlog() {
                   </p>
 
                   <p>
-                    As a founder, you need more than just advisors. You need peers who understand the unique pressures of building in blockchain. You need to exchange war stories with other CTOs who've debugged reentrancy exploits. You need to learn from security leaders who've recovered millions from hacks.
+                    As a founder, you need more than just advisors. You need peers who understand the unique pressures of building in blockchain. You need to exchange war stories with other CTOs who&apos;ve debugged reentrancy exploits. You need to learn from security leaders who&apos;ve recovered millions from hacks.
                   </p>
 
                   <p>
-                    That's why VLN started a weekly founder meetup in Oakland. It's a space to talk openly about the hard problems — security vulnerabilities you've discovered, architectural decisions you're wrestling with, fundraising challenges specific to web3, team scaling, and investor expectations around security.
+                    That&apos;s why VLN started a weekly founder meetup in Oakland. It&apos;s a space to talk openly about the hard problems — security vulnerabilities you&apos;ve discovered, architectural decisions you&apos;re wrestling with, fundraising challenges specific to web3, team scaling, and investor expectations around security.
                   </p>
 
                   <p>
@@ -190,7 +190,7 @@ export default function FounderMeetupBlog() {
             <CSSFade>
               <div className="text-center mb-12 sm:mb-16">
                 <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                  What You'll Get Out of It
+                  What You&apos;ll Get Out of It
                 </h2>
                 <p className="text-vln-gray text-lg max-w-2xl mx-auto">
                   Real connections with founders solving real problems in web3

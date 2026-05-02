@@ -151,7 +151,6 @@ export function CircuitTraceSVG(props: {
  */
 export function getCornerDecorationStyle(
   position: "top-left" | "top-right" | "bottom-left" | "bottom-right",
-  color: string = OG_COLORS.sage,
   opacity: number = 0.08
 ): React.CSSProperties {
   const baseStyle: React.CSSProperties = {

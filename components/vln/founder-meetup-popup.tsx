@@ -38,7 +38,6 @@ const STORAGE_KEY = "vln_founder_meetup_dismissed";
  */
 export default function FounderMeetupPopup({
   lumaEventUrl = MEETUP_CONFIG.lumaEventUrl,
-  linkedInUrl = MEETUP_CONFIG.linkedInUrl,
 }: FounderMeetupPopupProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -361,7 +360,7 @@ export default function FounderMeetupPopup({
               onClick={handleDismiss}
               className="w-full px-4 py-2 text-vln-bluegray hover:text-vln-white transition-colors text-xs font-medium"
             >
-              I'll pass for now
+              I&apos;ll pass for now
             </button>
           </div>
 
