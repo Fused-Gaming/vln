@@ -261,7 +261,7 @@ export default async function PeraltaOverviewPage() {
       {/* CTA */}
       <div className="mt-12 p-6 border border-sage-500/30 rounded-lg bg-sage-500/5">
         <p className="text-gray-300 mb-4">
-          Ready to secure your infrastructure? Start with the next section to learn about Peralta's architecture.
+          Ready to secure your infrastructure? Start with the next section to learn about Peralta&apos;s architecture.
         </p>
         <Link
           href="/docs/peraltacc/architecture"

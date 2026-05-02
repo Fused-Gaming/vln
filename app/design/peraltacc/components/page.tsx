@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { LucideArrowRight, LucideArrowLeft, Copy } from 'lucide-react';
+import { LucideArrowRight, LucideArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Component Library - Peralta Design System',
