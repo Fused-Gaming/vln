@@ -430,11 +430,56 @@ export const docsSitemap: DocSection[] = [
     ]
   },
   {
+    slug: 'vln-ecosystem',
+    title: 'VLN Ecosystem',
+    description: 'VLN.GG platform deployment, architecture, and versioning',
+    icon: '🌐',
+    order: 11,
+    pages: [
+      {
+        slug: 'overview',
+        title: 'Ecosystem Overview',
+        description: 'VLN.GG architecture and topology',
+        order: 1
+      },
+      {
+        slug: 'deployment-guide',
+        title: 'Deployment Guide',
+        description: 'Deploying VLN ecosystem components',
+        order: 2
+      },
+      {
+        slug: 'design-directives',
+        title: 'Design Directives',
+        description: 'Design principles and standards for VLN ecosystem',
+        order: 3
+      },
+      {
+        slug: 'domain-configuration',
+        title: 'Domain & Subdomain Configuration',
+        description: 'Top-level domain and subdomain setup strategies',
+        order: 4
+      },
+      {
+        slug: 'versioning',
+        title: 'Documentation Versioning',
+        description: 'Versioning strategy and release management',
+        order: 5
+      },
+      {
+        slug: 'confidential-docs',
+        title: 'Confidential Documentation',
+        description: 'Authentication-gated internal documentation (coming soon)',
+        order: 6
+      }
+    ]
+  },
+  {
     slug: 'peraltacc',
     title: 'Peralta Platform',
-    description: 'Peralta security platform documentation',
+    description: 'Peralta security platform technical documentation',
     icon: '🛡️',
-    order: 11,
+    order: 12,
     pages: [
       {
         slug: 'project-overview',
@@ -485,7 +530,7 @@ export const docsSitemap: DocSection[] = [
     title: 'ACE Blackjack',
     description: 'ACE blackjack game documentation and integration guide',
     icon: '🃏',
-    order: 12,
+    order: 13,
     pages: [
       {
         slug: 'overview',
