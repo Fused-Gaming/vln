@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
+import { AuditServiceType } from '@/lib/api-types';
 
 interface AuditIntakeRequest {
   projectName: string;
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Type-safe cast for validated serviceType
-    const validatedServiceType = serviceType as unknown as string;
+    const validatedServiceType = serviceType as AuditServiceType;
 
     // Verify user exists and is CLIENT or MANAGER
     const user = await prisma.user.findUnique({
