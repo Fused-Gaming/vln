@@ -20,15 +20,24 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
-    slug: "top-smart-contract-vulnerabilities-defi",
-    title: "Top Smart Contract Vulnerabilities Found in Bay Area DeFi Projects",
-    shortTitle: "DeFi Vulnerabilities in Bay Area",
+    slug: "drake-suing-eddie-kyc-fraud",
+    title: "Drake Suing Eddie: Fingered Aiden KYC Fraud",
     description:
-      "An analysis of the most common and critical smart contract vulnerabilities discovered in Bay Area DeFi projects.",
-    category: "Security Research",
-    publishedDate: "2026-02-01",
-    readTime: "12 min read",
-    accent: "sage",
+      "Analysis of the Drake and Eddie controversy involving KYC fraud and identity verification failures. Learn about verification vulnerabilities in high-profile cases.",
+    category: "Commentary",
+    publishedDate: "2026-03-08",
+    readTime: "6 min read",
+    accent: "purple",
+  },
+  {
+    slug: "2026-affiliate-marketing-blueprint",
+    title: "The 2026 Affiliate Marketing Blueprint",
+    description:
+      "A comprehensive guide to affiliate marketing strategies for 2026. Learn effective tactics, structure, and implementation for successful affiliate programs.",
+    category: "Business Strategy",
+    publishedDate: "2026-03-05",
+    readTime: "9 min read",
+    accent: "blue",
   },
   {
     slug: "front-end-developer-20",
