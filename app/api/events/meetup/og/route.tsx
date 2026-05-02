@@ -6,7 +6,7 @@ import { OG_COLORS } from "@/lib/og/utils";
  * Generates a social media preview image with the next Wednesday date
  * Includes SVG circuit trace decorations for VLN brand consistency
  */
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Calculate next Wednesday
     const today = new Date();
