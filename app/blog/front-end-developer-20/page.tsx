@@ -68,7 +68,7 @@ export default function FrontEndDeveloperPage() {
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
                 The Only Front-End Developer{" "}
-                <span className="text-gradient-rainbow">You&apos;ll Ever Need ($20)</span>
+                <span className="text-gradient-rainbow">You'll Ever Need ($20)</span>
               </h1>
 
               <p className="text-lg sm:text-xl text-vln-gray leading-relaxed mb-8">
