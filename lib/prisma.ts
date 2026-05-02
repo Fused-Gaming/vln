@@ -49,7 +49,7 @@ export function getPrisma(): PrismaClient {
 // Export lazy getter to avoid initialization during build
 export const prisma = new Proxy({} as PrismaClient, {
   get(target, prop) {
-    return (getPrisma() as unknown as Record<string, unknown>)[prop as string];
+    return (getPrisma() as any)[prop];
   },
 });
 
