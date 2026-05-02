@@ -1,0 +1,548 @@
+# ACE Integration Guide
+
+Complete guide to integrating ACE blackjack components into your application with state management and event handling.
+
+## Component Architecture
+
+ACE provides pre-built components for rapid integration:
+
+```
+ACEGame (Container)
+├── GameBoard
+│   ├── DealerHand
+│   ├── PlayerHand
+│   └── CommunityInfo
+├── ActionButtons
+│   ├── HitButton
+│   ├── StandButton
+│   ├── DoubleDownButton
+│   └── SplitButton
+├── BettingInterface
+│   ├── BetInput
+│   ├── ChipSelector
+│   └── SubmitBetButton
+└── ResultsModal
+    ├── OutcomeDisplay
+    ├── PayoutInfo
+    └── NextHandButton
+```
+
+## Basic Component Integration
+
+### Setting Up the Game Container
+
+```typescript
+'use client';
+
+import { ACEGame, ACEGameBoard } from '@vln/ace-blackjack';
+import { useEffect, useState } from 'react';
+
+export function BlackjackContainer() {
+  const [game, setGame] = useState<ACEGame | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const initializeGame = async () => {
+      try {
+        const newGame = new ACEGame({
+          tableId: 'main-table',
+          minBet: 10,
+          maxBet: 1000,
+          currency: 'USD'
+        });
+
+        await newGame.initialize();
+        newGame.setPlayerBalance(1000);
+        setGame(newGame);
+      } catch (error) {
+        console.error('Game initialization failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeGame();
+  }, []);
+
+  if (isLoading) {
+    return <div className="p-8">Loading game...</div>;
+  }
+
+  if (!game) {
+    return <div className="p-8 text-red-500">Failed to initialize game</div>;
+  }
+
+  return <ACEGameBoard game={game} />;
+}
+```
+
+### Game Board Component
+
+The `ACEGameBoard` component handles the complete game UI:
+
+```typescript
+import { ACEGameBoard } from '@vln/ace-blackjack';
+
+export function MyGamePage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-green-900 to-green-950">
+      <ACEGameBoard 
+        game={game}
+        theme="dark"
+        animationSpeed="normal"
+        onGameEnd={(outcome) => {
+          console.log('Game ended:', outcome);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+## State Management
+
+### Using React Hooks
+
+```typescript
+'use client';
+
+import { useACEGame } from '@vln/ace-blackjack/hooks';
+import { useState, useCallback } from 'react';
+
+export function MyGame() {
+  const game = useACEGame({
+    tableId: 'table-1',
+    minBet: 10,
+    maxBet: 1000,
+    currency: 'USD'
+  });
+
+  const [gameState, setGameState] = useState(game.getGameState());
+  const [playerState, setPlayerState] = useState(game.getPlayer());
+
+  // Subscribe to game state changes
+  useEffect(() => {
+    game.on('playerAction', () => {
+      setGameState(game.getGameState());
+    });
+
+    game.on('balanceUpdate', () => {
+      setPlayerState(game.getPlayer());
+    });
+
+    return () => {
+      game.off('playerAction', undefined);
+      game.off('balanceUpdate', undefined);
+    };
+  }, [game]);
+
+  return (
+    <div>
+      <div className="font-bold">Balance: {playerState.balance}</div>
+      <div>Current Value: {gameState.playerValue}</div>
+    </div>
+  );
+}
+```
+
+### Custom Hook for Game Management
+
+```typescript
+// hooks/useGameManager.ts
+import { useReducer, useCallback } from 'react';
+import { ACEGame } from '@vln/ace-blackjack';
+
+interface GameManagerState {
+  game: ACEGame | null;
+  balance: number;
+  isPlaying: boolean;
+  currentHand: any;
+  error: string | null;
+}
+
+type GameManagerAction = 
+  | { type: 'INITIALIZE'; game: ACEGame }
+  | { type: 'SET_BALANCE'; balance: number }
+  | { type: 'START_GAME' }
+  | { type: 'END_GAME' }
+  | { type: 'SET_ERROR'; error: string }
+  | { type: 'CLEAR_ERROR' };
+
+function gameManagerReducer(
+  state: GameManagerState,
+  action: GameManagerAction
+): GameManagerState {
+  switch (action.type) {
+    case 'INITIALIZE':
+      return { ...state, game: action.game };
+    case 'SET_BALANCE':
+      return { ...state, balance: action.balance };
+    case 'START_GAME':
+      return { ...state, isPlaying: true, error: null };
+    case 'END_GAME':
+      return { ...state, isPlaying: false };
+    case 'SET_ERROR':
+      return { ...state, error: action.error };
+    case 'CLEAR_ERROR':
+      return { ...state, error: null };
+    default:
+      return state;
+  }
+}
+
+export function useGameManager(config: ACEConfig) {
+  const [state, dispatch] = useReducer(gameManagerReducer, {
+    game: null,
+    balance: 0,
+    isPlaying: false,
+    currentHand: null,
+    error: null
+  });
+
+  const initialize = useCallback(async () => {
+    try {
+      const game = new ACEGame(config);
+      await game.initialize();
+      dispatch({ type: 'INITIALIZE', game });
+      return game;
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', error: String(error) });
+      throw error;
+    }
+  }, [config]);
+
+  return {
+    ...state,
+    initialize,
+    dispatch
+  };
+}
+```
+
+## Event Handling
+
+### Complete Event Setup
+
+```typescript
+export function setupGameEvents(game: ACEGame) {
+  // Game lifecycle
+  game.on('gameStart', (data) => {
+    console.log('Game started, balance:', data.balance);
+    // Update UI to show game board
+  });
+
+  game.on('dealCards', (data) => {
+    console.log('Cards dealt');
+    // Update hand displays
+    updatePlayerHandUI(data.playerCards);
+    updateDealerCardUI(data.dealerUpcard);
+  });
+
+  // Player actions
+  game.on('playerAction', (action) => {
+    console.log(`Player ${action.type}:`, action.card);
+    // Update action history or logs
+    addToLog(`You ${action.type}`);
+  });
+
+  // Dealer actions
+  game.on('dealerAction', (action) => {
+    console.log(`Dealer ${action.type}:`, action.card);
+    addToLog(`Dealer ${action.type}`);
+  });
+
+  // Game resolution
+  game.on('gameEnd', (result) => {
+    console.log('Game ended:', result.result, result.payout);
+    // Show results modal
+    displayOutcome(result);
+    updateBalance(result.newBalance);
+  });
+
+  // Balance updates
+  game.on('balanceUpdate', (balance) => {
+    console.log('New balance:', balance);
+    // Update balance display in real-time
+    updateBalanceDisplay(balance);
+  });
+
+  // Error handling
+  game.on('error', (error) => {
+    console.error('Game error:', error.code, error.message);
+    // Show error notification
+    showErrorNotification(error.message);
+  });
+}
+```
+
+## Custom UI Components
+
+### Custom Hand Display
+
+```typescript
+// components/ace/CustomHandDisplay.tsx
+'use client';
+
+import { Card } from '@vln/ace-blackjack';
+
+interface HandDisplayProps {
+  cards: Card[];
+  value: number;
+  isDealer?: boolean;
+  showAllCards?: boolean;
+}
+
+export function CustomHandDisplay({
+  cards,
+  value,
+  isDealer = false,
+  showAllCards = true
+}: HandDisplayProps) {
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 flex-wrap">
+        {cards.map((card, idx) => (
+          <div
+            key={idx}
+            className={`
+              w-20 h-28 rounded border-2 flex items-center justify-center
+              font-bold text-lg transition-all
+              ${!showAllCards && isDealer && idx === 1 
+                ? 'bg-red-900 border-red-700' 
+                : 'bg-white border-black text-black'
+              }
+            `}
+          >
+            {!showAllCards && isDealer && idx === 1 ? (
+              '?'
+            ) : (
+              <>
+                {card.rank}
+                <span className={card.suit === 'hearts' || card.suit === 'diamonds' ? 'text-red-600' : ''}>
+                  {getSuitSymbol(card.suit)}
+                </span>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="text-center font-bold text-lg">Total: {value}</div>
+    </div>
+  );
+}
+
+function getSuitSymbol(suit: string): string {
+  const symbols: Record<string, string> = {
+    hearts: '♥',
+    diamonds: '♦',
+    clubs: '♣',
+    spades: '♠'
+  };
+  return symbols[suit] || '';
+}
+```
+
+### Custom Action Buttons
+
+```typescript
+// components/ace/CustomActionButtons.tsx
+'use client';
+
+import { useState } from 'react';
+
+interface ActionButtonsProps {
+  onHit: () => Promise<void>;
+  onStand: () => Promise<void>;
+  onDoubleDown?: () => Promise<void>;
+  onSplit?: () => Promise<void>;
+  availableActions: string[];
+  isProcessing?: boolean;
+}
+
+export function CustomActionButtons({
+  onHit,
+  onStand,
+  onDoubleDown,
+  onSplit,
+  availableActions,
+  isProcessing = false
+}: ActionButtonsProps) {
+  const [processing, setProcessing] = useState(false);
+
+  const handleAction = async (action: () => Promise<void>) => {
+    setProcessing(true);
+    try {
+      await action();
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  return (
+    <div className="flex gap-2 justify-center">
+      {availableActions.includes('hit') && (
+        <button
+          onClick={() => handleAction(onHit)}
+          disabled={processing || isProcessing}
+          className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        >
+          Hit
+        </button>
+      )}
+
+      {availableActions.includes('stand') && (
+        <button
+          onClick={() => handleAction(onStand)}
+          disabled={processing || isProcessing}
+          className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+        >
+          Stand
+        </button>
+      )}
+
+      {availableActions.includes('doubleDown') && onDoubleDown && (
+        <button
+          onClick={() => handleAction(onDoubleDown)}
+          disabled={processing || isProcessing}
+          className="px-4 py-2 bg-yellow-600 text-white rounded disabled:opacity-50"
+        >
+          Double Down
+        </button>
+      )}
+
+      {availableActions.includes('split') && onSplit && (
+        <button
+          onClick={() => handleAction(onSplit)}
+          disabled={processing || isProcessing}
+          className="px-4 py-2 bg-purple-600 text-white rounded disabled:opacity-50"
+        >
+          Split
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+## Responsive Layout
+
+### Mobile-First Game Layout
+
+```typescript
+// components/ace/ResponsiveGameBoard.tsx
+'use client';
+
+export function ResponsiveGameBoard({ game }: { game: ACEGame }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-green-900 to-green-950 p-4">
+      {/* Header - Responsive */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="md:col-span-1">
+          <h1 className="text-2xl font-bold text-white">ACE Blackjack</h1>
+        </div>
+        <div className="md:col-span-2 text-right">
+          <div className="text-white text-xl font-bold">
+            Balance: <span className="text-yellow-400">${game.getPlayer().balance}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Game Area - Stack on mobile, side-by-side on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        {/* Left: Game Board */}
+        <div className="space-y-6">
+          {/* Dealer Hand */}
+          <div className="bg-green-800/50 p-4 rounded-lg">
+            <h2 className="text-white mb-4">Dealer</h2>
+            <DealerHandDisplay />
+          </div>
+
+          {/* Player Hand */}
+          <div className="bg-green-800/50 p-4 rounded-lg">
+            <h2 className="text-white mb-4">Your Hand</h2>
+            <PlayerHandDisplay />
+          </div>
+        </div>
+
+        {/* Right: Betting & Actions */}
+        <div className="space-y-4">
+          {/* Betting Section */}
+          <div className="bg-blue-900/50 p-4 rounded-lg">
+            <h3 className="text-white mb-4">Place Bet</h3>
+            <BettingInterface />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="bg-purple-900/50 p-4 rounded-lg">
+            <ActionButtons />
+          </div>
+
+          {/* Game Info */}
+          <div className="bg-gray-900/50 p-4 rounded-lg text-white text-sm">
+            <GameInfo />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Performance Optimization
+
+### Memoization
+
+```typescript
+import { memo, useMemo } from 'react';
+
+const MemoizedHandDisplay = memo(function HandDisplay({ cards, value }) {
+  return (
+    <div>
+      {cards.map(card => (
+        <div key={`${card.suit}-${card.rank}`}>{card.rank}</div>
+      ))}
+      <div>Total: {value}</div>
+    </div>
+  );
+});
+
+// Only recalculate when cards or value change
+const HandDisplayContainer = ({ game }) => {
+  const { cards, value } = useMemo(() => {
+    const state = game.getGameState();
+    return {
+      cards: state.playerCards,
+      value: state.playerValue
+    };
+  }, [game.getGameState()]);
+
+  return <MemoizedHandDisplay cards={cards} value={value} />;
+};
+```
+
+### Event Subscription Cleanup
+
+```typescript
+useEffect(() => {
+  const handlers = {
+    gameEnd: (data) => setOutcome(data),
+    balanceUpdate: (balance) => setBalance(balance)
+  };
+
+  Object.entries(handlers).forEach(([event, handler]) => {
+    game.on(event, handler);
+  });
+
+  return () => {
+    Object.entries(handlers).forEach(([event, handler]) => {
+      game.off(event, handler);
+    });
+  };
+}, [game]);
+```
+
+## Next Steps
+
+- **Code Examples:** See practical implementation patterns
+- **FAQ & Troubleshooting:** Common integration issues
+- **API Reference:** Complete method documentation
