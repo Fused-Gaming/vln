@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { LucideArrowRight, LucideArrowLeft, Copy } from 'lucide-react';
+import { LucideArrowRight, LucideArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Color Palette - Peralta Design System',
@@ -166,7 +166,7 @@ export default function PeraltaColorsPage() {
             {/* Do's and Don'ts */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="p-6 border border-green-500/50 rounded-lg bg-green-500/5 space-y-3">
-                <p className="font-semibold text-white text-sm">Do's</p>
+                <p className="font-semibold text-white text-sm">Do&apos;s</p>
                 <ul className="space-y-2 text-sm text-gray-400">
                   <li className="flex gap-2 items-start">
                     <span className="text-green-500">✓</span>
@@ -187,7 +187,7 @@ export default function PeraltaColorsPage() {
                 </ul>
               </div>
               <div className="p-6 border border-red-500/50 rounded-lg bg-red-500/5 space-y-3">
-                <p className="font-semibold text-white text-sm">Don'ts</p>
+                <p className="font-semibold text-white text-sm">Don&apos;ts</p>
                 <ul className="space-y-2 text-sm text-gray-400">
                   <li className="flex gap-2 items-start">
                     <span className="text-red-500">✗</span>
