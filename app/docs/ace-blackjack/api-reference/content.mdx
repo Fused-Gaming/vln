@@ -1,0 +1,555 @@
+# ACE API Reference
+
+Complete documentation of all ACE blackjack APIs including player management, betting, game state, and events.
+
+## Player API
+
+### initialize()
+
+Initialize the game and prepare for play.
+
+```typescript
+await game.initialize(): Promise<{ 
+  status: 'ready' | 'error'; 
+  table: TableInfo;
+  timestamp: string;
+}>
+```
+
+**Parameters:** None
+
+**Returns:**
+- `status`: Game initialization status
+- `table`: Current table configuration
+- `timestamp`: Server timestamp
+
+**Example:**
+```typescript
+const result = await game.initialize();
+if (result.status === 'ready') {
+  console.log('Game ready');
+}
+```
+
+---
+
+### setPlayerBalance(amount: number)
+
+Set the player's current balance.
+
+```typescript
+game.setPlayerBalance(amount: number): void
+```
+
+**Parameters:**
+- `amount`: Player's balance in units
+
+**Example:**
+```typescript
+game.setPlayerBalance(1000); // Set balance to 1000 units
+```
+
+---
+
+### getPlayerBalance(): number
+
+Retrieve the player's current balance.
+
+```typescript
+game.getPlayerBalance(): number
+```
+
+**Returns:** Player's balance in units
+
+**Example:**
+```typescript
+const balance = game.getPlayerBalance();
+console.log(`Balance: ${balance} units`);
+```
+
+---
+
+### startSession()
+
+Start a new game session.
+
+```typescript
+await game.startSession(): Promise<{
+  sessionId: string;
+  timestamp: string;
+  initialBalance: number;
+}>
+```
+
+**Returns:**
+- `sessionId`: Unique session identifier
+- `timestamp`: Session start time
+- `initialBalance`: Player's starting balance
+
+**Example:**
+```typescript
+const session = await game.startSession();
+console.log(`Session ${session.sessionId} started`);
+```
+
+---
+
+### getPlayer(): PlayerState
+
+Get current player state.
+
+```typescript
+game.getPlayer(): {
+  balance: number;
+  hands: Hand[];
+  totalBet: number;
+  sessionId: string;
+  status: 'waiting' | 'playing' | 'bust' | 'stand';
+}
+```
+
+**Returns:** Current player state object
+
+**Example:**
+```typescript
+const player = game.getPlayer();
+console.log(`Status: ${player.status}, Balance: ${player.balance}`);
+```
+
+---
+
+## Betting API
+
+### isValidBet(amount: number): boolean
+
+Validate if bet amount is within table limits.
+
+```typescript
+game.isValidBet(amount: number): boolean
+```
+
+**Parameters:**
+- `amount`: Proposed bet amount
+
+**Returns:** `true` if bet is valid, `false` otherwise
+
+**Example:**
+```typescript
+if (game.isValidBet(100)) {
+  await game.placeBet(100);
+}
+```
+
+---
+
+### placeBet(amount: number)
+
+Place a bet to start a new hand.
+
+```typescript
+await game.placeBet(amount: number): Promise<{
+  betId: string;
+  amount: number;
+  newBalance: number;
+  timestamp: string;
+}>
+```
+
+**Parameters:**
+- `amount`: Bet amount in units
+
+**Throws:**
+- `BetLimitError`: If bet outside table limits
+- `InsufficientFundsError`: If player balance insufficient
+- `InvalidStateError`: If game not in betting phase
+
+**Returns:**
+- `betId`: Unique bet identifier
+- `amount`: Confirmed bet amount
+- `newBalance`: Balance after bet deduction
+- `timestamp`: Bet placement time
+
+**Example:**
+```typescript
+try {
+  const receipt = await game.placeBet(50);
+  console.log(`Bet placed: ${receipt.betId}`);
+} catch (error) {
+  console.error(`Cannot place bet: ${error.message}`);
+}
+```
+
+---
+
+### getBetLimits()
+
+Get current table's bet limits.
+
+```typescript
+game.getBetLimits(): {
+  min: number;
+  max: number;
+  currency: string;
+}
+```
+
+**Returns:** Minimum and maximum bet amounts
+
+**Example:**
+```typescript
+const limits = game.getBetLimits();
+console.log(`Table limits: ${limits.min} - ${limits.max}`);
+```
+
+---
+
+## Game State API
+
+### deal()
+
+Deal initial cards to player and dealer.
+
+```typescript
+await game.deal(): Promise<{
+  playerCards: Card[];
+  dealerUpcard: Card;
+  playerValue: number;
+  dealerValue: number; // Only upcard value
+  isDealerBlackjack: boolean;
+}>
+```
+
+**Returns:**
+- `playerCards`: Array of player's cards
+- `dealerUpcard`: Dealer's visible card
+- `playerValue`: Total value of player's hand
+- `dealerValue`: Total value of dealer's upcard
+- `isDealerBlackjack`: Whether dealer likely has blackjack
+
+**Example:**
+```typescript
+const dealt = await game.deal();
+console.log(`Your hand: ${dealt.playerValue}`);
+console.log(`Dealer shows: ${dealt.dealerUpcard.rank} ${dealt.dealerUpcard.suit}`);
+```
+
+---
+
+### getGameState(): GameState
+
+Get current complete game state.
+
+```typescript
+game.getGameState(): {
+  phase: 'betting' | 'dealing' | 'playing' | 'dealerPlay' | 'resolution';
+  playerCards: Card[];
+  dealerUpcard: Card;
+  dealerHoleCard?: Card;
+  playerValue: number;
+  dealerValue: number;
+  betId: string;
+  betAmount: number;
+  availableActions: Action[];
+}
+```
+
+**Returns:** Complete game state
+
+**Example:**
+```typescript
+const state = game.getGameState();
+console.log(`Phase: ${state.phase}`);
+console.log(`Actions: ${state.availableActions.join(', ')}`);
+```
+
+---
+
+### getAvailableActions(): Action[]
+
+Get list of actions available to player.
+
+```typescript
+game.getAvailableActions(): ('hit' | 'stand' | 'doubleDown' | 'split' | 'insurance')[]
+```
+
+**Returns:** Array of available action types
+
+**Example:**
+```typescript
+const actions = game.getAvailableActions();
+if (actions.includes('doubleDown')) {
+  // Show double down button
+}
+```
+
+---
+
+### getOutcome()
+
+Get the final outcome of the hand.
+
+```typescript
+game.getOutcome(): {
+  result: 'win' | 'loss' | 'push' | 'blackjack';
+  playerValue: number;
+  dealerValue: number;
+  payout: number;
+  reason: string;
+  newBalance: number;
+}
+```
+
+**Returns:** Hand outcome details
+
+**Example:**
+```typescript
+const outcome = game.getOutcome();
+console.log(`Result: ${outcome.result}`);
+console.log(`Payout: ${outcome.payout} units`);
+console.log(`New balance: ${outcome.newBalance}`);
+```
+
+---
+
+## Player Actions API
+
+### hit()
+
+Request additional card.
+
+```typescript
+await game.hit(): Promise<{
+  card: Card;
+  hand: Card[];
+  value: number;
+  isBust: boolean;
+  canHit: boolean;
+  canStand: boolean;
+}>
+```
+
+**Returns:**
+- `card`: The card dealt
+- `hand`: Updated hand
+- `value`: New hand value
+- `isBust`: Whether hand exceeds 21
+- `canHit`: Whether hit is still available
+- `canStand`: Whether stand is available
+
+**Example:**
+```typescript
+const result = await game.hit();
+console.log(`You drew: ${result.card.rank} of ${result.card.suit}`);
+console.log(`Hand total: ${result.value}`);
+if (result.isBust) {
+  console.log('Bust! You lost.');
+}
+```
+
+---
+
+### stand()
+
+End player's turn.
+
+```typescript
+await game.stand(): Promise<{
+  playerValue: number;
+  dealerPlay: {
+    cards: Card[];
+    value: number;
+  };
+  outcome: OutcomeDetails;
+}>
+```
+
+**Returns:**
+- `playerValue`: Final player hand value
+- `dealerPlay`: Dealer's final hand
+- `outcome`: Game outcome
+
+**Example:**
+```typescript
+const result = await game.stand();
+console.log(`Dealer had: ${result.dealerPlay.value}`);
+console.log(`Result: ${result.outcome.result}`);
+```
+
+---
+
+### doubleDown()
+
+Double bet and receive one card.
+
+```typescript
+await game.doubleDown(): Promise<{
+  card: Card;
+  newBetAmount: number;
+  hand: Card[];
+  value: number;
+  dealerPlay: DealerPlay;
+  outcome: OutcomeDetails;
+}>
+```
+
+**Returns:**
+- `card`: Card dealt after double
+- `newBetAmount`: Doubled bet amount
+- `hand`: Updated hand
+- `value`: Hand value after card
+- `dealerPlay`: Dealer's final hand
+- `outcome`: Game outcome
+
+**Example:**
+```typescript
+const result = await game.doubleDown();
+console.log(`Bet doubled to: ${result.newBetAmount}`);
+console.log(`You drew: ${result.card.rank}`);
+```
+
+---
+
+### split()
+
+Split a pair into two hands.
+
+```typescript
+await game.split(): Promise<{
+  hand1: Card[];
+  hand2: Card[];
+  newBetAmount: number;
+  currentHand: number; // 0 or 1
+  value: number;
+}>
+```
+
+**Returns:**
+- `hand1`: First split hand
+- `hand2`: Second split hand
+- `newBetAmount`: Total bet amount (original × 2)
+- `currentHand`: Which hand is being played
+- `value`: Current hand value
+
+**Example:**
+```typescript
+const result = await game.split();
+console.log(`Split! Now playing hand 1`);
+console.log(`Total bet: ${result.newBetAmount}`);
+```
+
+---
+
+## Event API
+
+### on(event: string, listener: Function)
+
+Register an event listener.
+
+```typescript
+game.on(event: string, listener: (data: any) => void): void
+```
+
+**Available Events:**
+
+| Event | Data | Description |
+|-------|------|-------------|
+| `gameStart` | `{ phase, balance }` | Game started |
+| `dealCards` | `{ playerCards, dealerUpcard }` | Cards dealt |
+| `playerAction` | `{ type, card, hand, value }` | Player action taken |
+| `dealerAction` | `{ card, value }` | Dealer action |
+| `gameEnd` | `{ result, payout, newBalance }` | Game ended |
+| `balanceUpdate` | `{ oldBalance, newBalance }` | Balance changed |
+| `error` | `{ code, message }` | Error occurred |
+
+**Example:**
+```typescript
+game.on('gameEnd', (data) => {
+  console.log(`Won ${data.payout} units!`);
+});
+
+game.on('error', (error) => {
+  console.error(`Error: ${error.message}`);
+});
+```
+
+---
+
+### off(event: string, listener: Function)
+
+Unregister an event listener.
+
+```typescript
+game.off(event: string, listener: (data: any) => void): void
+```
+
+**Example:**
+```typescript
+const handleGameEnd = (data) => {
+  console.log('Game ended');
+};
+
+game.on('gameEnd', handleGameEnd);
+game.off('gameEnd', handleGameEnd);
+```
+
+---
+
+## Utility Methods
+
+### setAnimationSpeed(speed: 'slow' | 'normal' | 'fast' | 'instant')
+
+Control animation speed for UI.
+
+```typescript
+game.setAnimationSpeed(speed: 'slow' | 'normal' | 'fast' | 'instant'): void
+```
+
+**Example:**
+```typescript
+game.setAnimationSpeed('instant'); // For testing
+```
+
+---
+
+### getStats()
+
+Get session statistics.
+
+```typescript
+game.getStats(): {
+  handsPlayed: number;
+  totalBet: number;
+  totalWon: number;
+  totalLost: number;
+  winRate: number;
+  duration: number; // milliseconds
+}
+```
+
+**Example:**
+```typescript
+const stats = game.getStats();
+console.log(`Hands played: ${stats.handsPlayed}`);
+console.log(`Win rate: ${(stats.winRate * 100).toFixed(1)}%`);
+```
+
+---
+
+### endSession()
+
+End current game session and get final report.
+
+```typescript
+await game.endSession(): Promise<{
+  sessionId: string;
+  duration: number;
+  stats: SessionStats;
+  finalBalance: number;
+  timestamp: string;
+}>
+```
+
+**Example:**
+```typescript
+const report = await game.endSession();
+console.log(`Session ended. Final balance: ${report.finalBalance}`);

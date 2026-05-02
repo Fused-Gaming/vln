@@ -431,7 +431,7 @@ export default function BlackjackClient() {
   function deal() {
     if (S.phase !== "betting") return;
     let deck = shuffle(createShoe(6));
-    let hands = [...S.hands];
+    const hands = [...S.hands];
 
     const d1 = dealCard(deck, true);  deck = d1.remaining;
     const d2 = dealCard(deck, true);  deck = d2.remaining;
