@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'ACE Design System',
@@ -358,13 +359,13 @@ export default function ACEDesignSystemPage() {
           <p className="text-gray-400 mb-6">
             For complete API reference, integration guide, and code examples, visit the ACE documentation portal.
           </p>
-          <a
+          <Link
             href="/docs/ace-blackjack/overview"
             className="inline-flex items-center gap-2 px-4 py-2 bg-vln-sage text-vln-bg font-semibold rounded-lg hover:shadow-vln-glow transition-colors"
           >
             View Documentation
             <span>→</span>
-          </a>
+          </Link>
         </section>
       </div>
     </div>
