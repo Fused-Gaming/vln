@@ -156,11 +156,11 @@ export default async function VLNVersioningPage() {
           </p>
           <div className="bg-charcoal/50 border border-white/5 rounded-lg p-4 font-mono text-xs text-gray-300 space-y-1">
             <div>---</div>
-            <div>title: "Document Title"</div>
-            <div>version: "1.0.0"</div>
-            <div>status: "stable"</div>
-            <div>lastUpdated: "2026-05-02"</div>
-            <div>author: "VLN Team"</div>
+            <div>title: &quot;Document Title&quot;</div>
+            <div>version: &quot;1.0.0&quot;</div>
+            <div>status: &quot;stable&quot;</div>
+            <div>lastUpdated: &quot;2026-05-02&quot;</div>
+            <div>author: &quot;VLN Team&quot;</div>
             <div>---</div>
           </div>
           <p className="text-sm text-gray-400 mt-3">

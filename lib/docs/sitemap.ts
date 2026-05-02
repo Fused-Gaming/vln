@@ -526,11 +526,62 @@ export const docsSitemap: DocSection[] = [
     ]
   },
   {
+    slug: 'skill-mcp',
+    title: 'Skill MCP Tools',
+    description: 'Model Context Protocol integration for 28+ DevOps tools',
+    icon: '⚙️',
+    order: 13,
+    pages: [
+      {
+        slug: 'overview',
+        title: 'Overview',
+        description: 'skill.vln.gg platform and MCP concept',
+        order: 1
+      },
+      {
+        slug: 'getting-started',
+        title: 'Getting Started',
+        description: 'Quick start guide for developers',
+        order: 2
+      },
+      {
+        slug: 'architecture',
+        title: 'System Architecture',
+        description: '5-component system design and data flow',
+        order: 3
+      },
+      {
+        slug: 'tool-catalog',
+        title: 'Tool Catalog',
+        description: '28+ integrated DevOps tools reference',
+        order: 4
+      },
+      {
+        slug: 'api-reference',
+        title: 'API Reference',
+        description: 'JSON-RPC 2.0 protocol and endpoints',
+        order: 5
+      },
+      {
+        slug: 'deployment',
+        title: 'Deployment',
+        description: 'Production deployment checklist',
+        order: 6
+      },
+      {
+        slug: 'implementation-roadmap',
+        title: 'Implementation Roadmap',
+        description: '5-phase development plan with timeline',
+        order: 7
+      }
+    ]
+  },
+  {
     slug: 'ace-blackjack',
     title: 'ACE Blackjack',
     description: 'ACE blackjack game documentation and integration guide',
     icon: '🃏',
-    order: 13,
+    order: 14,
     pages: [
       {
         slug: 'overview',

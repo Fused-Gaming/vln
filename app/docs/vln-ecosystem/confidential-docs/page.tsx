@@ -79,7 +79,7 @@ export default async function VLNConfidentialDocsPage() {
 
         {/* What's Planned */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-white">What's Planned</h2>
+          <h2 className="text-2xl font-bold text-white">What&apos;s Planned</h2>
           <div className="space-y-4">
             <div className="p-4 border border-amber-500/30 rounded-lg bg-amber-500/5">
               <h4 className="font-semibold text-amber-300 mb-2">🔐 Authentication System</h4>
