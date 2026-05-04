@@ -68,7 +68,7 @@ export default function DrugMarketplacePage() {
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
                 I Sold Drugs:{" "}
-                <span className="text-gradient-rainbow">Marketplace Built by a Man I'm Interviewing</span>
+                <span className="text-gradient-rainbow">Marketplace Built by a Man I&apos;m Interviewing</span>
               </h1>
 
               <p className="text-lg sm:text-xl text-vln-gray leading-relaxed mb-8">
