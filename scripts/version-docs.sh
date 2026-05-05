@@ -194,7 +194,7 @@ m['current'] = {
     'released': '$today',
     'commit': 'HEAD',
     'branch': 'main',
-    'changelog_entry': f"CHANGELOG.md#${next.replace('.', '')}---$today",
+    'changelog_entry': f"CHANGELOG.md#{next.replace('.', '')}---$today",
     'status': 'active'
 }
 

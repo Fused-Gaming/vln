@@ -198,13 +198,13 @@ ${{ steps.summary.outputs.status }}
         id: status
         run: |
           if [ "${{ needs.deploy-peraltacc-docs.result }}" == "success" ]; then
-            echo "emoji=✅"
-            echo "color=3066993"
-            echo "status=Successful"
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+            echo "color=3066993" >> $GITHUB_OUTPUT
+            echo "status=Successful" >> $GITHUB_OUTPUT
           else
-            echo "emoji=❌"
-            echo "color=15158332"
-            echo "status=Failed"
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+            echo "color=15158332" >> $GITHUB_OUTPUT
+            echo "status=Failed" >> $GITHUB_OUTPUT
           fi
 
       - name: 📢 Send Notification
