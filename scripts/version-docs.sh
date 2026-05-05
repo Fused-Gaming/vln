@@ -168,6 +168,9 @@ cmd_bump() {
 import json
 from datetime import date
 
+next = '$next'
+today = '$today'
+
 with open('$MANIFEST') as f:
     m = json.load(f)
 
@@ -189,12 +192,12 @@ if not version_exists:
 
 # Update current
 m['current'] = {
-    'version': '$next',
+    'version': next,
     'channel': 'stable',
-    'released': '$today',
+    'released': today,
     'commit': 'HEAD',
     'branch': 'main',
-    'changelog_entry': f"CHANGELOG.md#{next.replace('.', '')}---$today",
+    'changelog_entry': f"CHANGELOG.md#{next.replace('.', '')}---{today}",
     'status': 'active'
 }
 
@@ -209,22 +212,22 @@ if m['versions']:
 
 # Add new version as active
 m['versions'].insert(0, {
-    'version': '$next',
+    'version': next,
     'channel': 'stable',
-    'released': '$today',
+    'released': today,
     'status': 'active',
     'label': 'Current',
     'branch': 'main',
     'highlights': []
 })
 
-m['updated'] = '${today}T00:00:00Z'
+m['updated'] = f'{today}T00:00:00Z'
 
 with open('$MANIFEST', 'w') as f:
     json.dump(m, f, indent=2)
     f.write('\n')
 
-print(f"✅ VERSION_MANIFEST.json updated: v{current['version']} → $next")
+print(f"✅ VERSION_MANIFEST.json updated: v{current['version']} → {next}")
 PYEOF
 
   ok "Version bumped to v$next"
