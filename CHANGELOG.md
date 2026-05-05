@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Navigation:** Removed dead `/founder-meetup` Events link that caused 404 errors
+- **Scripts:** Fixed shell interpolation error in `version-docs.sh` version bump command
+- **Workflows:** Deploy notification workflow now properly exposes status outputs to GitHub Actions
+
 ### Planned
 - Client dashboard for audit report viewing
 - Payment integration (Stripe/crypto)
