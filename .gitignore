@@ -65,6 +65,8 @@ dist/
 .claude/local-docs/
 .claude/configs/
 .claude/*.local.json
+.claude/settings.local.json
+.claude/*.local
 claude-workspace.json
 
 # Local document uploads
