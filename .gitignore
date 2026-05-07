@@ -80,3 +80,37 @@ docs/peralta/
 app/skill/
 app/ace/
 app/peralta/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.editorconfig.local
+.vscode-settings.json
+
+# IDE cache directories
+.vscode-server/
+.remote-containers/
+
+# Prisma
+.prisma/
+
+# pnpm specific
+.pnpm/
+pnpm-workspace.yaml.local
+
+# macOS
+.AppleDouble
+.LSOverride
+*.swp
+Thumbs.db
+
+# Miscellaneous
+.env.development.local
+.env.test.local
+.env.production.local
+.cache
+.next/cache/

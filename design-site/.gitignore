@@ -26,3 +26,6 @@ Thumbs.db
 
 # Build caches
 .turbo/
+
+# Vercel
+.vercel/
