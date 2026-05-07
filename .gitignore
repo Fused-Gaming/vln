@@ -66,8 +66,34 @@ dist/
 .claude/configs/
 .claude/*.local.json
 .claude/settings.local.json
+.claude/settings.json
 .claude/*.local
 claude-workspace.json
+
+# Fused Gaming DevOps & Skill standards
+# Security: Never commit local overrides, test credentials, or development secrets
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.example.local
+.envrc
+.envrc.local
+.direnvrc
+
+# Fused Gaming Skill MCP local configs
+.skill-config.local.json
+.mcp-settings.local.json
+skill.local.json
+
+# Session & temporary files
+*.session
+.session
+sessions/
+temp-sessions/
+crash-dumps/
 
 # Local document uploads
 *.local.md
