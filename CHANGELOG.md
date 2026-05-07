@@ -7,11 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **Navigation:** Removed dead `/founder-meetup` Events link that caused 404 errors
-- **Scripts:** Fixed shell interpolation error in `version-docs.sh` version bump command
-- **Workflows:** Deploy notification workflow now properly exposes status outputs to GitHub Actions
-
 ### Planned
 - Client dashboard for audit report viewing
 - Payment integration (Stripe/crypto)
@@ -21,7 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.11.0] - 2026-02-13
+## [0.12.1] - 2026-05-05
+
+### Fixed
+- **Navigation:** Removed dead `/founder-meetup` Events link that caused 404 errors
+- **Scripts:** Fixed shell interpolation error in `version-docs.sh` version bump command
+- **Workflows:** Deploy notification workflow now properly exposes status outputs to GitHub Actions
+
+---
+
+## [0.12.0] - 2026-04-28
 
 ### Added
 - **Dynamic Open Graph Image System** using Next.js `ImageResponse` (`next/og`)

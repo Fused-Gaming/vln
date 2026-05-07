@@ -1,21 +1,18 @@
 {
   "$schema": "https://vln.gg/schemas/version-manifest/v1",
-  "project": "VLN – Vulnerability Lab Network",
+  "project": "VLN \u2013 Vulnerability Lab Network",
   "repository": "Fused-Gaming/vln",
   "maintainer": "Fused Gaming DevOps",
-  "updated": "2026-04-28T00:00:00Z",
-
+  "updated": "2026-05-07T00:00:00Z",
   "current": {
-    "version": "0.12.0",
+    "version": "0.12.1",
     "channel": "stable",
-    "released": "2026-04-28",
+    "released": "2026-05-07",
     "commit": "HEAD",
     "branch": "main",
-    "docs_path": "docs-site/src/content/docs",
-    "changelog_entry": "CHANGELOG.md#0120---2026-04-28",
+    "changelog_entry": "CHANGELOG.md#0121---2026-05-07",
     "status": "active"
   },
-
   "channels": {
     "stable": {
       "description": "Production-ready documentation, mirrors main branch",
@@ -36,14 +33,22 @@
       "review_required": false
     }
   },
-
   "versions": [
+    {
+      "version": "0.12.1",
+      "channel": "stable",
+      "released": "2026-05-07",
+      "status": "active",
+      "label": "Current",
+      "branch": "main",
+      "highlights": []
+    },
     {
       "version": "0.12.0",
       "channel": "stable",
       "released": "2026-04-28",
-      "status": "active",
-      "label": "Current",
+      "status": "maintained",
+      "label": null,
       "branch": "main",
       "highlights": [
         "Documentation versioning system",
@@ -93,7 +98,6 @@
       ]
     }
   ],
-
   "compatibility": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0",
@@ -102,15 +106,29 @@
     "next": "^15.0.0",
     "typescript": "^5.0.0"
   },
-
   "schemas": {
     "frontmatter": {
-      "required": ["title", "description"],
-      "optional": ["sidebar", "tableOfContents", "lastUpdated", "editUrl", "template", "hero", "badge"],
-      "version_fields": ["doc_version", "doc_status", "doc_audience", "doc_reviewed"]
+      "required": [
+        "title",
+        "description"
+      ],
+      "optional": [
+        "sidebar",
+        "tableOfContents",
+        "lastUpdated",
+        "editUrl",
+        "template",
+        "hero",
+        "badge"
+      ],
+      "version_fields": [
+        "doc_version",
+        "doc_status",
+        "doc_audience",
+        "doc_reviewed"
+      ]
     }
   },
-
   "lifecycle": {
     "active": "Fully supported, receives all updates",
     "maintained": "Security and critical fixes only",
