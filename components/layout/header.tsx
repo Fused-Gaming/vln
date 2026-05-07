@@ -13,7 +13,6 @@ import {
   Users,
   Mail,
   Gamepad2,
-  Calendar,
   Wrench,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -31,7 +30,6 @@ const navLinks = [
   { href: "/services/igaming", label: "iGaming", icon: Gamepad2 },
   { href: "/services/corporate-background-investigations", label: "Investigations", icon: Users },
   { href: "/pricing", label: "Pricing", icon: Tag },
-  { href: "/founder-meetup", label: "Events", icon: Calendar },
   { href: "/referrals", label: "Referrals", icon: Users },
   { href: "/images", label: "Tools", icon: Wrench },
   { href: "/contact", label: "Contact", icon: Mail },
