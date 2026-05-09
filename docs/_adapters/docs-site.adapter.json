@@ -4,11 +4,9 @@
   "targetSite": "docs-site",
   "targetPath": "docs-site/src/content/docs",
   "contentRoots": [
-    "docs/_source/technical",
-    "docs/_source/api",
-    "docs/_source/infrastructure",
-    "docs/_source/security",
-    "docs/_source/research"
+    "docs/technical",
+    "docs/guides",
+    "docs/architecture"
   ],
   "routes": {
     "technical/getting-started/**/*.md": {
