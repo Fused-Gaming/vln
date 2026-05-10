@@ -8,8 +8,8 @@
  * - Code accessibility
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
-const path = require('path');
 const glob = require('glob');
 
 const VALID_LANGUAGES = [

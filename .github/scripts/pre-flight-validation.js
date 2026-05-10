@@ -6,8 +6,8 @@
  * Checks all aspects of documentation quality
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
-const path = require('path');
 const { execSync } = require('child_process');
 
 class PreFlightValidator {
