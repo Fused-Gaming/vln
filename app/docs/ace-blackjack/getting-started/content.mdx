@@ -1,0 +1,290 @@
+# Getting Started with ACE
+
+This guide covers setup, installation, and basic initialization of the ACE blackjack platform.
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- **Node.js:** v18.0.0 or higher
+- **Package Manager:** pnpm, npm, or yarn
+- **React:** v18.0.0 or higher
+- **TypeScript:** v5.0.0 or higher (recommended)
+
+## Installation
+
+### Step 1: Install ACE Package
+
+```bash
+npm install @vln/ace-blackjack
+# or
+pnpm add @vln/ace-blackjack
+# or
+yarn add @vln/ace-blackjack
+```
+
+### Step 2: Import and Initialize
+
+```typescript
+import { ACEGame } from '@vln/ace-blackjack';
+
+// Initialize the game
+const game = new ACEGame({
+  tableId: 'table-001',
+  minBet: 10,
+  maxBet: 1000,
+  currency: 'USD'
+});
+```
+
+### Step 3: Create a Game Component
+
+```typescript
+'use client';
+
+import { ACEGame } from '@vln/ace-blackjack';
+import { useState } from 'react';
+
+export default function BlackjackGame() {
+  const [game, setGame] = useState<ACEGame | null>(null);
+
+  const handleInitialize = async () => {
+    const newGame = new ACEGame({
+      tableId: 'table-001',
+      minBet: 10,
+      maxBet: 1000,
+      currency: 'USD'
+    });
+    
+    await newGame.initialize();
+    setGame(newGame);
+  };
+
+  return (
+    <div className="p-6">
+      <button onClick={handleInitialize} className="px-4 py-2 bg-sage-500 rounded">
+        Start Game
+      </button>
+      {game && <ACEGameBoard game={game} />}
+    </div>
+  );
+}
+```
+
+## Configuration Options
+
+### Basic Configuration
+
+```typescript
+interface ACEConfig {
+  // Table identification
+  tableId: string;
+  tableName?: string;
+  
+  // Betting limits
+  minBet: number;
+  maxBet: number;
+  
+  // Currency and locale
+  currency: 'USD' | 'EUR' | 'GBP' | 'JPY';
+  locale?: string;
+  
+  // Game rules
+  dealerHitsSoft17: boolean; // Default: false
+  allowInsurance: boolean;    // Default: true
+  allowDoubleDown: boolean;   // Default: true
+  allowSplit: boolean;        // Default: true
+  
+  // RNG Configuration
+  rngProvider: 'internal' | 'external';
+  rngSeed?: string; // For reproducible testing
+}
+```
+
+### Advanced Configuration
+
+```typescript
+const config: ACEConfig = {
+  tableId: 'premium-table-1',
+  tableName: 'Premium Table',
+  minBet: 25,
+  maxBet: 5000,
+  currency: 'USD',
+  
+  // Rule variations
+  dealerHitsSoft17: false,
+  allowInsurance: true,
+  allowDoubleDown: true,
+  allowSplit: true,
+  
+  // RNG
+  rngProvider: 'external',
+  rngSeed: undefined, // Use external randomness in production
+  
+  // Analytics
+  enableAnalytics: true,
+  analyticsEndpoint: 'https://api.vln.gg/analytics'
+};
+
+const game = new ACEGame(config);
+```
+
+## Initialization Steps
+
+### 1. Create Game Instance
+
+```typescript
+const game = new ACEGame(config);
+```
+
+### 2. Initialize Game State
+
+```typescript
+await game.initialize();
+// Returns: { status: 'ready', table: {...} }
+```
+
+### 3. Set Player Balance
+
+```typescript
+game.setPlayerBalance(1000); // 1000 units
+```
+
+### 4. Start Game Session
+
+```typescript
+const session = await game.startSession();
+// Returns: { sessionId: '...', timestamp: '...' }
+```
+
+## Basic Game Flow
+
+```typescript
+// 1. Place bet
+await game.placeBet(50);
+
+// 2. Deal cards
+const hand = await game.deal();
+// Returns: { playerCards: [...], dealerUpcard: {...} }
+
+// 3. Get available actions
+const actions = game.getAvailableActions();
+// Returns: ['hit', 'stand', 'doubleDown', 'split']
+
+// 4. Player action
+if (actions.includes('hit')) {
+  const result = await game.hit();
+  // Returns: { hand: [...], value: 18, canHit: true, canStand: true }
+}
+
+// 5. Proceed to dealer play
+const dealerHand = await game.dealerPlay();
+
+// 6. Get outcome
+const outcome = game.getOutcome();
+// Returns: { result: 'win', payout: 100, newBalance: 1100 }
+```
+
+## Event Listeners
+
+ACE emits events throughout the game lifecycle. Subscribe to important events:
+
+```typescript
+// Game state changes
+game.on('gameStart', (data) => {
+  console.log('Game started:', data);
+});
+
+game.on('playerAction', (action) => {
+  console.log('Player action:', action.type, action.card);
+});
+
+game.on('gameEnd', (result) => {
+  console.log('Game ended:', result.outcome, result.payout);
+});
+
+game.on('balanceUpdate', (balance) => {
+  console.log('New balance:', balance);
+});
+
+// Error handling
+game.on('error', (error) => {
+  console.error('Game error:', error.message);
+});
+```
+
+## Validation and Error Handling
+
+```typescript
+try {
+  // Validate bet amount
+  if (!game.isValidBet(betAmount)) {
+    throw new Error('Bet outside table limits');
+  }
+  
+  // Place bet with validation
+  const receipt = await game.placeBet(betAmount);
+  
+} catch (error) {
+  if (error instanceof BetLimitError) {
+    console.error('Bet exceeds table limits');
+  } else if (error instanceof InsufficientFundsError) {
+    console.error('Player balance insufficient');
+  } else {
+    console.error('Unexpected error:', error);
+  }
+}
+```
+
+## Testing Setup
+
+For development and testing:
+
+```typescript
+// Use mock RNG for reproducible tests
+const testGame = new ACEGame({
+  tableId: 'test-table',
+  minBet: 1,
+  maxBet: 100,
+  currency: 'USD',
+  rngProvider: 'internal',
+  rngSeed: '12345' // Fixed seed for reproducibility
+});
+
+// Speed up animations for tests
+testGame.setAnimationSpeed('instant');
+```
+
+## Environment Configuration
+
+Create a `.env.local` file:
+
+```env
+# ACE Configuration
+NEXT_PUBLIC_ACE_TABLE_ID=table-001
+NEXT_PUBLIC_ACE_MIN_BET=10
+NEXT_PUBLIC_ACE_MAX_BET=1000
+NEXT_PUBLIC_ACE_CURRENCY=USD
+
+# API Endpoints
+NEXT_PUBLIC_ACE_API_URL=https://api.vln.gg/ace
+NEXT_PUBLIC_ACE_WS_URL=wss://ws.vln.gg/ace
+```
+
+## Common Issues
+
+### Issue: Game not initializing
+**Solution:** Ensure `await game.initialize()` is called before starting a game.
+
+### Issue: Balance not updating
+**Solution:** Verify `game.setPlayerBalance()` is called after initialization and listen to `balanceUpdate` events.
+
+### Issue: Actions not available
+**Solution:** Check `game.getAvailableActions()` returns expected actions based on game state.
+
+## Next Steps
+
+- **API Reference:** Learn all available methods and events
+- **Integration Guide:** Implement UI components
+- **Code Examples:** See practical patterns
+- **Troubleshooting:** Resolve common issues

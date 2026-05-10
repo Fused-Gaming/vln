@@ -10,7 +10,6 @@ import FAQSection from "@/components/vln/faq-section";
 import ComparisonTable from "@/components/vln/comparison-table";
 import GuaranteeSection from "@/components/vln/guarantee-section";
 import UrgencyBanner from "@/components/vln/urgency-banner";
-import FounderMeetupPopup from "@/components/vln/founder-meetup-popup";
 import CSSFade from "@/components/animations/css-fade";
 import Button from "@/components/ui/button";
 import { Check, Search, DollarSign, ShieldCheck, Siren, ArrowRight } from "lucide-react";
@@ -19,9 +18,6 @@ import { BLOG_POSTS } from "@/lib/blog/metadata";
 export default function Home() {
   return (
     <div className="min-h-screen bg-vln-bg text-vln-white overflow-x-hidden">
-      {/* Founder Meetup Popup */}
-      <FounderMeetupPopup />
-
       {/* Fixed Background - Futuristic IC Board */}
       <ICBoardBackground />
 

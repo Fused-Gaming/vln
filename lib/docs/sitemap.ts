@@ -428,6 +428,198 @@ export const docsSitemap: DocSection[] = [
         order: 3
       }
     ]
+  },
+  {
+    slug: 'vln-ecosystem',
+    title: 'VLN Ecosystem',
+    description: 'VLN.GG platform deployment, architecture, and versioning',
+    icon: '🌐',
+    order: 11,
+    pages: [
+      {
+        slug: 'overview',
+        title: 'Ecosystem Overview',
+        description: 'VLN.GG architecture and topology',
+        order: 1
+      },
+      {
+        slug: 'deployment-guide',
+        title: 'Deployment Guide',
+        description: 'Deploying VLN ecosystem components',
+        order: 2
+      },
+      {
+        slug: 'design-directives',
+        title: 'Design Directives',
+        description: 'Design principles and standards for VLN ecosystem',
+        order: 3
+      },
+      {
+        slug: 'domain-configuration',
+        title: 'Domain & Subdomain Configuration',
+        description: 'Top-level domain and subdomain setup strategies',
+        order: 4
+      },
+      {
+        slug: 'versioning',
+        title: 'Documentation Versioning',
+        description: 'Versioning strategy and release management',
+        order: 5
+      },
+      {
+        slug: 'confidential-docs',
+        title: 'Confidential Documentation',
+        description: 'Authentication-gated internal documentation (coming soon)',
+        order: 6
+      }
+    ]
+  },
+  {
+    slug: 'peraltacc',
+    title: 'Peralta Platform',
+    description: 'Peralta security platform technical documentation',
+    icon: '🛡️',
+    order: 12,
+    pages: [
+      {
+        slug: 'project-overview',
+        title: 'Project Overview',
+        description: 'Peralta mission and key features',
+        order: 1
+      },
+      {
+        slug: 'architecture',
+        title: 'Architecture Guide',
+        description: 'System design and component hierarchy',
+        order: 2
+      },
+      {
+        slug: 'implementation',
+        title: 'Implementation Guide',
+        description: 'Setup and integration instructions',
+        order: 3
+      },
+      {
+        slug: 'api-reference',
+        title: 'API Reference',
+        description: 'Endpoint documentation and specifications',
+        order: 4
+      },
+      {
+        slug: 'deployment',
+        title: 'Deployment Guide',
+        description: 'Deployment options and configuration',
+        order: 5
+      },
+      {
+        slug: 'configuration',
+        title: 'Configuration Guide',
+        description: 'Settings and environment setup',
+        order: 6
+      },
+      {
+        slug: 'troubleshooting',
+        title: 'Troubleshooting',
+        description: 'Common issues and solutions',
+        order: 7
+      }
+    ]
+  },
+  {
+    slug: 'skill-mcp',
+    title: 'Skill MCP Tools',
+    description: 'Model Context Protocol integration for 28+ DevOps tools',
+    icon: '⚙️',
+    order: 13,
+    pages: [
+      {
+        slug: 'overview',
+        title: 'Overview',
+        description: 'skill.vln.gg platform and MCP concept',
+        order: 1
+      },
+      {
+        slug: 'getting-started',
+        title: 'Getting Started',
+        description: 'Quick start guide for developers',
+        order: 2
+      },
+      {
+        slug: 'architecture',
+        title: 'System Architecture',
+        description: '5-component system design and data flow',
+        order: 3
+      },
+      {
+        slug: 'tool-catalog',
+        title: 'Tool Catalog',
+        description: '28+ integrated DevOps tools reference',
+        order: 4
+      },
+      {
+        slug: 'api-reference',
+        title: 'API Reference',
+        description: 'JSON-RPC 2.0 protocol and endpoints',
+        order: 5
+      },
+      {
+        slug: 'deployment',
+        title: 'Deployment',
+        description: 'Production deployment checklist',
+        order: 6
+      },
+      {
+        slug: 'implementation-roadmap',
+        title: 'Implementation Roadmap',
+        description: '5-phase development plan with timeline',
+        order: 7
+      }
+    ]
+  },
+  {
+    slug: 'ace-blackjack',
+    title: 'ACE Blackjack',
+    description: 'ACE blackjack game documentation and integration guide',
+    icon: '🃏',
+    order: 14,
+    pages: [
+      {
+        slug: 'overview',
+        title: 'Overview',
+        description: 'Game rules and mechanics',
+        order: 1
+      },
+      {
+        slug: 'getting-started',
+        title: 'Getting Started',
+        description: 'Setup and initialization',
+        order: 2
+      },
+      {
+        slug: 'api-reference',
+        title: 'API Reference',
+        description: 'Player, Betting, Game State, and Event APIs',
+        order: 3
+      },
+      {
+        slug: 'integration-guide',
+        title: 'Integration Guide',
+        description: 'Component usage and state management',
+        order: 4
+      },
+      {
+        slug: 'code-examples',
+        title: 'Code Examples',
+        description: 'Basic setup and usage examples',
+        order: 5
+      },
+      {
+        slug: 'faq',
+        title: 'FAQ & Troubleshooting',
+        description: 'Common questions and solutions',
+        order: 6
+      }
+    ]
   }
 ];
 
