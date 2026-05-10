@@ -116,7 +116,7 @@ export default function AffiliateMarketingBlueprintPage() {
                   Need help structuring security or compliance aspects of your affiliate network?
                 </p>
                 <Button variant="primary" size="lg" href="/contact" className="group">
-                  Let's Discuss
+                  Let&apos;s Discuss
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Button>
               </div>
