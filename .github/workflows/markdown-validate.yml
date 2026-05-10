@@ -1,0 +1,183 @@
+name: Markdown Validation & Formatting
+
+on:
+  push:
+    branches: [ main, development, "feature/**" ]
+    paths:
+      - "**.md"
+      - "**.mdx"
+      - ".github/workflows/markdown-validate.yml"
+      - ".markdownlintrc.json"
+      - ".prettierrc.json"
+  pull_request:
+    branches: [ main, development ]
+    paths:
+      - "**.md"
+      - "**.mdx"
+      - ".github/workflows/markdown-validate.yml"
+      - ".markdownlintrc.json"
+      - ".prettierrc.json"
+
+jobs:
+  markdown-lint:
+    name: Markdown Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install markdown linter
+        run: npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: markdownlint "**/*.md" "**/*.mdx" --config .markdownlintrc.json
+        continue-on-error: true
+
+  markdown-format:
+    name: Markdown Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install Prettier
+        run: npm install -g prettier
+
+      - name: Check markdown formatting
+        run: |
+          prettier --check "**/*.md" "**/*.mdx" --prose-wrap always 2>&1 | tee prettier-check.log
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "❌ Markdown formatting issues found"
+            echo "Run: prettier --write \"**/*.md\" \"**/*.mdx\" --prose-wrap always"
+            exit 1
+          fi
+        continue-on-error: true
+
+  link-validation:
+    name: Link Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install markdown-link-check
+        run: npm install -g markdown-link-check
+
+      - name: Check markdown links
+        run: |
+          find . -name "*.md" -o -name "*.mdx" | grep -v node_modules | while read file; do
+            echo "Checking links in: $file"
+            markdown-link-check "$file" -c .github/markdown-link-check-config.json || true
+          done
+        continue-on-error: true
+
+  code-blocks-validation:
+    name: Code Blocks Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Run code blocks validation
+        run: node .github/scripts/validate-code-blocks.js
+        continue-on-error: true
+
+  documentation-structure:
+    name: Documentation Structure Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Validate documentation structure
+        run: node .github/scripts/validate-doc-structure.js
+        continue-on-error: true
+
+  pre-flight-check:
+    name: Pre-Flight Documentation Check
+    runs-on: ubuntu-latest
+    needs: [ markdown-lint, markdown-format, link-validation, code-blocks-validation, documentation-structure ]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Run pre-flight validation
+        run: node .github/scripts/pre-flight-validation.js
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: markdown-validation-report
+          path: |
+            markdown-validation-report.json
+            prettier-check.log
+          retention-days: 30
+
+      - name: Comment PR with validation results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.existsSync('markdown-validation-report.json')
+              ? JSON.parse(fs.readFileSync('markdown-validation-report.json', 'utf8'))
+              : { status: 'unknown' };
+
+            const emoji = report.status === 'pass' ? '✅' : report.status === 'warning' ? '⚠️' : '❌';
+            const comment = `## ${emoji} Markdown Validation Report
+
+| Check | Status | Details |
+|-------|--------|---------|
+| Linting | ${report.linting?.status || 'N/A'} | ${report.linting?.issues || 0} issues |
+| Formatting | ${report.formatting?.status || 'N/A'} | ${report.formatting?.issues || 0} files |
+| Links | ${report.links?.status || 'N/A'} | ${report.links?.broken || 0} broken |
+| Code Blocks | ${report.codeBlocks?.status || 'N/A'} | ${report.codeBlocks?.issues || 0} issues |
+| Structure | ${report.structure?.status || 'N/A'} | ${report.structure?.issues || 0} issues |
+
+**Overall:** ${report.status?.toUpperCase() || 'PENDING'}
+
+${report.summary || 'Validation complete'}`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

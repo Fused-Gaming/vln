@@ -1,0 +1,59 @@
+{
+  "default": true,
+  "extends": "markdownlint/style/prettier",
+  "line-length": {
+    "line_length": 120,
+    "heading_line_length": 120,
+    "header_line_length": 120,
+    "code_blocks": false,
+    "code_fence_block": false,
+    "tables": false,
+    "headers": true
+  },
+  "no-hard-tabs": true,
+  "no-trailing-spaces": true,
+  "no-trailing-punctuation": false,
+  "no-multiple-blanks": {
+    "maximum": 2
+  },
+  "list-marker-space": true,
+  "list-indent": true,
+  "blanks-around-lists": true,
+  "blanks-around-headings": true,
+  "blanks-around-images": true,
+  "blanks-around-tables": true,
+  "heading-increment": true,
+  "heading-start-left": true,
+  "no-duplicate-heading": false,
+  "no-multiple-space-setext": true,
+  "fenced-code-language": true,
+  "first-line-h1": false,
+  "first-line-heading": false,
+  "link-fragments": true,
+  "proper-names": false,
+  "single-title": true,
+  "no-emphasis-as-heading": true,
+  "ol-prefix": {
+    "style": "one_or_ordered"
+  },
+  "ul-style": {
+    "style": "dash"
+  },
+  "no-inline-html": {
+    "allowed_elements": [
+      "a",
+      "br",
+      "code",
+      "em",
+      "img",
+      "kbd",
+      "mark",
+      "pre",
+      "span",
+      "strong",
+      "sub",
+      "sup"
+    ]
+  },
+  "ul-start-left": true
+}
