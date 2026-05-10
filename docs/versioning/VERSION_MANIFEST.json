@@ -1,0 +1,119 @@
+{
+  "$schema": "https://vln.gg/schemas/version-manifest/v1",
+  "project": "VLN – Vulnerability Lab Network",
+  "repository": "Fused-Gaming/vln",
+  "maintainer": "Fused Gaming DevOps",
+  "updated": "2026-04-28T00:00:00Z",
+
+  "current": {
+    "version": "0.12.0",
+    "channel": "stable",
+    "released": "2026-04-28",
+    "commit": "HEAD",
+    "branch": "main",
+    "docs_path": "docs-site/src/content/docs",
+    "changelog_entry": "CHANGELOG.md#0120---2026-04-28",
+    "status": "active"
+  },
+
+  "channels": {
+    "stable": {
+      "description": "Production-ready documentation, mirrors main branch",
+      "branch_pattern": "main",
+      "auto_publish": true,
+      "review_required": true
+    },
+    "preview": {
+      "description": "Integration branch previews, mirrors integration/vln",
+      "branch_pattern": "integration/vln",
+      "auto_publish": true,
+      "review_required": false
+    },
+    "draft": {
+      "description": "Feature branch working drafts",
+      "branch_pattern": "feature/*",
+      "auto_publish": false,
+      "review_required": false
+    }
+  },
+
+  "versions": [
+    {
+      "version": "0.12.0",
+      "channel": "stable",
+      "released": "2026-04-28",
+      "status": "active",
+      "label": "Current",
+      "branch": "main",
+      "highlights": [
+        "Documentation versioning system",
+        "Peralta proposal delivery (PeraltaCC)",
+        "Astro Starlight peralta sidebar category",
+        "Version manifest and release tooling"
+      ]
+    },
+    {
+      "version": "0.11.0",
+      "channel": "stable",
+      "released": "2026-02-13",
+      "status": "maintained",
+      "label": null,
+      "branch": "main",
+      "highlights": [
+        "Dynamic Open Graph image system",
+        "OG design documentation",
+        "Shared OG utilities"
+      ]
+    },
+    {
+      "version": "0.10.0",
+      "channel": "stable",
+      "released": "2025-12-12",
+      "status": "maintained",
+      "label": null,
+      "branch": "main",
+      "highlights": [
+        "Referrals page",
+        "Partner logos",
+        "VLN report templates",
+        "Getting started documentation"
+      ]
+    },
+    {
+      "version": "0.9.0",
+      "channel": "stable",
+      "released": "2025-11-01",
+      "status": "eol",
+      "label": null,
+      "branch": "main",
+      "highlights": [
+        "Initial Astro Starlight docs site",
+        "Design system documentation",
+        "Architecture documentation"
+      ]
+    }
+  ],
+
+  "compatibility": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0",
+    "astro": "^5.0.0",
+    "starlight": "^0.32.0",
+    "next": "^15.0.0",
+    "typescript": "^5.0.0"
+  },
+
+  "schemas": {
+    "frontmatter": {
+      "required": ["title", "description"],
+      "optional": ["sidebar", "tableOfContents", "lastUpdated", "editUrl", "template", "hero", "badge"],
+      "version_fields": ["doc_version", "doc_status", "doc_audience", "doc_reviewed"]
+    }
+  },
+
+  "lifecycle": {
+    "active": "Fully supported, receives all updates",
+    "maintained": "Security and critical fixes only",
+    "eol": "No further updates, archived for reference"
+  }
+}

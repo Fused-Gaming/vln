@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
+import { AuditServiceType } from '@/lib/api-types';
 
 interface AuditIntakeRequest {
   projectName: string;
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Type-safe cast for validated serviceType
-    const validatedServiceType = serviceType as unknown as string;
+    const validatedServiceType = serviceType as AuditServiceType;
 
     // Verify user exists and is CLIENT or MANAGER
     const user = await prisma.user.findUnique({
@@ -142,18 +143,17 @@ export async function POST(request: NextRequest) {
     const scopeSize = lineOfCode || (contracts?.length || 0) + (files?.length || 0);
 
     // Create audit request
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const auditRequest = await prisma.auditRequest.create({
       data: {
         userId,
         teamId: teamId || null,
         projectName: projectName.trim(),
         description: description.trim(),
-        serviceType: validatedServiceType as any,
+        serviceType: validatedServiceType,
         scope: JSON.stringify(scope),
         scopeSize: scopeSize || 0,
-        status: 'INTAKE' as any,
-        priority: 'MEDIUM' as any,
+        status: 'INTAKE',
+        priority: 'MEDIUM',
         estimatedCost: estimatedCost,
       },
     });

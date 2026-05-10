@@ -1,0 +1,270 @@
+name: 📚 Documentation Versioning
+
+on:
+  push:
+    branches:
+      - main
+      - integration/vln
+    paths:
+      - 'docs-site/src/content/docs/**'
+      - 'docs/versioning/VERSION_MANIFEST.json'
+      - 'CHANGELOG.md'
+  pull_request:
+    branches:
+      - main
+      - integration/vln
+    paths:
+      - 'docs-site/src/content/docs/**'
+      - 'docs/versioning/VERSION_MANIFEST.json'
+      - 'CHANGELOG.md'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'validate'
+        type: choice
+        options:
+          - validate
+          - status
+          - report
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-manifest:
+    name: 🔍 Validate Version Manifest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔎 Validate VERSION_MANIFEST.json
+        id: manifest
+        run: |
+          MANIFEST="docs/versioning/VERSION_MANIFEST.json"
+
+          if [ ! -f "$MANIFEST" ]; then
+            echo "❌ VERSION_MANIFEST.json not found at $MANIFEST"
+            exit 1
+          fi
+
+          # Validate JSON structure
+          if ! python3 -m json.tool "$MANIFEST" > /dev/null 2>&1; then
+            echo "❌ VERSION_MANIFEST.json is not valid JSON"
+            exit 1
+          fi
+
+          # Extract current version
+          CURRENT_VERSION=$(python3 -c "
+          import json
+          with open('$MANIFEST') as f:
+              m = json.load(f)
+          print(m['current']['version'])
+          ")
+
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ VERSION_MANIFEST.json valid — current version: $CURRENT_VERSION"
+
+      - name: 📋 Validate Required Fields
+        run: |
+          python3 << 'EOF'
+          import json, sys
+
+          with open('docs/versioning/VERSION_MANIFEST.json') as f:
+              manifest = json.load(f)
+
+          required_top = ['project', 'repository', 'current', 'channels', 'versions']
+          required_current = ['version', 'channel', 'released', 'status']
+          required_version = ['version', 'channel', 'released', 'status']
+
+          errors = []
+
+          for field in required_top:
+              if field not in manifest:
+                  errors.append(f"Missing top-level field: {field}")
+
+          for field in required_current:
+              if field not in manifest.get('current', {}):
+                  errors.append(f"Missing current.{field}")
+
+          for v in manifest.get('versions', []):
+              for field in required_version:
+                  if field not in v:
+                      errors.append(f"Version entry missing field: {field}")
+
+          if errors:
+              print("❌ Manifest validation failed:")
+              for e in errors:
+                  print(f"  - {e}")
+              sys.exit(1)
+          else:
+              print(f"✅ All required fields present")
+              print(f"   Versions tracked: {len(manifest.get('versions', []))}")
+          EOF
+
+  validate-frontmatter:
+    name: 🏷️ Validate Doc Frontmatter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Install PyYAML
+        run: pip install pyyaml
+
+      - name: 🔍 Validate All Frontmatter
+        id: frontmatter
+        run: |
+          python3 << 'EOF'
+          import os, sys
+          import yaml
+
+          DOCS_DIR = "docs-site/src/content/docs"
+          REQUIRED_FIELDS = ["title", "description"]
+          errors = []
+          checked = 0
+
+          for root, dirs, files in os.walk(DOCS_DIR):
+              for filename in files:
+                  if not filename.endswith(('.md', '.mdx')):
+                      continue
+
+                  filepath = os.path.join(root, filename)
+                  checked += 1
+
+                  with open(filepath, 'r') as f:
+                      content = f.read()
+
+                  # Extract frontmatter
+                  if not content.startswith('---'):
+                      errors.append(f"{filepath}: Missing frontmatter (no opening ---)")
+                      continue
+
+                  parts = content.split('---', 2)
+                  if len(parts) < 3:
+                      errors.append(f"{filepath}: Malformed frontmatter (no closing ---)")
+                      continue
+
+                  try:
+                      fm = yaml.safe_load(parts[1]) or {}
+                  except yaml.YAMLError as e:
+                      errors.append(f"{filepath}: Invalid YAML in frontmatter: {e}")
+                      continue
+
+                  for field in REQUIRED_FIELDS:
+                      if field not in fm or not fm[field]:
+                          errors.append(f"{filepath}: Missing required frontmatter field: '{field}'")
+
+          print(f"Checked {checked} documentation files")
+
+          if errors:
+              print(f"\n❌ {len(errors)} frontmatter error(s) found:")
+              for e in errors:
+                  print(f"  - {e}")
+              sys.exit(1)
+          else:
+              print(f"✅ All {checked} files have valid frontmatter")
+          EOF
+
+  validate-changelog:
+    name: 📝 Validate CHANGELOG
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Validate CHANGELOG Format
+        run: |
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "❌ CHANGELOG.md not found"
+            exit 1
+          fi
+
+          # Check for required format elements
+          if ! grep -q "^## \[" CHANGELOG.md; then
+            echo "❌ CHANGELOG.md missing version entries (## [x.y.z] format)"
+            exit 1
+          fi
+
+          if ! grep -q "Keep a Changelog" CHANGELOG.md; then
+            echo "⚠️  CHANGELOG.md missing Keep a Changelog reference (non-fatal)"
+          fi
+
+          VERSION_COUNT=$(grep -c "^## \[" CHANGELOG.md)
+          echo "✅ CHANGELOG.md valid — $VERSION_COUNT version entries found"
+
+  docs-build:
+    name: 🏗️ Docs Site Build
+    runs-on: ubuntu-latest
+    needs: [validate-manifest, validate-frontmatter]
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: docs-site/pnpm-lock.yaml
+
+      - name: 📥 Install Dependencies
+        working-directory: docs-site
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build Docs Site
+        working-directory: docs-site
+        run: pnpm build
+
+      - name: ✅ Build Summary
+        run: |
+          echo "✅ docs-site build successful"
+          echo "📁 Output:"
+          ls docs-site/dist/ | head -20
+
+  version-report:
+    name: 📊 Version Report
+    runs-on: ubuntu-latest
+    needs: [validate-manifest, validate-frontmatter, validate-changelog]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📊 Generate Version Report
+        run: |
+          python3 << 'EOF'
+          import json
+          from datetime import datetime
+
+          with open('docs/versioning/VERSION_MANIFEST.json') as f:
+              manifest = json.load(f)
+
+          current = manifest['current']
+          versions = manifest['versions']
+
+          print("=" * 60)
+          print("VLN Documentation Version Report")
+          print(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
+          print("=" * 60)
+          print(f"\n📌 Current: v{current['version']} ({current['channel']}) — {current['released']}")
+          print(f"   Status: {current['status']}")
+          print(f"\n📚 Version History:")
+          for v in versions:
+              label = f" [{v.get('label', '')}]" if v.get('label') else ""
+              print(f"   v{v['version']}{label} — {v['released']} ({v['status']})")
+          print("\n✅ Documentation versioning validated and reported")
+          EOF

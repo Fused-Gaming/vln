@@ -1,0 +1,469 @@
+# ACE FAQ & Troubleshooting
+
+Answers to frequently asked questions and solutions for common issues.
+
+## Frequently Asked Questions
+
+### Game Rules & Mechanics
+
+**Q: What happens if I get blackjack?**
+A: Blackjack (Ace + 10-value card) pays 3:2 (1.5x your bet) and beats all other hands except dealer blackjack. If both player and dealer have blackjack, it's a push (tie).
+
+**Q: When can I double down?**
+A: You can double down on any initial two cards with values of 9, 10, or 11 (before drawing any additional cards). Doubling down doubles your bet and gives you exactly one more card, then your turn ends.
+
+**Q: Can I split any pair?**
+A: Yes, you can split any two cards of equal value. Each split hand gets a separate bet (double the total wager). Special rule: Aces that are split receive only one additional card each (cannot hit further).
+
+**Q: Does the dealer hit on soft 17?**
+A: In standard ACE rules, the dealer stands on soft 17. However, this can be configured per table. Check your table configuration or dealer rules.
+
+**Q: What's the house edge in ACE?**
+A: With basic strategy, the house edge is approximately 0.5-0.6%, which is standard for casino blackjack. Edge varies with specific rule variations and player strategy.
+
+**Q: Is insurance available?**
+A: Insurance is available by default when the dealer shows an Ace. It's a side bet of 50% of your original wager. If the dealer has blackjack, you win 2:1 on the insurance bet. This is optional and can be configured per table.
+
+---
+
+### Getting Started
+
+**Q: How do I install ACE?**
+A: Use your package manager:
+```bash
+npm install @vln/ace-blackjack
+# or
+pnpm add @vln/ace-blackjack
+```
+
+**Q: What are the minimum requirements?**
+A: You need Node.js 18+, React 18+, and TypeScript 5+ (recommended). ACE works with any React app.
+
+**Q: Can I use ACE without TypeScript?**
+A: Yes, TypeScript is optional. ACE works with JavaScript projects, though types improve the development experience.
+
+**Q: Do I need to configure environment variables?**
+A: Optional. You can configure ACE via code or environment variables. See the setup guide for details.
+
+---
+
+### Integration & Components
+
+**Q: Can I use my own UI components?**
+A: Yes! ACE provides both pre-built components and low-level APIs. You can use the pre-built `ACEGameBoard` component or build custom components using the underlying game engine.
+
+**Q: How do I handle game state?**
+A: ACE provides an event-based system. Subscribe to events like `gameEnd`, `balanceUpdate`, and `error` to keep your UI in sync. You can also use hooks or your own state management.
+
+**Q: Can I embed ACE in a modal or dialog?**
+A: Yes, ACE components are responsive and work in modals. Ensure the container has sufficient dimensions (minimum 800px width recommended for desktop).
+
+**Q: How do I handle player authentication?**
+A: ACE doesn't handle authentication. Implement authentication in your application layer and pass the authenticated player's balance to ACE via `game.setPlayerBalance()`.
+
+**Q: Can I run multiple game instances?**
+A: Yes, each `ACEGame` instance is independent. Create separate instances for different tables with unique `tableId` values.
+
+---
+
+### Performance & Optimization
+
+**Q: Is ACE performant?**
+A: Yes. ACE is optimized for performance with memoized components, efficient re-renders, and debounced event handlers. Typical frame rate is 60fps.
+
+**Q: How do I improve rendering performance?**
+A: Use React's `memo()` for card and hand components, `useMemo()` for expensive game state computations, and `useCallback()` for event handlers. See code examples for patterns.
+
+**Q: How do I disable animations for faster gameplay?**
+A: Use `game.setAnimationSpeed('instant')` to remove all animations, or 'fast' for 50% speed.
+
+**Q: Does ACE work with Server Components?**
+A: The game engine works anywhere, but UI components must be client components (`'use client'`). The game instance can be initialized on the server and passed to client components.
+
+---
+
+### Betting & Balance
+
+**Q: What happens if I bet more than my balance?**
+A: ACE prevents this with validation. `isValidBet()` checks both table limits AND sufficient balance. Attempting to exceed balance throws `InsufficientFundsError`.
+
+**Q: Can I change bet limits?**
+A: Yes, specify `minBet` and `maxBet` in the game config. Default is 10-1000.
+
+**Q: How are payouts calculated?**
+A: Payouts follow standard blackjack math:
+- Blackjack: 3:2 (1.5x bet)
+- Win: 1:1 (equal to bet, so 2x total)
+- Push: 0 (bet returned)
+- Loss: -1 (lose full bet)
+
+**Q: Can I set a custom currency?**
+A: Yes, specify `currency: 'USD' | 'EUR' | 'GBP' | 'JPY'` in config. This affects display only; math is unit-based.
+
+---
+
+### Events & Listeners
+
+**Q: What events are available?**
+A: Core events are:
+- `gameStart`, `dealCards`, `playerAction`, `dealerAction`, `gameEnd`
+- `balanceUpdate`, `error`
+
+Subscribe with `game.on(event, handler)` and unsubscribe with `game.off(event, handler)`.
+
+**Q: How do I handle errors?**
+A: Listen to the `error` event and handle specific error types:
+```typescript
+game.on('error', (error) => {
+  if (error.code === 'INSUFFICIENT_FUNDS') {
+    // Handle insufficient balance
+  } else if (error.code === 'INVALID_ACTION') {
+    // Handle invalid game action
+  }
+});
+```
+
+**Q: Do I need to unsubscribe from events?**
+A: Yes, in React components use `useEffect()` cleanup:
+```typescript
+useEffect(() => {
+  const handler = (data) => { /* ... */ };
+  game.on('gameEnd', handler);
+  return () => game.off('gameEnd', handler);
+}, [game]);
+```
+
+---
+
+## Troubleshooting
+
+### Initialization Issues
+
+**Problem: "Game initialization failed"**
+
+**Solution:**
+1. Verify you're calling `await game.initialize()` before other methods
+2. Check network connectivity (if using external RNG)
+3. Ensure table configuration is valid
+
+```typescript
+try {
+  await game.initialize();
+} catch (error) {
+  console.error('Init failed:', error);
+}
+```
+
+---
+
+**Problem: "Cannot read property of undefined" during initialization**
+
+**Solution:**
+The game instance wasn't created properly. Check:
+1. Config object is valid
+2. `tableId` is provided
+3. Component is a client component (`'use client'`)
+
+```typescript
+'use client'; // Required!
+
+const game = new ACEGame({
+  tableId: 'table-1', // Required
+  minBet: 10,
+  maxBet: 1000,
+  currency: 'USD'
+});
+```
+
+---
+
+### Betting Issues
+
+**Problem: "Bet outside table limits"**
+
+**Solution:**
+Check bet amount against limits:
+```typescript
+const limits = game.getBetLimits();
+const balance = game.getPlayerBalance();
+
+const betAmount = 50;
+const maxAllowed = Math.min(limits.max, balance);
+
+if (betAmount < limits.min || betAmount > maxAllowed) {
+  console.error(`Bet must be ${limits.min}-${maxAllowed}`);
+} else {
+  game.placeBet(betAmount);
+}
+```
+
+---
+
+**Problem: "InsufficientFundsError" when placing bet**
+
+**Solution:**
+Ensure balance is set before betting:
+```typescript
+game.setPlayerBalance(1000); // Set balance first
+const receipt = await game.placeBet(50); // Then bet
+```
+
+---
+
+**Problem: Balance not updating after win/loss**
+
+**Solution:**
+Listen to `balanceUpdate` event:
+```typescript
+game.on('balanceUpdate', (newBalance) => {
+  setBalance(newBalance); // Update UI
+});
+```
+
+Balance only updates after game ends. Check `game.getOutcome()` for final balance.
+
+---
+
+### Game State Issues
+
+**Problem: "Cannot perform action, game not in playing phase"**
+
+**Solution:**
+Check game phase before acting:
+```typescript
+const state = game.getGameState();
+
+if (state.phase !== 'playing') {
+  console.error('Can only act during playing phase');
+  return;
+}
+
+const actions = game.getAvailableActions();
+if (actions.includes('hit')) {
+  await game.hit();
+}
+```
+
+---
+
+**Problem: Actions not available when expected**
+
+**Solution:**
+Available actions depend on hand value and game rules. Check actual availability:
+```typescript
+const actions = game.getAvailableActions();
+console.log('Available:', actions);
+
+// Double down only for 9, 10, 11
+// Split only for equal values
+// Hit/Stand always available in playing phase
+```
+
+---
+
+**Problem: Game seems to skip ahead or freeze**
+
+**Solution:**
+Ensure all async operations are awaited:
+```typescript
+// Wrong - not awaiting
+game.placeBet(50);
+game.deal();
+
+// Right - await each step
+await game.placeBet(50);
+const dealt = await game.deal();
+```
+
+---
+
+### UI & Rendering Issues
+
+**Problem: "Cannot find module '@vln/ace-blackjack'"**
+
+**Solution:**
+Install the package:
+```bash
+npm install @vln/ace-blackjack
+npm install # Install all dependencies
+```
+
+---
+
+**Problem: Component not rendering or blank screen**
+
+**Solution:**
+1. Ensure component is marked `'use client'`
+2. Initialize game in useEffect with proper cleanup
+3. Add loading/error states
+
+```typescript
+'use client';
+
+export function MyGame() {
+  const [game, setGame] = useState<ACEGame | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const g = new ACEGame({ /* ... */ });
+        await g.initialize();
+        setGame(g);
+      } catch (err) {
+        setError(String(err));
+      }
+    };
+    init();
+  }, []);
+
+  if (error) return <div>Error: {error}</div>;
+  if (!game) return <div>Loading...</div>;
+  return <ACEGameBoard game={game} />;
+}
+```
+
+---
+
+**Problem: Cards not animating or animations are choppy**
+
+**Solution:**
+Adjust animation speed or disable:
+```typescript
+game.setAnimationSpeed('normal'); // 'slow', 'normal', 'fast', 'instant'
+```
+
+For performance issues, check:
+1. Browser DevTools performance tab
+2. Memoize components with `React.memo()`
+3. Use `useMemo()` for expensive calculations
+
+---
+
+**Problem: Mobile layout broken or unresponsive**
+
+**Solution:**
+Ensure responsive classes are applied:
+```typescript
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  {/* Mobile: 1 col, Desktop: 2 cols */}
+</div>
+```
+
+Test on actual devices or Chrome DevTools mobile emulation.
+
+---
+
+### Event Handling Issues
+
+**Problem: Event listeners not firing**
+
+**Solution:**
+1. Ensure `game` is initialized before adding listeners
+2. Add listeners before triggering events
+3. Check event names are correct
+
+```typescript
+const game = new ACEGame(config);
+await game.initialize(); // Initialize first
+
+// Then add listeners
+game.on('gameEnd', handler); // Not 'gameended' or 'gameOver'
+
+// Then trigger
+await game.deal();
+```
+
+---
+
+**Problem: Memory leak warning about event listeners**
+
+**Solution:**
+Clean up listeners in useEffect:
+```typescript
+useEffect(() => {
+  const handler = () => { /* ... */ };
+  game.on('event', handler);
+
+  return () => {
+    game.off('event', handler); // Cleanup!
+  };
+}, [game]);
+```
+
+---
+
+### Testing Issues
+
+**Problem: Tests timeout or hang**
+
+**Solution:**
+Use a test-friendly config with instant animations:
+```typescript
+const testGame = new ACEGame({
+  tableId: 'test',
+  minBet: 1,
+  maxBet: 100,
+  currency: 'USD',
+  rngProvider: 'internal',
+  rngSeed: '12345'
+});
+
+testGame.setAnimationSpeed('instant');
+```
+
+---
+
+**Problem: Tests fail with "Cannot place bet"**
+
+**Solution:**
+Always set balance before betting:
+```typescript
+test('can place bet', async () => {
+  const game = new ACEGame(/* ... */);
+  await game.initialize();
+  game.setPlayerBalance(1000); // Required!
+  await game.placeBet(50); // Now works
+});
+```
+
+---
+
+## Getting Help
+
+**Still stuck?**
+
+1. Check the code examples for your use case
+2. Review the API reference for correct method signatures
+3. Check browser console for error messages
+4. Enable debug logging: `localStorage.setItem('ACE_DEBUG', 'true')`
+5. Contact support: [support@vln.gg](mailto:support@vln.gg)
+
+## Performance Tips
+
+1. **Use memoization** for expensive components
+2. **Debounce event handlers** if firing frequently
+3. **Lazy load** the game component if not immediately visible
+4. **Disable animations** for slower devices
+5. **Minimize re-renders** with proper state management
+
+## Accessibility Tips
+
+1. All buttons have keyboard shortcuts
+2. Card values announced via aria-labels
+3. Game status announced for screen readers
+4. High contrast colors meet WCAG AA
+5. Focus indicators always visible
+
+## Browser Support
+
+- Chrome/Edge: Full support (latest 2 versions)
+- Firefox: Full support (latest 2 versions)
+- Safari: Full support (latest 2 versions)
+- Mobile browsers: Optimized for iOS Safari, Chrome Mobile
+
+## Next Steps
+
+- **API Reference:** Detailed method documentation
+- **Code Examples:** See working implementations
+- **Integration Guide:** Component integration patterns
