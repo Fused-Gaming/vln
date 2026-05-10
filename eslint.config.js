@@ -9,11 +9,20 @@ const compat = new FlatCompat({
 module.exports = [
   {
     ignores: [
-      'docs-site/**',
-      '.next/**',
       'node_modules/**',
-      'out/**',
+      '.next/**',
       'dist/**',
+      'build/**',
+      'out/**',
+      '.astro/**',
+      'docs-site/.astro/**',
+      'docs-site/dist/**',
+      'design-site/.astro/**',
+      'design-site/dist/**',
+      'coverage/**',
+      '.vercel/**',
+      '*.tsbuildinfo',
+      '.github/scripts/**',
       'scripts/**',
       'eslint.config.js',
     ],
