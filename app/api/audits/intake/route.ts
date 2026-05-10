@@ -30,7 +30,9 @@ const VALID_SERVICE_TYPES = [
   'WALLET_FLOW_RISK_ASSESSMENT',
   'API_SECURITY_REVIEW',
   'CUSTOM_ASSESSMENT',
-];
+] as const;
+
+type AuditServiceType = (typeof VALID_SERVICE_TYPES)[number];
 
 // Pricing model (can be enhanced with dynamic pricing)
 function estimateAuditCost(serviceType: string, scope: Record<string, unknown>): number {
@@ -86,7 +88,7 @@ export async function POST(request: NextRequest) {
       errors.push('Description must be at least 10 characters');
     }
 
-    if (!VALID_SERVICE_TYPES.includes(serviceType)) {
+    if (!VALID_SERVICE_TYPES.includes(serviceType as AuditServiceType)) {
       errors.push(`Invalid service type. Must be one of: ${VALID_SERVICE_TYPES.join(', ')}`);
     }
 
