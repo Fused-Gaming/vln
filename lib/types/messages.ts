@@ -58,7 +58,7 @@ export const MESSAGE_CONSTRAINTS = {
   },
   phone: {
     minLength: 10,
-    pattern: /^[\d\s\-\+\(\)]+$/,
+    pattern: /^[\d\s+()-]+$/,
   },
   company: {
     minLength: 1,
