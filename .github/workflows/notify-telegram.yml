@@ -1,0 +1,56 @@
+name: Telegram Notifications
+
+on:
+  deployment:
+  deployment_status:
+  push:
+    branches:
+      - main
+      - integration/vln
+  pull_request:
+    types:
+      - opened
+      - closed
+      - synchronize
+      - ready_for_review
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.action != 'synchronize'
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Send Telegram Notification
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.TELEGRAM_WEBHOOK_URL }}
+          method: POST
+          customHeaders: '{"X-GitHub-Event": "${{ github.event_name }}", "Content-Type": "application/json"}'
+          data: ${{ toJson(github.event) }}
+        env:
+          TELEGRAM_WEBHOOK_URL: ${{ secrets.TELEGRAM_WEBHOOK_URL }}
+        continue-on-error: true
+
+  deployment-notify:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'deployment_status'
+    timeout-minutes: 5
+
+    steps:
+      - name: Create Deployment Notification
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.TELEGRAM_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "title": "Deployment Status",
+              "message": "Repository: ${{ github.repository }}\nEnvironment: ${{ github.event.deployment.environment }}\nStatus: ${{ github.event.deployment_status.state }}",
+              "type": "${{ github.event.deployment_status.state == 'success' && 'success' || 'warning' }}",
+              "url": "${{ github.event.deployment_status.target_url || github.server_url }}/${{ github.repository }}"
+            }' \
+            "${{ secrets.TELEGRAM_NOTIFICATION_API_URL }}"
+        continue-on-error: true
