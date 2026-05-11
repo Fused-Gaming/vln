@@ -16,7 +16,13 @@ async function runSwarm() {
 
   // Define a sample workflow with multiple tasks
   const workflowId = `vln-swarm-${Date.now()}`;
-  const topology = process.argv[2] || 'hierarchical'; // Allow topology override via CLI arg
+  const validTopologies = ['hierarchical', 'mesh', 'adaptive'] as const;
+  type Topology = (typeof validTopologies)[number];
+
+  const topologyArg = process.argv[2] || 'hierarchical';
+  const topology: Topology = validTopologies.includes(topologyArg as Topology)
+    ? (topologyArg as Topology)
+    : 'hierarchical';
 
   const tasks = [
     {
@@ -47,7 +53,7 @@ async function runSwarm() {
       workflowId,
       topology,
       tasks,
-    });
+    } as any);
 
     console.log('\n✅ Swarm Execution Complete');
     console.log('Workflow ID:', workflowId);
