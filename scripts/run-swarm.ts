@@ -1,6 +1,18 @@
-import { createSyncPulseSkill } from '@h4shed/skill-syncpulse';
+// TODO: @h4shed/skill-syncpulse has unresolved security vulnerabilities in transitive deps
+// Re-enable when upstream package publishes patched version
+// import { createSyncPulseSkill } from '@h4shed/skill-syncpulse';
 
 async function runSwarm() {
+  console.error('❌ SyncPulse skill temporarily disabled due to upstream security vulnerabilities');
+  console.error('   Issue: @h4shed/skill-syncpulse has 10+ high-severity vulnerabilities in transitive dependencies');
+  console.error('   Status: Removed from package.json pending upstream patch');
+  console.error('');
+  console.error('   To re-enable when package is patched:');
+  console.error('   1. Run: pnpm add @h4shed/skill-syncpulse');
+  console.error('   2. Uncomment this file');
+  process.exit(1);
+
+  /*
   console.log('Initializing SyncPulse Skill...');
   const skill = createSyncPulseSkill();
 
