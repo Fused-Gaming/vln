@@ -45,6 +45,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.TELEGRAM_API_TOKEN }}" \
+            -H "X-Webhook-Secret: ${{ secrets.PERALTA_GITHUB_WEBHOOK_SECRET }}" \
             -H "Content-Type: application/json" \
             -d '{
               "title": "Deployment Status",

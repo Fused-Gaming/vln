@@ -14,7 +14,7 @@ import {
 export async function POST(request: NextRequest) {
   try {
     // Verify webhook secret if configured
-    const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+    const webhookSecret = process.env.PERALTA_GITHUB_WEBHOOK_SECRET;
     if (webhookSecret) {
       const signature = request.headers.get('x-hub-signature-256');
       if (!signature) {
