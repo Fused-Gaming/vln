@@ -156,20 +156,13 @@ jobs:
 
             git add "$TARGET_DIR"
 
-            COMMIT_MSG="docs(${{ github.event.inputs.target_section }}): update from $SOURCE_REPO v$VERSION"
-            if [ -n "$COMPONENT" ]; then
-              COMMIT_MSG="$COMMIT_MSG ($COMPONENT)"
-            fi
-
-            git commit -m "$COMMIT_MSG
-
-- Source: $SOURCE_REPO
-- Version: $VERSION
-- Ref: ${{ github.event.inputs.source_ref }}
-- Path: ${{ github.event.inputs.source_path }}
-- Commit: ${{ steps.metadata.outputs.commit }}
-
-✅ Documentation updated and validated"
+            git commit -m "docs(${{ github.event.inputs.target_section }}): update from $SOURCE_REPO v$VERSION" \
+              -m "Source: $SOURCE_REPO" \
+              -m "Version: $VERSION" \
+              -m "Ref: ${{ github.event.inputs.source_ref }}" \
+              -m "Path: ${{ github.event.inputs.source_path }}" \
+              -m "Commit: ${{ steps.metadata.outputs.commit }}" \
+              -m "Documentation updated and validated"
 
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "✅ Changes committed"
