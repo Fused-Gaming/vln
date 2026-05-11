@@ -1,0 +1,81 @@
+{
+  "version": "1.0.0",
+  "skills": [
+    {
+      "id": "vln-audit-intake",
+      "name": "VLN Audit Intake",
+      "description": "Handle security audit request intake and validation",
+      "version": "0.1.0",
+      "path": "./vln-audit-intake.ts",
+      "enabled": true,
+      "dependencies": [],
+      "triggers": [
+        "manual",
+        "webhook"
+      ]
+    },
+    {
+      "id": "vln-report-generator",
+      "name": "VLN Report Generator",
+      "description": "Generate security audit reports from raw findings",
+      "version": "0.1.0",
+      "path": "./vln-report-generator.ts",
+      "enabled": true,
+      "dependencies": [
+        "vln-audit-intake"
+      ],
+      "triggers": [
+        "manual",
+        "scheduled"
+      ]
+    },
+    {
+      "id": "documentation-sync",
+      "name": "Documentation Sync",
+      "description": "Synchronize documentation from multiple repositories",
+      "version": "0.2.0",
+      "path": "./documentation-sync.ts",
+      "enabled": true,
+      "dependencies": [],
+      "triggers": [
+        "manual",
+        "scheduled"
+      ],
+      "schedule": "0 2 * * *"
+    },
+    {
+      "id": "mcp-validation",
+      "name": "MCP Validation",
+      "description": "Validate MCP server health and connectivity",
+      "version": "0.1.0",
+      "path": "./mcp-validation.ts",
+      "enabled": true,
+      "dependencies": [],
+      "triggers": [
+        "manual",
+        "scheduled"
+      ],
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "id": "documentation-link-checker",
+      "name": "Documentation Link Checker",
+      "description": "Check for broken links in documentation",
+      "version": "0.1.0",
+      "path": "./documentation-link-checker.ts",
+      "enabled": true,
+      "dependencies": [],
+      "triggers": [
+        "manual",
+        "scheduled"
+      ],
+      "schedule": "0 3 * * 0"
+    }
+  ],
+  "metadata": {
+    "created": "2026-05-11T14:16:00Z",
+    "lastUpdated": "2026-05-11T14:16:00Z",
+    "organization": "fused-gaming",
+    "project": "vln"
+  }
+}
