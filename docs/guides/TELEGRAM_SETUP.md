@@ -58,7 +58,7 @@ cp .env.example .env.local
 TELEGRAM_BOT_TOKEN=123456789:ABCDefghijklmnopQRSTuvWXYZ-AbCdEFgh
 TELEGRAM_CHAT_ID=123456789
 TELEGRAM_API_TOKEN=$(openssl rand -base64 32)
-GITHUB_WEBHOOK_SECRET=$(openssl rand -base64 32)
+PERALTA_GITHUB_WEBHOOK_SECRET=$(openssl rand -base64 32)
 ```
 
 ### Production (GitHub Secrets)
@@ -75,7 +75,7 @@ Configure these secrets in your GitHub repository:
 | `TELEGRAM_API_TOKEN` | Generated with `openssl rand -base64 32` |
 | `TELEGRAM_WEBHOOK_URL` | `https://yourdomain.com/api/webhooks/telegram` |
 | `TELEGRAM_NOTIFICATION_API_URL` | `https://yourdomain.com/api/notifications/telegram` |
-| `GITHUB_WEBHOOK_SECRET` | Generated with `openssl rand -base64 32` |
+| `PERALTA_GITHUB_WEBHOOK_SECRET` | Generated with `openssl rand -base64 32` |
 
 ## Step 4: Set Up GitHub Webhook
 
