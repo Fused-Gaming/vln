@@ -13,7 +13,7 @@ async function runSwarm() {
   process.exit(1);
 
   /*
-  console.log('Initializing SyncPulse Skill...');
+   console.log('Initializing SyncPulse Skill...');
   const skill = createSyncPulseSkill();
 
   // Get the coordinate_agents tool
@@ -77,6 +77,7 @@ async function runSwarm() {
     console.error('Error:', error instanceof Error ? error.message : error);
     process.exit(1);
   }
+  */
 }
 
 runSwarm();
