@@ -1,0 +1,182 @@
+{
+  "version": "1.0.0",
+  "mcpServers": {
+    "github": {
+      "name": "GitHub MCP Server",
+      "description": "Repository operations, PRs, issues, and code search",
+      "enabled": true,
+      "command": "node",
+      "args": [],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "list_repos",
+        "list_issues",
+        "list_pull_requests",
+        "create_pull_request",
+        "get_file_contents",
+        "create_or_update_file",
+        "search_code",
+        "search_repositories"
+      ]
+    },
+    "supabase": {
+      "name": "Supabase MCP Server",
+      "description": "Database operations, migrations, and edge functions",
+      "enabled": true,
+      "env": {
+        "SUPABASE_PROJECT_ID": "${SUPABASE_PROJECT_ID}",
+        "SUPABASE_API_KEY": "${SUPABASE_API_KEY}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "execute_sql",
+        "apply_migration",
+        "list_migrations",
+        "list_tables",
+        "deploy_edge_function"
+      ]
+    },
+    "vercel": {
+      "name": "Vercel MCP Server",
+      "description": "Deployment management and environment variables",
+      "enabled": true,
+      "env": {
+        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "list_projects",
+        "get_deployment",
+        "get_deployment_build_logs",
+        "get_runtime_logs",
+        "deploy_to_vercel"
+      ]
+    },
+    "mailerlite": {
+      "name": "MailerLite MCP Server",
+      "description": "Email campaigns and automation workflows",
+      "enabled": true,
+      "env": {
+        "MAILERLITE_API_KEY": "${MAILERLITE_API_KEY}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "create_campaign",
+        "list_campaigns",
+        "list_subscribers",
+        "create_automation",
+        "list_automations"
+      ]
+    },
+    "cloudflare": {
+      "name": "Cloudflare MCP Server",
+      "description": "KV storage, R2 buckets, D1 databases, and Workers",
+      "enabled": true,
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}",
+        "CLOUDFLARE_ACCOUNT_ID": "${CLOUDFLARE_ACCOUNT_ID}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "kv_namespace_get",
+        "r2_bucket_get",
+        "d1_database_query",
+        "workers_list"
+      ]
+    },
+    "google-calendar": {
+      "name": "Google Calendar MCP Server",
+      "description": "Event scheduling and availability management",
+      "enabled": true,
+      "env": {
+        "GOOGLE_CALENDAR_TOKEN": "${GOOGLE_CALENDAR_TOKEN}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "create_event",
+        "list_events",
+        "suggest_time",
+        "update_event",
+        "delete_event"
+      ]
+    },
+    "calendly": {
+      "name": "Calendly MCP Server",
+      "description": "Booking and meeting management",
+      "enabled": true,
+      "env": {
+        "CALENDLY_API_TOKEN": "${CALENDLY_API_TOKEN}"
+      },
+      "transport": "stdio",
+      "status": "active",
+      "tools": [
+        "event_types-list_event_types",
+        "event_types-list_event_type_available_times",
+        "meetings-list_events",
+        "meetings-create_invitee"
+      ]
+    }
+  },
+  "skillRegistry": {
+    "path": ".mcp/skills",
+    "autoDiscover": true,
+    "versionManagement": {
+      "enabled": true,
+      "strategy": "semver"
+    }
+  },
+  "syncPulse": {
+    "enabled": true,
+    "package": "@h4shed/skill-syncpulse",
+    "version": "^0.2.0",
+    "config": {
+      "agentTopology": "mesh",
+      "coordinationMode": "adaptive",
+      "healthCheckInterval": 30000,
+      "logging": {
+        "level": "info",
+        "destination": ".mcp/logs"
+      }
+    }
+  },
+  "sessions": {
+    "persistence": {
+      "enabled": true,
+      "backend": "file",
+      "storePath": ".mcp/sessions"
+    },
+    "lifecycle": {
+      "timeout": 3600000,
+      "cleanup": "auto"
+    }
+  },
+  "security": {
+    "tokenManagement": {
+      "encrypted": true,
+      "rotationPolicy": "monthly"
+    },
+    "auditLog": {
+      "enabled": true,
+      "path": ".mcp/logs/audit.log"
+    }
+  },
+  "monitoring": {
+    "healthCheck": {
+      "enabled": true,
+      "interval": 60000
+    },
+    "metrics": {
+      "enabled": true,
+      "export": "prometheus"
+    }
+  }
+}

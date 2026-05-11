@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: "20.x"
+  NODE_VERSION: "24.x"
 
 jobs:
   security-audit:
@@ -111,6 +111,10 @@ jobs:
         if: steps.check_package.outputs.has_package == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: 🔧 Generate Prisma Client
+        if: steps.check_package.outputs.has_package == 'true'
+        run: npx prisma generate
+
       - name: 🎨 Run ESLint
         if: steps.check_package.outputs.has_package == 'true'
         continue-on-error: true
@@ -162,6 +166,10 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           pnpm install --frozen-lockfile
           echo "✓ Dependencies installed successfully"
+
+      - name: 🔧 Generate Prisma Client
+        if: steps.check_package.outputs.has_package == 'true'
+        run: npx prisma generate
 
       - name: 🏗️  Build project
         if: steps.check_package.outputs.has_package == 'true'
