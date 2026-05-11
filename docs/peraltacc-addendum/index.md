@@ -27,6 +27,12 @@ This proposal package constitutes the formal engagement addendum for PeraltaCC's
 | 06 | [Pricing & Retainer](./06-pricing.md) | Fee structure, retainer options, and payment terms |
 | 07 | [Team & Credentials](./07-team.md) | Assigned analysts, qualifications, and oversight |
 | 08 | [Terms & References](./08-terms-and-references.md) | Legal terms, NDAs, references, and contact |
+| 09 | [Risk Assessment](./09-risk-assessment.md) | Security findings framework, severity classification, remediation strategy |
+| 10 | [Implementation Roadmap](./10-implementation-roadmap.md) | Post-engagement support tiers, remediation timeline, SLAs |
+| 11 | [Quality Assurance](./11-quality-assurance.md) | Testing standards, coverage metrics, validation procedures |
+| 12 | [Success Metrics](./12-success-metrics.md) | KPIs, ROI measurement, engagement success criteria |
+| 13 | [Company Background](./13-company-background.md) | VLN credentials, client references, industry recognition |
+| 14 | [Appendices](./14-appendices.md) | Technical reference, tools, checklists, compliance standards |
 
 ---
 
@@ -34,9 +40,10 @@ This proposal package constitutes the formal engagement addendum for PeraltaCC's
 
 | Version | Date | Author | Notes |
 |---------|------|--------|-------|
-| 0.1.0 | 2026-04-14 | VLN Team | Initial draft |
+| 0.1.0 | 2026-04-14 | VLN Team | Initial draft (8 sections) |
 | 0.9.0 | 2026-04-21 | VLN Team | Internal review |
-| 1.0.0 | 2026-04-28 | VLN Team | Final delivery |
+| 1.0.0 | 2026-04-28 | VLN Team | Final delivery (8 sections) |
+| 1.1.0 | 2026-05-11 | Claude Code | Expansion to 14-section PDF proposal |
 
 ---
 

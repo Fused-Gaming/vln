@@ -1,12 +1,20 @@
-# PeraltaCC Addendum Documentation
+# PeraltaCC Security Engagement Proposal
 
-This directory contains documentation synced from the [Fused-Gaming/PeraltaCC](https://github.com/Fused-Gaming/PeraltaCC) repository.
+Comprehensive 14-section security engagement proposal documentation for PeraltaCC platform audit and remediation program.
 
-**Last Synced:** See `.source-metadata.json` for sync timestamp and source commit information.
+## Document Structure
+
+This proposal package contains a complete security engagement proposal that can be compiled into a professional PDF bid document. All sections are cross-referenced and designed for client delivery.
+
+### Proposal Sections
+
+**See [index.md](./index.md) for the complete 14-section structure:**
+- 8 core proposal sections (Executive Summary through Terms & References)
+- 6 expanded sections (Risk Assessment, Implementation Roadmap, QA, Success Metrics, Company Background, Appendices)
 
 ## Contents
 
-Documentation files are automatically synced from `docs/addendum-bid/` in the PeraltaCC repository.
+Documentation includes both synced content from the PeraltaCC repository and VLN-authored proposal extensions for comprehensive bidding.
 
 ### Manual Sync
 
