@@ -1,0 +1,216 @@
+name: 📚 Update Documentation Section
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: 'Source repository (e.g., Fused-Gaming/PeraltaCC)'
+        required: true
+        type: string
+      source_ref:
+        description: 'Source branch/ref (e.g., main, v1.0.0)'
+        required: true
+        type: string
+      source_path:
+        description: 'Path within source repo containing docs (e.g., docs/guides)'
+        required: true
+        type: string
+      target_section:
+        description: 'Target section in docs (e.g., peralta, addendum)'
+        required: true
+        type: string
+      version:
+        description: 'Version number for the update (e.g., 1.0.0)'
+        required: true
+        type: string
+      component:
+        description: 'Component name (e.g., peraltacc, audit-sdk)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-docs-section:
+    name: 📚 Update ${{ github.event.inputs.target_section }} Section
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout VLN Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📥 Checkout Source Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.source_repo }}
+          path: ./source-docs
+          ref: ${{ github.event.inputs.source_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔍 Verify Source Directory
+        run: |
+          SOURCE_PATH="./source-docs/${{ github.event.inputs.source_path }}"
+
+          if [ ! -d "$SOURCE_PATH" ]; then
+            echo "❌ Source directory not found: ${{ github.event.inputs.source_path }}"
+            echo "Available directories in source repo:"
+            find ./source-docs -maxdepth 3 -type d | head -20
+            exit 1
+          fi
+
+          echo "✅ Source directory verified: $SOURCE_PATH"
+
+      - name: 📂 Prepare Target Directory
+        run: |
+          TARGET_DIR="docs/${{ github.event.inputs.target_section }}"
+          mkdir -p "$TARGET_DIR"
+
+          echo "✅ Target directory prepared: $TARGET_DIR"
+
+      - name: 📋 Copy Documentation Files
+        run: |
+          SOURCE_PATH="./source-docs/${{ github.event.inputs.source_path }}"
+          TARGET_DIR="docs/${{ github.event.inputs.target_section }}"
+
+          # Remove old content but preserve metadata
+          find "$TARGET_DIR" -type f \( -name "*.md" -o -name "*.mdx" \) -delete
+
+          # Copy new content
+          if [ -d "$SOURCE_PATH" ]; then
+            cp -r "$SOURCE_PATH"/* "$TARGET_DIR/" 2>/dev/null || true
+            echo "✅ Documentation files copied"
+          else
+            echo "⚠️  No files found in source path"
+            exit 1
+          fi
+
+      - name: 📝 Generate Metadata
+        id: metadata
+        run: |
+          SOURCE_REPO="${{ github.event.inputs.source_repo }}"
+          SOURCE_PATH="${{ github.event.inputs.source_path }}"
+          TARGET_SECTION="${{ github.event.inputs.target_section }}"
+          VERSION="${{ github.event.inputs.version }}"
+          COMPONENT="${{ github.event.inputs.component }}"
+
+          # Get commit info from source
+          SOURCE_COMMIT=$(cd ./source-docs && git rev-parse --short HEAD)
+          SOURCE_DATE=$(cd ./source-docs && git log -1 --pretty=%cd --date=iso)
+          SOURCE_AUTHOR=$(cd ./source-docs && git log -1 --pretty=%an)
+
+          echo "commit=$SOURCE_COMMIT" >> $GITHUB_OUTPUT
+          echo "date=$SOURCE_DATE" >> $GITHUB_OUTPUT
+          echo "author=$SOURCE_AUTHOR" >> $GITHUB_OUTPUT
+
+          # Create version-tagged metadata file
+          TARGET_DIR="docs/$TARGET_SECTION"
+          cat > "$TARGET_DIR/.source-metadata.json" << EOF
+          {
+            "source_repo": "$SOURCE_REPO",
+            "source_path": "$SOURCE_PATH",
+            "source_commit": "$SOURCE_COMMIT",
+            "source_date": "$SOURCE_DATE",
+            "source_author": "$SOURCE_AUTHOR",
+            "target_section": "$TARGET_SECTION",
+            "version": "$VERSION",
+            "component": "$COMPONENT",
+            "synced_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "synced_by": "GitHub Actions (Docs Webhook)"
+          }
+          EOF
+
+          echo "✅ Metadata generated for version $VERSION"
+
+      - name: 🔍 Validate Documentation
+        run: |
+          TARGET_DIR="docs/${{ github.event.inputs.target_section }}"
+          DOC_COUNT=$(find "$TARGET_DIR" -type f \( -name "*.md" -o -name "*.mdx" \) | wc -l)
+
+          if [ "$DOC_COUNT" -eq 0 ]; then
+            echo "⚠️  Warning: No markdown files found in target directory"
+          fi
+
+          echo "✅ Found $DOC_COUNT documentation files"
+          echo ""
+          echo "📄 Documentation Files:"
+          find "$TARGET_DIR" -type f \( -name "*.md" -o -name "*.mdx" \) | sort
+
+      - name: 💾 Commit Documentation
+        id: commit
+        run: |
+          TARGET_DIR="docs/${{ github.event.inputs.target_section }}"
+          VERSION="${{ github.event.inputs.version }}"
+          COMPONENT="${{ github.event.inputs.component }}"
+          SOURCE_REPO="${{ github.event.inputs.source_repo }}"
+
+          if git diff --quiet "$TARGET_DIR"; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No changes detected"
+          else
+            git config --local user.name "VLN Documentation Bot"
+            git config --local user.email "bot@vln.gg"
+
+            git add "$TARGET_DIR"
+
+            git commit -m "docs(${{ github.event.inputs.target_section }}): update from $SOURCE_REPO v$VERSION" \
+              -m "Source: $SOURCE_REPO" \
+              -m "Version: $VERSION" \
+              -m "Ref: ${{ github.event.inputs.source_ref }}" \
+              -m "Path: ${{ github.event.inputs.source_path }}" \
+              -m "Commit: ${{ steps.metadata.outputs.commit }}" \
+              -m "Documentation updated and validated"
+
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes committed"
+          fi
+
+      - name: 🚀 Push Changes
+        if: steps.commit.outputs.has_changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: integration/vln
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          rm -rf ./source-docs
+          echo "✅ Temporary files cleaned up"
+
+      - name: 📊 Generate Deployment Summary
+        if: always()
+        id: summary
+        run: |
+          if [ "${{ steps.commit.outputs.has_changes }}" == "true" ]; then
+            echo "status=✅ Deployment Successful"
+            echo "message=Documentation for ${{ github.event.inputs.target_section }} has been updated to version ${{ github.event.inputs.version }}"
+          else
+            echo "status=ℹ️  No Changes"
+            echo "message=Documentation is already up to date"
+          fi
+
+      - name: 💬 Send Telegram Notification
+        if: always()
+        run: |
+          if [ "${{ steps.commit.outputs.has_changes }}" == "true" ]; then
+            STATUS="✅ Success"
+            TYPE="success"
+          else
+            STATUS="ℹ️ No Changes"
+            TYPE="info"
+          fi
+
+          curl -X POST "${{ secrets.TELEGRAM_NOTIFICATION_API_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.TELEGRAM_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "title": "Documentation Updated: ${{ github.event.inputs.target_section }}",
+              "message": "$STATUS\n\nVersion: ${{ github.event.inputs.version }}\nComponent: ${{ github.event.inputs.component }}\nSource: ${{ github.event.inputs.source_repo }}",
+              "type": "'"$TYPE"'",
+              "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }' \
+            || echo "⚠️ Failed to send Telegram notification"
