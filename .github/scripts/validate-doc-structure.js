@@ -9,8 +9,8 @@
  * - Links to other docs
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
-const path = require('path');
 const glob = require('glob');
 
 const REQUIRED_FRONTMATTER = ['title', 'description'];
