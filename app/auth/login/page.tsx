@@ -1,10 +1,12 @@
+'use client';
+
+export const dynamic = 'force-dynamic';
+
 /**
  * Login Page
  * User authentication via email/password or OAuth
  * Date: 2026-02-25
  */
-
-'use client';
 
 import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
