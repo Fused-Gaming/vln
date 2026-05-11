@@ -29,7 +29,10 @@
     "design:lint": "cd design-site && pnpm lint",
     "monorepo:build": "pnpm -r build",
     "monorepo:lint": "pnpm -r lint",
-    "monorepo:test": "pnpm --filter=vln-website test && pnpm --filter=vln-docs-site test || true"
+    "monorepo:test": "pnpm --filter=vln-website test && pnpm --filter=vln-docs-site test || true",
+    "swarm": "tsx scripts/run-swarm.ts",
+    "swarm:mesh": "tsx scripts/run-swarm.ts mesh",
+    "swarm:adaptive": "tsx scripts/run-swarm.ts adaptive"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
