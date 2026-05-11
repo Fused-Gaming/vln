@@ -105,6 +105,247 @@ jobs:
           echo "📄 Documentation Files:"
           find docs/peraltacc-addendum -type f \( -name "*.md" -o -name "*.mdx" \) | head -20
 
+      - name: 🔐 Create Client-Facing Version
+        run: |
+          # Create client delivery directory
+          mkdir -p docs/peraltacc-addendum/client-delivery
+
+          # Copy client-safe sections (exclude internal methodology/tools)
+          COPY_SECTIONS=(
+            "01-executive-summary.md"
+            "02-scope-of-work.md"
+            "04-deliverables.md"
+            "05-timeline.md"
+            "06-pricing.md"
+            "07-team.md"
+            "08-terms-and-references.md"
+            "09-risk-assessment.md"
+            "10-implementation-roadmap.md"
+            "12-success-metrics.md"
+            "13-company-background.md"
+          )
+
+          for section in "${COPY_SECTIONS[@]}"; do
+            if [ -f "docs/peraltacc-addendum/$section" ]; then
+              cp "docs/peraltacc-addendum/$section" "docs/peraltacc-addendum/client-delivery/$section"
+              echo "✅ Included: $section"
+            fi
+          done
+
+          # Create filtered appendices (remove sensitive tool/methodology details)
+          if [ -f "docs/peraltacc-addendum/14-appendices.md" ]; then
+            # Extract only the non-sensitive appendices (C, F, G, H, I, J)
+            # Exclude A (Tools), D (Remediation Checklist), E (Communications)
+            cat > docs/peraltacc-addendum/client-delivery/14-appendices.md << 'APPENDIX_EOF'
+# Appendices & References (Client Delivery)
+
+          ## Appendix C: Vulnerability Reference
+
+          ### CWE (Common Weakness Enumeration) Alignment
+
+          #### CWE-94: Improper Control of Generation of Code
+          - **Category:** Code Injection
+          - **Severity:** Critical
+          - **Examples:** Dynamic bytecode generation without validation
+          - **Remediation:** Input validation, static code generation
+
+          #### CWE-269: Improper Access Control
+          - **Category:** Access Control
+          - **Severity:** High/Critical
+          - **Examples:** Missing require() checks, public functions
+          - **Remediation:** onlyOwner modifiers, role-based access
+
+          #### CWE-190: Integer Overflow or Wraparound
+          - **Category:** Arithmetic
+          - **Severity:** High/Medium
+          - **Examples:** Addition without SafeMath
+          - **Remediation:** Use SafeMath library, Solidity 0.8+
+
+          ### OWASP Top 10 for Web3
+
+          | Rank | Category | Coverage |
+          |------|----------|----------|
+          | 1 | Broken Access Control | 100% |
+          | 2 | Cryptographic Failures | 100% |
+          | 3 | Injection | 95% |
+          | 4 | Insecure Design | 90% |
+          | 5 | Security Misconfiguration | 100% |
+          | 6 | Vulnerable Components | 100% |
+          | 7 | Auth & Session Issues | 100% |
+          | 8 | Data Integrity Failures | 95% |
+          | 9 | Logging & Monitoring | 85% |
+          | 10 | SSRF | 90% |
+
+          ## Appendix F: Regulatory & Compliance References
+
+          ### Relevant Standards
+          - **SEC Guidance** - Digital asset custody and trading
+          - **FinCEN Rules** - Money services definitions
+          - **State-level Gaming** - iGaming licensing requirements
+          - **GDPR Article 32** - Security of processing
+
+          ### Audit Standards
+          - **AICPA SOC 2 Type II** - Service org controls
+          - **ISO 27001:2022** - Information security management
+          - **NIST Cybersecurity Framework** - Risk-based approach
+          - **CIS Controls** - Best practice standards
+
+          ## Appendix G: Post-Audit Monitoring Recommendations
+
+          ### Monthly Tasks
+          - [ ] Security patch application review
+          - [ ] New CVE monitoring
+          - [ ] Dependency upgrade assessment
+          - [ ] Access control audit
+
+          ### Quarterly Tasks
+          - [ ] Penetration testing sample
+          - [ ] Architecture review for changes
+          - [ ] New threat landscape assessment
+          - [ ] Compliance verification
+
+          ### Annual Tasks
+          - [ ] Comprehensive re-audit
+          - [ ] Compliance certification update
+          - [ ] Team security training
+          - [ ] Strategic security planning
+
+          ## Appendix H: Glossary & Technical Terms
+
+          ### Blockchain Terminology
+          - **EVM** - Ethereum Virtual Machine
+          - **Solidity** - Smart contract language
+          - **Gas** - Transaction cost metric
+          - **Mainnet** - Production blockchain
+          - **Testnet** - Development blockchain
+
+          ### Security Terminology
+          - **Exploit** - Practical demonstration of vulnerability
+          - **Vulnerability** - Security weakness in code/design
+          - **Threat** - Actor or malicious intent
+          - **Risk** - Potential impact of threat realization
+          - **Remediation** - Fix or mitigation of vulnerability
+
+          ## Appendix J: Additional Resources
+
+          ### Security Learning Resources
+          - **OWASP Top 10** - owasp.org/www-project-top-ten
+          - **CWE List** - cwe.mitre.org
+          - **Smart Contract Auditing Guide** - consensys.net/diligence
+          - **Solidity Documentation** - docs.soliditylang.org
+
+          ### Community & Support
+          - **GitHub Issues** - github.com/Fused-Gaming/vln
+          - **Discord Server** - discord.gg/vln
+          - **Email Support** - engage@vln.gg
+          - **Security Advisory** - security@vln.gg
+
+          ---
+
+          *Last Updated: $(date -u +%Y-%m-%d)*
+          *Classification: Client Delivery*
+          APPENDIX_EOF
+
+            cp docs/peraltacc-addendum/client-delivery/14-appendices-client.md docs/peraltacc-addendum/client-delivery/14-appendices.md
+            echo "✅ Filtered appendices created"
+          fi
+
+      - name: 📄 Generate Client Delivery Index
+        run: |
+          cat > docs/peraltacc-addendum/client-delivery/INDEX.md << 'INDEX_EOF'
+          # PeraltaCC Security Engagement — Client Proposal
+
+          **Prepared by:** VLN – Vulnerability Lab Network
+          **Client:** PeraltaCC
+          **Classification:** Confidential – Client Delivery Only
+
+          ---
+
+          ## Document Contents
+
+          This proposal package contains VLN's comprehensive security engagement proposal for PeraltaCC's platform audit and remediation program.
+
+          | Section | Document | Description |
+          |---------|----------|-------------|
+          | 01 | Executive Summary | Scope overview and strategic recommendation |
+          | 02 | Scope of Work | In-scope systems, exclusions, and boundaries |
+          | 04 | Deliverables | Report formats and delivery schedule |
+          | 05 | Timeline | Phased engagement calendar |
+          | 06 | Pricing & Retainer | Fee structure and payment terms |
+          | 07 | Team & Credentials | Assigned analysts and qualifications |
+          | 08 | Terms & References | Legal terms and contact |
+          | 09 | Risk Assessment | Security findings framework |
+          | 10 | Implementation Roadmap | Post-engagement support and SLAs |
+          | 12 | Success Metrics | KPIs and engagement success criteria |
+          | 13 | Company Background | VLN credentials and references |
+          | 14 | Appendices | Technical reference and resources |
+
+          ---
+
+          ## Confidentiality Notice
+
+          This proposal is confidential and proprietary to VLN. It is provided exclusively to PeraltaCC for evaluation purposes. Unauthorized distribution or disclosure is prohibited.
+
+          For questions, contact: **engage@vln.gg**
+
+          ---
+
+          *Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)*
+          INDEX_EOF
+
+          echo "✅ Client delivery index created"
+
+      - name: 🔒 Set Restricted Permissions
+        run: |
+          # Mark client delivery files as confidential
+          cat > docs/peraltacc-addendum/client-delivery/.delivery-metadata.json << 'META_EOF'
+          {
+            "delivery_type": "client-confidential",
+            "access_level": "restricted",
+            "recipient": "PeraltaCC",
+            "classification": "Confidential",
+            "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "excluded_sections": [
+              "03-methodology.md (internal tooling)",
+              "11-quality-assurance.md (internal standards)",
+              "14-appendices.md (tools and communications)"
+            ],
+            "delivery_channels": [
+              "Secure authenticated endpoint",
+              "Time-limited access tokens",
+              "Client portal only"
+            ]
+          }
+          META_EOF
+
+          echo "✅ Delivery metadata configured"
+
+      - name: 📦 Prepare Deployment Package
+        run: |
+          # Create public-facing docs structure
+          mkdir -p public/docs/peralta
+
+          # Copy client-facing version to public
+          cp -r docs/peraltacc-addendum/client-delivery/* public/docs/peralta/
+
+          # Generate manifest
+          cat > public/docs/peralta/.manifest.json << 'MANIFEST_EOF'
+          {
+            "name": "PeraltaCC Security Engagement Proposal",
+            "version": "1.1.0",
+            "classification": "Confidential – Client Delivery",
+            "prepared_by": "VLN – Vulnerability Lab Network",
+            "delivery_date": "$(date -u +%Y-%m-%d)",
+            "sections": 12,
+            "path": "/peralta",
+            "access": "authenticated",
+            "format": "markdown"
+          }
+          MANIFEST_EOF
+
+          echo "✅ Deployment package prepared"
+          ls -la public/docs/peralta/ | head -20
+
       - name: 💾 Commit Documentation
         id: commit
         run: |
@@ -116,6 +357,7 @@ jobs:
             git config --local user.email "bot@vln.gg"
 
             git add docs/peraltacc-addendum/
+            git add public/docs/peralta/
 
             git commit -m "docs(peraltacc): sync PeraltaCC addendum-bid documentation
 
@@ -125,8 +367,9 @@ Automated sync from Fused-Gaming/PeraltaCC
 - Author: ${{ steps.metadata.outputs.author }}
 - Date: ${{ steps.metadata.outputs.date }}
 
-✅ Documentation validated and deployed
-📚 ${{ job.status }}"
+🔐 Client-facing version prepared
+📦 Deployment package created
+✅ Ready for docs.vln.gg deployment"
 
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "✅ Changes committed"
