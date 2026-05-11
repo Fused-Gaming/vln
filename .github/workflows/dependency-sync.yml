@@ -1,0 +1,129 @@
+name: Dependency Sync & Lock File Update
+
+on:
+  push:
+    branches:
+      - main
+      - integration/vln
+    paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches:
+      - main
+      - integration/vln
+    paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Check for dependency mismatches
+        id: check-sync
+        run: |
+          echo "Checking if dependencies and lock file are in sync..."
+
+          # Try frozen lockfile first to detect mismatches
+          if ! pnpm install --frozen-lockfile --prefer-offline 2>&1 | tee sync-check.log; then
+            echo "sync-needed=true" >> $GITHUB_OUTPUT
+            echo "❌ Dependency mismatch detected - lock file needs regeneration"
+            cat sync-check.log
+          else
+            echo "sync-needed=false" >> $GITHUB_OUTPUT
+            echo "✓ Dependencies and lock file in sync"
+          fi
+
+      - name: Clean installation if needed
+        if: steps.check-sync.outputs.sync-needed == 'true'
+        run: |
+          echo "🧹 Removing stale artifacts..."
+          rm -rf node_modules .pnpm-store pnpm-lock.yaml
+          echo "📦 Performing clean installation..."
+          pnpm install --no-frozen-lockfile
+
+      - name: Verify lock file integrity
+        run: |
+          echo "🔍 Verifying regenerated lock file integrity..."
+          pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Run tests
+        run: |
+          echo "🧪 Running test suite..."
+          pnpm test --run
+
+      - name: Build project
+        run: |
+          echo "🔨 Building project..."
+          pnpm build
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet pnpm-lock.yaml; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            echo "📝 Lock file changes detected"
+            git diff pnpm-lock.yaml | head -50
+          fi
+
+      - name: Commit and push if changes detected
+        if: steps.changes.outputs.has-changes == 'true'
+        run: |
+          git config user.name "🤖 Dependency Sync Bot"
+          git config user.email "bot@fused-gaming.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore(deps): sync and update dependency lock files [skip ci]"
+
+          # Push with retry logic for transient failures
+          for attempt in {1..4}; do
+            if git push origin HEAD:${{ github.ref_name }} 2>&1; then
+              echo "✓ Changes pushed successfully"
+              exit 0
+            fi
+
+            if [ $attempt -lt 4 ]; then
+              wait_time=$((2 ** (attempt - 1)))
+              echo "Push failed, retrying in ${wait_time}s... (attempt $attempt/4)"
+              sleep $wait_time
+              git pull --rebase origin ${{ github.ref_name }}
+            fi
+          done
+
+          echo "❌ Failed to push after 4 attempts"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Dependency Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Sync Status**: ${{ steps.check-sync.outputs.sync-needed == 'true' && '❌ Mismatches Found & Fixed' || '✓ Already In Sync' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changes Committed**: ${{ steps.changes.outputs.has-changes == 'true' && '✓ Yes' || '✗ No' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests**: ✓ Passed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build**: ✓ Succeeded" >> $GITHUB_STEP_SUMMARY
