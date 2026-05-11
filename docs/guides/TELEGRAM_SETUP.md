@@ -92,7 +92,7 @@ The `notify-telegram.yml` workflow triggers automatically on:
 2. Configure:
    - **Payload URL**: `https://yourdomain.com/api/webhooks/telegram`
    - **Content type**: `application/json`
-   - **Secret**: Your `GITHUB_WEBHOOK_SECRET`
+   - **Secret**: Your `PERALTA_GITHUB_WEBHOOK_SECRET`
    - **Events**: Select:
      - `Deployments`
      - `Pushes`
@@ -195,7 +195,7 @@ curl -X POST "https://yourdomain.com/api/notifications/telegram" \
 1. **Never commit secrets** to git
 2. **Use GitHub Secrets** for production environment variables
 3. **Rotate API tokens** regularly
-4. **Verify webhook signatures** when using `GITHUB_WEBHOOK_SECRET`
+4. **Verify webhook signatures** when using `PERALTA_GITHUB_WEBHOOK_SECRET`
 5. **Limit webhook URLs** to trusted domains
 6. **Monitor logs** for failed notification attempts
 
