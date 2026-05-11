@@ -44,7 +44,7 @@ export interface TelegramSendMessageRequest {
   disable_notification?: boolean;
 }
 
-export interface TelegramAPIResponse<T = any> {
+export interface TelegramAPIResponse<T = Record<string, unknown>> {
   ok: boolean;
   result?: T;
   error_code?: number;
@@ -57,5 +57,5 @@ export interface NotificationPayload {
   type: 'deployment' | 'error' | 'warning' | 'info' | 'success';
   url?: string;
   timestamp?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }

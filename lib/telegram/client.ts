@@ -112,10 +112,7 @@ class TelegramClient {
    * Verify webhook signature (if needed for security)
    * Currently a placeholder for future implementation
    */
-  verifyWebhookSignature(
-    signature: string,
-    payload: string
-  ): boolean {
+  verifyWebhookSignature(): boolean {
     // Future: Implement HMAC verification when GitHub webhook secrets are used
     return true;
   }

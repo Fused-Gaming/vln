@@ -1,19 +1,37 @@
 import { telegramClient } from './client';
-import { NotificationPayload } from './types';
+import { NotificationPayload, TelegramAPIResponse } from './types';
 
 /**
  * Webhook handler utilities for Telegram notifications
  */
 
+interface DeploymentWebhookPayload {
+  deployment: {
+    environment: string;
+    ref: string;
+    state?: string;
+  };
+  deployment_status?: {
+    state: string;
+    target_url?: string;
+  };
+  repository: {
+    name: string;
+    html_url: string;
+  };
+}
+
 /**
  * Handle GitHub Actions webhook for deployments
  */
-export async function handleDeploymentWebhook(payload: any) {
+export async function handleDeploymentWebhook(
+  payload: Record<string, unknown>
+): Promise<TelegramAPIResponse> {
   if (!payload.deployment || !payload.repository) {
-    return { ok: false, error: 'Invalid payload structure' };
+    return { ok: false, error_code: 400, description: 'Invalid payload structure' };
   }
 
-  const { repository, deployment, deployment_status } = payload;
+  const { repository, deployment, deployment_status } = payload as unknown as DeploymentWebhookPayload;
   const status = deployment_status?.state || deployment?.state || 'unknown';
 
   const title = `Deployment: ${repository.name}`;
@@ -51,15 +69,29 @@ export async function handleNotificationWebhook(
   return telegramClient.sendMessage(text);
 }
 
+interface PushWebhookPayload {
+  repository: {
+    name: string;
+    html_url: string;
+  };
+  pusher: {
+    name: string;
+  };
+  ref: string;
+  commits?: Array<{ id: string }>;
+}
+
 /**
  * Handle push webhook for code updates
  */
-export async function handlePushWebhook(payload: any) {
+export async function handlePushWebhook(
+  payload: Record<string, unknown>
+): Promise<TelegramAPIResponse> {
   if (!payload.repository || !payload.pusher) {
-    return { ok: false, error: 'Invalid payload structure' };
+    return { ok: false, error_code: 400, description: 'Invalid payload structure' };
   }
 
-  const { repository, pusher, ref, commits } = payload;
+  const { repository, pusher, ref, commits } = payload as unknown as PushWebhookPayload;
   const branch = ref.split('/').pop();
   const commitCount = commits?.length || 0;
 
@@ -80,15 +112,32 @@ export async function handlePushWebhook(payload: any) {
   return telegramClient.sendMessage(text);
 }
 
+interface PullRequestWebhookPayload {
+  pull_request: {
+    number: number;
+    title: string;
+    html_url: string;
+    user: {
+      login: string;
+    };
+  };
+  repository: {
+    name: string;
+  };
+  action: string;
+}
+
 /**
  * Handle pull request webhook
  */
-export async function handlePullRequestWebhook(payload: any) {
+export async function handlePullRequestWebhook(
+  payload: Record<string, unknown>
+): Promise<TelegramAPIResponse> {
   if (!payload.pull_request || !payload.repository) {
-    return { ok: false, error: 'Invalid payload structure' };
+    return { ok: false, error_code: 400, description: 'Invalid payload structure' };
   }
 
-  const { pull_request, repository, action } = payload;
+  const { pull_request, repository, action } = payload as unknown as PullRequestWebhookPayload;
   const type = action === 'opened' ? 'info' : 'warning';
 
   const title = `🔀 PR: ${action.toUpperCase()}`;
@@ -133,16 +182,17 @@ function getNotificationType(
 /**
  * Validate incoming webhook payload (basic)
  */
-export function validateWebhookPayload(payload: any): boolean {
-  return payload && typeof payload === 'object';
+export function validateWebhookPayload(
+  payload: unknown
+): payload is Record<string, unknown> {
+  return payload !== null && typeof payload === 'object';
 }
 
 /**
- * Get webhook event type from headers or payload
+ * Get webhook event type from headers
  */
 export function getWebhookEventType(
-  headers: Record<string, string>,
-  payload?: any
+  headers: Record<string, string>
 ): string | null {
   // GitHub sends event type in X-GitHub-Event header
   return headers['x-github-event'] || headers['x-event-type'] || null;

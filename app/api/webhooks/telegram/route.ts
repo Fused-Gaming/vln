@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const eventType = getWebhookEventType(headers, payload);
+    const eventType = getWebhookEventType(headers);
 
     if (!eventType) {
       return NextResponse.json(
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
  * GET /api/webhooks/telegram
  * Health check endpoint
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   return NextResponse.json({
     status: 'ok',
     service: 'telegram-webhook-receiver',
